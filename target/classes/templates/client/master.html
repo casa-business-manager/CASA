@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Client管理</title>
+    <link rel="stylesheet" href="../../static/assets/bootstrap/css/bootstrap.min.css"
+          th:href="@{/assets/bootstrap/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" media="screen" href="../../static/assets/bootstrap-table/bootstrap-table.min.css"
+          th:href="@{/assets/bootstrap-table/bootstrap-table.min.css}"/>
+    <script src="../../static/assets/jquery.min.js"
+            th:src="@{/assets/jquery.min.js}"></script>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<nav class="navbar navbar-expand-lg navbar-light static-top sb-navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand">OAuth2 管理</a>
+        <button class="navbar-toggler navbar-toggler-right collapsed" type="button" data-toggle="collapse"
+                data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
+                aria-label="Toggle navigation">
+            Menu
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="navbar-collapse collapse" id="navbarResponsive" style="">
+            <ul class="navbar-nav mr-auto">
+                <!-- <li class="nav-item dropdown">
+                     <a class="nav-link dropdown-toggle" href="#" id="dropdownThemes" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Themes</a>
+                     <div class="dropdown-menu" aria-labelledby="dropdownThemes">
+                         <a class="dropdown-item" href="#">
+                             <i class="fa fa-star"></i>
+                             Most Popular</a>
+                         <div class="dropdown-divider"></div>
+                         <a class="dropdown-item" href="#">Full Websites</a>
+                     </div>
+                 </li>-->
+                <li class="nav-item">
+                    <a class="nav-link active" href="/management/client/">应用接入管理</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/management/user/">用户管理</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">退出</a>
+                </li>
+            </ul>
+            <!--<ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="https://twitter.com/sbootstrap">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://twitter.com/sbootstrap">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </li>
+            </ul>-->
+        </div>
+    </div>
+</nav>
+<div class="container-fluid mt-3">
+    <section>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Main content -->
+            <section class="content gridContainer">
+                <table id="table">
+                </table>
+                <br/>
+                <button type="button" class="btn btn-info" id="createNew">添加新纪录</button>
+
+            </section>
+            <section class="content">
+                <form class="d-none" id="detailsForm">
+
+                    <input type="hidden" value="" id="id"/>
+
+                    <div class="form-group row my-2">
+                        <label for="clientId" class="col-2 control-label text-end">clientId</label>
+                        <div class="col-6">
+                            <input type="text" class="form-control" id="clientId" placeholder="clientId"
+                                   required="required"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group row my-2">
+                        <label for="clientSecret" class="col-2 control-label text-end">clientSecret</label>
+                        <div class="col-6">
+                            <input type="text" class="form-control" id="clientSecret" placeholder="clientSecret"
+                                   required="required"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group row my-2">
+                        <label for="scope" class="col-2 control-label text-end">scope</label>
+                        <div class="col-6">
+                            <input type="text" class="form-control" id="scope" placeholder="scope" required="required"/>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label for="authorizedGrantTypes"
+                               class="col-2 control-label text-end">grantTypes</label>
+                        <div class="col-6">
+                            <input type="text" class="form-control" id="authorizedGrantTypes"
+                                   placeholder="authorizedGrantTypes" required="required"/>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label for="webServerRedirectUri"
+                               class="col-2 control-label text-end">redirectUri</label>
+                        <div class="col-6">
+                            <input type="text" class="form-control" id="webServerRedirectUri"
+                                   placeholder="redirectUri" required="required"/>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label for="remarks" class="col-2 control-label text-end">remarks</label>
+                        <div class="col-6">
+                            <input type="text" class="form-control" id="remarks" placeholder="remarks"/>
+                        </div>
+                    </div>
+                    <div class="form-group row my-2">
+                        <label class="col-2 control-label"></label>
+                        <div class="col-6">
+                            <button type="submit" class="btn btn-info mr-5" id="update">保存</button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <!-- /.content -->
+            <!-- /.content -->
+        </div>
+    </section>
+</div>
+<!-- /.content-wrapper -->
+<footer class="main-footer">
+</footer>
+
+<script src="../../static/assets/bootstrap/js/bootstrap.min.js"
+        th:src="@{/assets/bootstrap/js/bootstrap.min.js}"></script>
+<script src="../../static/assets/moment-with-locales.min.js"
+        th:src="@{/assets/moment-with-locales.min.js}"></script>
+<script th:src="@{/assets/localforage.min.js}" src="../static/assets/localforage.min.js"></script>
+
+<script type="text/javascript" charset="utf8" src="../../static/assets/bootstrap-table/bootstrap-table.min.js"
+        th:src="@{/assets/bootstrap-table/bootstrap-table.min.js}"></script>
+
+<th:block th:inline="javascript">
+    <script>
+
+        function formatBoolean(cellValue, options, rowObject) {
+            if (cellValue == null || cellValue == "") {
+                return "";
+            } else if (cellValue == true) {
+                return "是";
+            } else {
+                return "否";
+            }
+        }
+
+        function formatStatus(cellValue, options, rowObject) {
+            if (cellValue === null || cellValue === "") {
+                return "";
+            } else if (Number(cellValue) == -1) {
+                return "是";
+            } else {
+                return "否";
+            }
+        }
+
+        function formatDate(cellValue) {
+            if (cellValue != null && cellValue != "") {
+                var day = moment(cellValue);
+                var formatted = day.format("YYYY-MM-DD HH:mm");
+                return formatted;
+            } else {
+                return "";
+            }
+
+        }
+
+        $(document).ready(function () {
+
+            let $table = $('#table');
+            $table.bootstrapTable({
+                url: '/management/client/list',
+                dataField:'rows',
+                uniqueId:'id',
+                toolbar: '#toolbar',
+                clickEdit: true,
+                showToggle: true,
+                pagination: true,       //显示分页条
+                showColumns: true,
+                showPaginationSwitch: true,     //显示切换分页按钮
+                showRefresh: true,      //显示刷新按钮
+                showPaginationSwitch: false,
+                sidePagination:'server',
+                //clickToSelect: true,  //点击row选中radio或CheckBox
+                columns: [{
+                    checkbox: true
+                }, {
+                    field: 'id',
+                    title: 'ID',
+                    sortable: false
+                }, {
+                    field: 'clientId',
+                    title: 'clientId',
+                    sortable: true
+                }, {
+                    field: 'scope',
+                    title: 'scope',
+                    sortable: true
+                }, {
+                    field: 'authorizedGrantTypes',
+                    title: 'authorizedGrantTypes',
+                    sortable: false
+                }, {
+                    field: 'webServerRedirectUri',
+                    title: 'webServerRedirectUri',
+                    sortable: false
+                }, {
+                    field: 'remarks',
+                    title: 'remarks',
+                    sortable: false
+                }, {
+                    field: 'dateCreated',
+                    title: 'dateCreated',
+                    sortable: false
+                }, {
+                    field: '',
+                    title: '操作',
+                    formatter: function (value, row, index){
+                        var btnString = "";
+                        if (row.recordStatus < 0) {
+                            btnString = "<button class='btn btn-secondary btn-sm btn-status' data-client-id='" + row.id + "' data-record-status='" + row.recordStatus + "'>启用</button>";
+                        } else {
+                            btnString = "<button class='btn btn-success btn-sm btn-status' data-client-id='" + row.id + "' data-record-status='" + row.recordStatus + "'>禁用</button>";
+                        }
+                        btnString += "&nbsp;&nbsp;&nbsp;<button class='btn btn-primary btn-sm btn-edit' data-client-id='" + row.id + "'>编辑</button>";
+                        return btnString;
+                    }
+                }],
+                onLoadError:function(status, jqXHR) {
+                    Swal.fire({
+                      icon: 'error',
+                      title: status,
+                      text: 'Something went wrong!',
+                      timer: 1500
+                    })
+                }
+            });
+
+            $("#createNew").click(function () {
+                $("#id").val("0");
+                $("#clientId").val('');
+                $("#clientSecret").val('');
+                $("#scope").val("");
+                $("#authorizedGrantTypes").val("refresh_token,authorization_code");
+                $("#webServerRedirectUri").val("");
+                $("#remarks").val("");
+                $("#detailsForm").removeClass("d-none");
+                $("#message").removeClass("bg-danger").html("");
+                $("#message").removeClass("bg-success").html("");
+            });
+
+            $("#table").on("click", ".btn-edit", function () {
+                var clientId = $(this).data("client-id");
+                $("#detailsForm").removeClass("d-none");
+                var url = "/management/client/details?id=" + clientId;
+                $.get(url, function (data) {
+                    $("#id").val(data.id);
+                    $("#clientId").val(data.clientId);
+                    $("#clientSecret").val('');
+                    $("#scope").val(data.scope);
+                    $("#authorizedGrantTypes").val(data.authorizedGrantTypes);
+                    $("#webServerRedirectUri").val(data.webServerRedirectUri);
+                    $("#remarks").val(data.remarks);
+                    $("#message").removeClass("bg-danger").html("");
+                    $("#message").removeClass("bg-success").html("");
+                });
+            });
+
+
+            $("#detailsForm").on("submit", function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: '/management/client/details',
+                    data: {
+                        id: $("#id").val(),
+                        clientId: $("#clientId").val(),
+                        clientSecret: $("#clientSecret").val(),
+                        scope: $("#scope").val(),
+                        authorizedGrantTypes: $("#authorizedGrantTypes").val(),
+                        webServerRedirectUri: $("#webServerRedirectUri").val(),
+                        remarks: $("#remarks").val()
+                    },
+                    success: function (data) {
+                        if (data.status == 1) {
+                            $table.bootstrapTable('refresh')
+                            $("#createNew").trigger("click");
+                            $("#detailsForm").addClass("d-none");
+                            alert("保存成功!");
+                        } else {
+                            alert(data.message);
+                        }
+                    }
+                });
+                return false;
+            });
+
+
+            $("#table").on("click", ".btn-status", function () {
+                var clientId = $(this).data("client-id");
+                var deleteOperation = $(this).data("record-status");
+                $.ajax({
+                    type: 'POST',
+                    url: '/management/client/details',
+                    data: {id: clientId, deleteOperation: deleteOperation},
+                    success: function (data) {
+                        $table.bootstrapTable('refresh')
+                    }
+                });
+
+            });
+
+        });
+    </script>
+</th:block>
+</body>
+</html>
