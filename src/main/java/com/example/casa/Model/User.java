@@ -2,12 +2,13 @@ package com.example.casa.Model;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.GenericGenerator;
 
 
-@Table(name = "users")
+@Table(name = "user")
 @Entity
 public class User {
     @Id
@@ -42,7 +43,9 @@ public class User {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "organization_id")
     )
-    private Set<Organization> organizations;
+
+        private Set<Organization> organizations = new HashSet<>();
+
 
     //Getters and Setters
     public String getId() {

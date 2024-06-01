@@ -3,12 +3,13 @@ package com.example.casa.Model;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
 
-@Entity
+
 @Table(name = "organization")
+@Entity
 public class Organization {
     
     @Id
@@ -24,11 +25,10 @@ public class Organization {
     private String orgDescription;
 
     @Column(name = "org_location", nullable = false)
-    private String orgLocation; 
+    private String orgLocation;
 
     @ManyToMany(mappedBy = "organizations")
-    private Set<User> users;
-
+    private Set<User> users = new HashSet<>();
 
     public Organization() {
         this.users = new HashSet<>();
