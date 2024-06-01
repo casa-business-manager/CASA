@@ -3,6 +3,7 @@ package com.example.casa.Security;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,12 @@ import java.util.Date;
 @Service
 public class TokenProvider {
     
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    @Value("${jwt.expiration}")
+    private long jwtExpirationInMs;
+
     private static final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
     private AppProperties appProperties;
 
@@ -21,18 +28,18 @@ public class TokenProvider {
     }
 
     @SuppressWarnings("deprecation")
-    public String createToken(Authentication authentication){
+    public String createToken(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + appProperties.getAuth().getTokenExpirationMsec());
+        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
         return Jwts.builder()
-            .claim("sub", userPrincipal.getId())
-            .setIssuedAt(new Date())
-            .setExpiration(expiryDate)
-            .signWith(SignatureAlgorithm.HS512, appProperties.getAuth().getTokenSecret())
-            .compact();
+                .setSubject(String.valueOf(userPrincipal.getId()))
+                .setIssuedAt(new Date())
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
     }
 
     public Long getUserIdFromToken(String token){

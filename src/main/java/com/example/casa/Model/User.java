@@ -1,6 +1,9 @@
 package com.example.casa.Model;
 
 import jakarta.persistence.*;
+
+import java.util.Set;
+
 import org.hibernate.annotations.GenericGenerator;
 
 
@@ -32,6 +35,14 @@ public class User {
     private AuthProvider provider;
 
     private String providerId;
+
+    @ManyToMany
+    @JoinTable(
+        name = "user_organization",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "organization_id")
+    )
+    private Set<Organization> organizations;
 
     //Getters and Setters
     public String getId() {
@@ -97,4 +108,9 @@ public class User {
     public void setProviderId(String providerId) {
         this.providerId = providerId;
     }
+
+    public Set<Organization> getOrganizations() {
+        return organizations;
+    }
+
 }

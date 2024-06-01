@@ -10,6 +10,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
@@ -31,26 +35,24 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(jakarta.servlet.http.HttpServletRequest request,
-            jakarta.servlet.http.HttpServletResponse response, jakarta.servlet.FilterChain filterChain)
-            throws jakarta.servlet.ServletException, IOException {
-                try {
-                    String jwt = getJwtFromRequest(request);
-        
-                    if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                        Long userId = tokenProvider.getUserIdFromToken(jwt);
-        
-                        UserDetails userDetails = customUserDetailsService.loadUserById(String.valueOf(userId));
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    }
-                } catch (Exception ex) {
-                    logger.error("Could not set user authentication in security context", ex);
-                }
-        
-                filterChain.doFilter(request, response);
-        throw new UnsupportedOperationException("Unimplemented method 'doFilterInternal'");
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        try {
+            String jwt = getJwtFromRequest(request);
+
+            if (jwt != null && tokenProvider.validateToken(jwt)) {
+                Long userId = tokenProvider.getUserIdFromToken(jwt);
+
+                UserDetails userDetails = customUserDetailsService.loadUserById(String.valueOf(userId));
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (Exception ex) {
+            logger.error("Could not set user authentication in security context", ex);
+        }
+
+        filterChain.doFilter(request, response);
     }
 }

@@ -1,0 +1,21 @@
+.hr-with-text {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.hr-with-text::before,
+.hr-with-text::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #ccc;
+}
+
+.hr-with-text::before {
+    margin-right: 10px;
+}
+
+.hr-with-text::after {
+    margin-left: 10px;
+}
