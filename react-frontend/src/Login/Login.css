@@ -19,3 +19,19 @@
 .hr-with-text::after {
     margin-left: 10px;
 }
+
+.text-h2{
+    text-align: center;
+}
+
+.button-div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

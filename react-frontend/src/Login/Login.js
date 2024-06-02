@@ -4,7 +4,8 @@ import { GoogleLoginButton } from 'react-social-login-buttons';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import './Login.css'; 
 import { GOOGLE_AUTH_URL } from '../Constants/constants';
-import { login, signup } from '../../util/APIUtils';
+import { useNavigate } from 'react-router-dom'; 
+import { login, signup } from '../APIUtils/APIUtils';
 
 function Login() {
     const [formData, setFormData] = useState({
@@ -18,7 +19,8 @@ function Login() {
     
     const [authState, setAuthState] = useState('signIn');
     const [nextStep, setNextStep] = useState(false);
-
+    const navigate = useNavigate(); 
+    
     const handleStateNextStep = (e) => {
         e.preventDefault();
         setNextStep(true);
@@ -38,32 +40,27 @@ function Login() {
             alert('You must accept the terms of service and privacy policy.');
             return;
         }
-        const url = authState === 'signUp' ? 'http://localhost:8080/auth/signup' : 'http://localhost:8080/auth/login';
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
-        if (response.ok) {
+        try {
+            const response = authState === 'signUp' ? await signup(formData) : await login(formData);
             alert(`${authState === 'signUp' ? 'Signup' : 'Signin'} successful!`);
-        } else {
-            alert(`${authState === 'signUp' ? 'Signup' : 'Signin'} failed!`);
+            localStorage.setItem('ACCESS_TOKEN', response.accessToken);
+            navigate('/organization'); 
+        } catch (error) {
+            alert(`${authState === 'signUp' ? 'Signup' : 'Signin'} failed: ${error}`);
         }
     };
 
     return (
         <div>
             <Container maxWidth="sm" sx={{ backgroundColor: '#f0f0f0', padding: '20px', borderRadius: '10px', marginTop: '250px' }}>
-                <div>
+                <div className='login-form-container'>
                     <form onSubmit={handleSubmit}>
-                        <h2>Welcome to CASA</h2>
-                        <div>
+                        <h2 className='text-h2'>Welcome to CASA</h2>
+                        <div className='button-div'>
                             <Button 
                                 variant={authState === 'signIn' ? 'contained' : 'outlined'} 
                                 onClick={() => { setAuthState('signIn'); setNextStep(false); }}
-                                sx={{marginRight: '10px'}}
+                                sx={{marginRight: '10px', }}
                             >
                                 Sign In
                             </Button>
@@ -74,7 +71,7 @@ function Login() {
                                 Sign Up
                             </Button>
                         </div>
-                        <div>
+                        <div className='form-div'>
                             <TextField 
                                 id="outlined-basic" 
                                 label="Email Address" 
@@ -82,12 +79,12 @@ function Login() {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                sx={{marginTop: '10px'}}
+                                sx={{marginTop: '30px'}}
                             />
                         </div>
                         {authState === 'signUp' && nextStep && (
                             <>
-                                <div>
+                                <div className='form-div'>
                                     <TextField 
                                         id="firstName" 
                                         label="First Name" 
@@ -98,7 +95,7 @@ function Login() {
                                         sx={{marginTop: '10px'}}
                                     />
                                 </div>
-                                <div>
+                                <div className='form-div'>
                                     <TextField 
                                         id="lastName" 
                                         label="Last Name" 
@@ -112,7 +109,7 @@ function Login() {
                             </>
                         )}
                         {nextStep && (
-                            <div>
+                            <div className='form-div'>
                                 <TextField 
                                     id="password" 
                                     label="Password" 
@@ -125,6 +122,7 @@ function Login() {
                                 />
                             </div>
                         )}
+                        <div className='button-div'>
                         {nextStep ? (
                             <Button 
                                 type="submit"
@@ -134,17 +132,18 @@ function Login() {
                                 Submit
                             </Button>
                         ) : (
-                            <Button 
+                            <Button                         
                                 variant="contained" 
                                 endIcon={<NavigateNextIcon />} 
-                                sx={{marginTop: '10px', marginBottom: '10px'}}
                                 onClick={handleStateNextStep}
+                                sx={{marginTop: '10px', marginBottom: '10px'}}
                             >
                                 Next
                             </Button>
                         )}
+                        </div>
                         {authState === 'signUp' && (
-                            <div>
+                            <div className='form-div'>
                                 <label>
                                     <input
                                         type="checkbox"
@@ -155,7 +154,7 @@ function Login() {
                                 </label>
                             </div>
                         )}
-                        <div>
+                        <div className='form-div'>
                             <label style={{display: 'left-align', alignItems: 'center'}}>
                                 <input
                                     type="checkbox"
@@ -167,8 +166,8 @@ function Login() {
                         </div>
                         <div className="hr-with-text">Or</div>
                         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                            <GoogleLoginButton onClick={() => window.location.href = GOOGLE_AUTH_URL}>
-                                <span>Continue with Google</span>
+                            <GoogleLoginButton onClick={() => window.location.href = GOOGLE_AUTH_URL} style={{justifyContent: 'center', display: 'flex', alignItems: 'center'}}>
+                                &nbsp;&nbsp;<span>Continue with Google</span>
                             </GoogleLoginButton>
                         </Box>
                     </form>
