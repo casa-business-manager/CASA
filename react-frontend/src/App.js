@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './Login/Login';
 import Organization from './Organization/Organization';
 import OAuth2RedirectHandler from '././Login/OAuth2RedirectHandler';
+import OrganizationLanding from './OrganizationLanding/OrganizationLanding';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/organization" element={<Organization />} />
         <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
+        <Route path="/organization/:orgId" element={<OrganizationLanding />} />
       </Routes>
     </Router>
   );

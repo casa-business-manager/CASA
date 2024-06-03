@@ -49,3 +49,58 @@ export function signup(signupRequest) {
         body: JSON.stringify(signupRequest)
     });
 }
+
+export function createOrganization(organizationRequest) {
+    return getCurrentUser()
+        .then(user => {
+            const userId = user.id;
+            console.log(userId);
+            return request({
+                url: API_BASE_URL + "/user/" + userId + "/organizations",
+                method: 'POST',
+                body: JSON.stringify(organizationRequest)
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching current user:', error);
+            return Promise.reject(error);
+        });
+}
+
+export function getOrganizations() {
+    return getCurrentUser()
+        .then(user => {
+            const userId = user.id;
+            console.log(userId);
+            return fetch(API_BASE_URL + "/user/" + userId + "/organizations", {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`
+                }
+            });
+        })
+        .then(response => {
+            if (!response.ok) {
+                return Promise.reject('Failed to fetch organizations');
+            }
+            if (response.status === 204) {
+                return []; // No content, return an empty array
+            }
+            return response.json(); // Parse JSON response
+        })
+        .catch(error => {
+            console.error('Error fetching organizations:', error);
+            return Promise.reject(error);
+        });
+}
+
+export const updateOrganization = async (organization) => {
+    console.log("Organization Id: ", organization.orgId);
+    return request({
+        url: API_BASE_URL + "/organization/" + organization.orgId,
+        method: 'PUT',
+        body: JSON.stringify(organization)
+    });
+};
+
