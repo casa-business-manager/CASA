@@ -106,6 +106,7 @@ public class SecurityConfig {
 								"/*/*.js",
 								"/auth/**",
 								"/oauth2/**",
+								"/organization/**",
 								"/")
 						.permitAll()
 						.anyRequest().authenticated())

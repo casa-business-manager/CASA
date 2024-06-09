@@ -7,8 +7,10 @@ import java.util.Set;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-@Table(name = "user")
+
+@Table(name = "users")
 @Entity
 public class User {
     @Id
@@ -26,7 +28,7 @@ public class User {
     @Column(nullable = false, unique = true, name = "email")
     private String email;
 
-    @Column(nullable = false, name = "password")
+    @Column(name = "password", nullable = true)
     private String password;
 
     private String imageUrl;
@@ -37,14 +39,14 @@ public class User {
 
     private String providerId;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
-        name = "user_organization",
+        name = "user_organizations",
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "organization_id")
     )
-
-        private Set<Organization> organizations = new HashSet<>();
+    @JsonManagedReference
+    private Set<Organization> organizations = new HashSet<>();
 
 
     //Getters and Setters

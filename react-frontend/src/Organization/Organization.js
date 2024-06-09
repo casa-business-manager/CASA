@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getCurrentUser, getOrganizations, createOrganization, updateOrganization } from '../APIUtils/APIUtils';
 import './Organization.css';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import NavBar from '../NavBar/NavBar';
 
 const Organization = () => {
     const [user, setUser] = useState(null);
@@ -19,14 +20,12 @@ const Organization = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                console.log('Fetching user data...');
                 const userData = await getCurrentUser();
-                console.log('Fetched user data:', userData);
+                console.log('User data:', userData);
                 setUser(userData);
     
-                console.log('Fetching organizations...');
                 const orgData = await getOrganizations();
-                console.log('Fetched organizations:', orgData);
+                console.log('Organization data:', orgData);
                 setOrganizations(orgData);
             } catch (error) {
                 console.error('Error:', error);
@@ -66,7 +65,6 @@ const Organization = () => {
 
     const handleUpdateOrganization = async (event) => {
         event.preventDefault();
-        console.log('Updating organization...');
         const updatedOrg = { ...editingOrg, orgName, orgDescription, orgLocation };
     
         try {
@@ -105,6 +103,7 @@ const Organization = () => {
 
     return (
         <div>
+            <NavBar />
             <h1>Organization</h1>
             {organizations.length > 0 ? (
                 organizations.map(org => (

@@ -6,6 +6,7 @@ import './Login.css';
 import { GOOGLE_AUTH_URL } from '../Constants/constants';
 import { useNavigate } from 'react-router-dom'; 
 import { login, signup } from '../APIUtils/APIUtils';
+import { ACCESS_TOKEN } from '../Constants/constants';
 
 function Login() {
     const [formData, setFormData] = useState({
@@ -43,7 +44,8 @@ function Login() {
         try {
             const response = authState === 'signUp' ? await signup(formData) : await login(formData);
             alert(`${authState === 'signUp' ? 'Signup' : 'Signin'} successful!`);
-            localStorage.setItem('ACCESS_TOKEN', response.accessToken);
+            console.log('Access Token:', response.accessToken);
+            sessionStorage.setItem(ACCESS_TOKEN, response.accessToken);
             navigate('/organization'); 
         } catch (error) {
             alert(`${authState === 'signUp' ? 'Signup' : 'Signin'} failed: ${error}`);

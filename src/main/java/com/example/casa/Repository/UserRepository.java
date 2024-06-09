@@ -11,7 +11,7 @@ import com.example.casa.Model.User;
 public interface UserRepository extends JpaRepository<User, String> {
 
     Optional<User> findByEmail(String email);
-
+    Optional<User> findById(String userId);
     Boolean existsByEmail(String email);
 
 }
