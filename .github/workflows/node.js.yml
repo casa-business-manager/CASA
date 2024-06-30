@@ -28,6 +28,7 @@ jobs:
         cache: 'npm'
     - run: npm ci
 
-    - run: (cd react-frontend && npm build)
-    - run: (cd react-frontend && npm install --watchAll)
+    - run: (cd react-frontend && npm install)
+    - run: (cd react-frontend && npm run build)
+    - run: (cd react-frontend && npm test --watchAll)
     
