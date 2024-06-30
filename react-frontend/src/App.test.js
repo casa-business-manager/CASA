@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import App from './App';
 
 test('tests are able to run', () => {
-  expect('poop shit fart').toBe('poop shit fart')
+  expect('this string is equal to itself').toBe('this string is equal to itself')
 });
 
 // failing test :(
