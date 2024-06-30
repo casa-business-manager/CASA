@@ -10,6 +10,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./react-frontend/
+
     strategy:
       matrix:
         node-version: [21]
@@ -22,7 +26,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: (cd react-frontend && npm ci)
-    - run: (cd react-frontend && npm run build)
-    - run: (cd react-frontend && npm test --watchAll)
+    - run: npm ci
+    - run: npm run build
+    - run: npm test --watchAll
     
