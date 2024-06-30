@@ -17,6 +17,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Cache local Maven repository
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+            
     - uses: getong/mariadb-action@v1.11
       with:
         #   host port: 3800 # Optional, default value is 3306. The port of host
