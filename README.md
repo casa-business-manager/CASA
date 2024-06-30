@@ -11,4 +11,4 @@ First time setup guide:
 and
 ```git config --global user.email "MY_NAME@example.com"```.
 4. Install the **Recommended Java Extensions** as well as the **Spring Boot Tools** extension.
-5. Done! Environment should be configured now and can be reopened when you reopen VS Code (Docker must be running). You can also go to `File > Open Recent > .../CASA [Dev Container]`. If you ever have to recreate your dev container, youll have to repeat steps 2-4.
+5. Done! Environment should be configured now and can be reopened when you reopen VS Code (Docker must be running). You can also go to `File > Open Recent > .../CASA [Dev Container]`. If you ever have to recreate your dev container, you'll have to repeat steps 2-4. Also, the devcontainer will only run `npm install` once when it is created so you won't have to start another download, but this might fail or the dependencies might change. After the devcontainer's initial creation you will have to rerun `npm install` and handle your own package management as needed.
