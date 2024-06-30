@@ -24,5 +24,6 @@
 	// "customizations": {},
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	"remoteUser": "vscode",
-	"postStartCommand": "bash .devcontainer/entrypoint.sh; (cd react-frontend && npm install)"
+	"postStartCommand": "bash .devcontainer/entrypoint.sh",
+	"postCreateCommand": "cd react-frontend && npm install",
 }
