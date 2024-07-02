@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>casa</artifactId>
+	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>CASA</name>
+	<name>backend</name>
 	<description>Empowering Your Business, One Solution at a Time</description>
 	<properties>
 		<java.version>21</java.version>
