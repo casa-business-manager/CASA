@@ -76,7 +76,7 @@ export function getOrganizations() {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`
+                    'Authorization': `Bearer ${sessionStorage.getItem(ACCESS_TOKEN)}`
                 }
             });
         })
