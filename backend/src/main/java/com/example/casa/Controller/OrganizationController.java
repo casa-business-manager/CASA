@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.casa.Model.Organization;
 import com.example.casa.Model.User;
+import com.example.casa.Payload.ApiResponse;
 import com.example.casa.Payload.OrganizationDto;
 import com.example.casa.Repository.OrganizationRepository;
 import com.example.casa.Repository.UserRepository;
@@ -107,7 +108,7 @@ public class OrganizationController {
         organizationRepository.save(organization);
         userRepository.save(user);
 
-        return ResponseEntity.ok().build(); 
+        return ResponseEntity.ok(new ApiResponse(true, "User invited successfully"));
     }
 
     @DeleteMapping("/organization/{orgId}/user/{userId}")
@@ -124,7 +125,7 @@ public class OrganizationController {
         organizationRepository.save(organization);
         userRepository.save(user);
 
-        return ResponseEntity.ok().build();  
+        return ResponseEntity.ok(new ApiResponse(true, "User deleted successfully"));  
     }
 }
 
