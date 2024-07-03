@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # start the db
-sudo service mariadb start;
+sudo service mariadb start
 
 # create a database called 'casa'
 sudo mariadb -e "CREATE DATABASE casa"
