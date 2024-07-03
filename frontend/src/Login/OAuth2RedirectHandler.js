@@ -16,7 +16,7 @@ const OAuth2RedirectHandler = () => {
     const error = getUrlParameter('error');
 
     if (token) {
-        localStorage.setItem(ACCESS_TOKEN, token);
+        sessionStorage.setItem(ACCESS_TOKEN, token);
         return <Navigate to="/organization" state={{ from: location }} replace />;
     } else {
         return <Navigate to="/login" state={{ from: location, error: error }} replace />;

@@ -3,25 +3,36 @@ import { API_BASE_URL, ACCESS_TOKEN } from '../Constants/constants';
 const request = (options) => {
     const headers = new Headers({
         'Content-Type': 'application/json',
-    })
+    });
     
-    if(sessionStorage.getItem(ACCESS_TOKEN)) {
-        headers.append('Authorization', 'Bearer ' + sessionStorage.getItem(ACCESS_TOKEN))
+    if (sessionStorage.getItem(ACCESS_TOKEN)) {
+        headers.append('Authorization', 'Bearer ' + sessionStorage.getItem(ACCESS_TOKEN));
     }
 
-    const defaults = {headers: headers};
+    const defaults = { headers: headers };
     options = Object.assign({}, defaults, options);
 
     return fetch(options.url, options)
-    .then(response => 
-        response.json().then(json => {
-            if(!response.ok) {
-                return Promise.reject(json);
+        .then(response => {
+            if (response.status === 204) {
+                return {};
             }
-            return json;
-        })
-    );
-}
+            return response.text().then(text => {
+                if (!text) {
+                    return {}; 
+                }
+                try {
+                    const json = JSON.parse(text);
+                    if (!response.ok) {
+                        return Promise.reject(json);
+                    }
+                    return json;
+                } catch (error) {
+                    return Promise.reject('Failed to parse JSON: ' + text);
+                }
+            });
+        });
+};
 
 export function getCurrentUser() {
     if(!sessionStorage.getItem(ACCESS_TOKEN)) {
@@ -76,7 +87,7 @@ export function getOrganizations() {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`
+                    'Authorization': `Bearer ${sessionStorage.getItem(ACCESS_TOKEN)}`
                 }
             });
         })
@@ -116,16 +127,13 @@ export const inviteUserToOrganization = async (organizationId, userEmail) => {
         url: API_BASE_URL + "/organization/" + organizationId + "/invite?email=" + userEmail,
         method: 'POST'
     })
-    .then(response => response.text()) 
-    .then(text => {
-        try {
-            return JSON.parse(text); 
-        } catch (error) {
-            console.error('Failed to parse JSON:', text);
-            return Promise.reject('Failed to parse JSON: ' + text);
-        }
+    .then(response => {
+        return response;
+    })
+    .catch(error => {
+        console.error('Failed to invite user:', error);
+        return Promise.reject('Failed to invite user: ' + error);
     });
-
 };
 
 export const removeUserFromOrganization = async (organizationId, userId) => {
@@ -133,13 +141,11 @@ export const removeUserFromOrganization = async (organizationId, userId) => {
         url: API_BASE_URL + "/organization/" + organizationId + "/user/" + userId,
         method: 'DELETE'
     })
-    .then(response => response.text()) 
-    .then(text => {
-        try {
-            return JSON.parse(text); 
-        } catch (error) {
-            console.error('Failed to parse JSON:', text);
-            return Promise.reject('Failed to parse JSON: ' + text);
-        }
+    .then(response => {
+        return response; 
+    })
+    .catch(error => {
+        console.error('Failed to remove user:', error);
+        return Promise.reject('Failed to remove user: ' + error);
     });
 };

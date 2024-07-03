@@ -49,8 +49,10 @@ const UserManagement = () => {
 
     const handleInvite = async () => {
         try {
-            await inviteUserToOrganization(orgId, email); 
+            await inviteUserToOrganization(orgId, email);
             setOpen(false);
+            const updatedUsers = await getUsersInOrganization(orgId); 
+            setUsers(updatedUsers);
         } catch (error) {
             console.error('Error inviting user:', error);
             setError(error);
