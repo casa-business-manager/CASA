@@ -18,6 +18,10 @@ const OrganizationLanding = () => {
         }
     };
 
+    const handleCalendarIconClick = () => {
+        navigate('/userCalendar');
+    };
+
     return (
         <div>
             <h1>Applications</h1>
@@ -27,7 +31,7 @@ const OrganizationLanding = () => {
                     <GroupsIcon className="icon" />
                     <div className="icon-label">Users</div>
                 </div>
-                <div className="icon-box">
+                <div className="icon-box" onClick={handleCalendarIconClick}>
                     <CalendarTodayIcon className="icon" />
                     <div className="icon-label">Calendar</div>
                 </div>

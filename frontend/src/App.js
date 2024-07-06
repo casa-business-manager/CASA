@@ -5,6 +5,7 @@ import Organization from './Organization/Organization';
 import OAuth2RedirectHandler from '././Login/OAuth2RedirectHandler';
 import OrganizationLanding from './OrganizationLanding/OrganizationLanding';
 import UserManagement from './UserManagement/UserManagement';
+import UserCalendar from './UserCalendar/UserCalendar';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
         <Route path="/organization/:orgId" element={<OrganizationLanding />} />
         <Route path="/userManagement/:orgId" element={<UserManagement />} />
+        <Route path="/userCalendar" element={<UserCalendar />} />
       </Routes>
     </Router>
   );
