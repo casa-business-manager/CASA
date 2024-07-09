@@ -61,6 +61,13 @@ export function signup(signupRequest) {
     });
 }
 
+export function getCalendarData(orgId, userId) {
+    return request({
+        url: `${API_BASE_URL}/organizationCalendar/${orgId}/userId/${userId}`,
+        method: 'GET'
+    });
+}
+
 export function createOrganization(organizationRequest) {
     return getCurrentUser()
         .then(user => {

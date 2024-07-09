@@ -1,19 +1,26 @@
 package com.example.casa.Controller;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.example.casa.Model.Event;
 import com.example.casa.Model.Organization;
 import com.example.casa.Model.User;
 import com.example.casa.Payload.ApiResponse;
+import com.example.casa.Payload.CalendarResponse;
 import com.example.casa.Payload.OrganizationDto;
+import com.example.casa.Repository.EventRepository;
 import com.example.casa.Repository.OrganizationRepository;
 import com.example.casa.Repository.UserRepository;
 
@@ -25,6 +32,34 @@ public class OrganizationController {
 
     @Autowired
     private OrganizationRepository organizationRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @GetMapping("/organizationCalendar/{orgId}/userId/{userId}")
+    public ResponseEntity<?> getCalendarData(@PathVariable String orgId, @PathVariable String userId) {
+        // Verify organization exists
+        Organization organization = organizationRepository.findById(orgId)
+            .orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
+
+        // Verify user exists
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        // Check if user is part of the organization
+        if (!organization.getUsers().contains(user)) {
+            return ResponseEntity.status(403).body(new ApiResponse(false, "User does not have access to this organization's calendar"));
+        }
+
+        // Fetch events for the calendar and user
+        Set<Event> events = eventRepository.findByOrganizationAndEventAccessorsContaining(organization, user);
+
+        if (events.isEmpty()) {
+            events = new HashSet<>();
+        }
+
+        return ResponseEntity.ok(new CalendarResponse(events));
+    }
 
     @GetMapping("/user/{userId}/organizations")
     public ResponseEntity<?> getOrganizationsForUser(@PathVariable String userId) {

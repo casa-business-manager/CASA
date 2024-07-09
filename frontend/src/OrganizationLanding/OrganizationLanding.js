@@ -19,7 +19,7 @@ const OrganizationLanding = () => {
     };
 
     const handleCalendarIconClick = () => {
-        navigate('/userCalendar');
+        navigate(`/organizationCalendar/${orgId}`);
     };
 
     return (
