@@ -31,111 +31,109 @@ import com.example.casa.Security.OAuth.OAuth2AuthenticationSuccessHandler;
 
 import lombok.RequiredArgsConstructor;
 
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
-	private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
-	private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
-	@Bean
-	public TokenAuthenticationFilter tokenAuthenticationFilter() {
-		return new TokenAuthenticationFilter();
-	}
+    @Bean
+    public TokenAuthenticationFilter tokenAuthenticationFilter() {
+        return new TokenAuthenticationFilter();
+    }
 
     @Bean
     public AuthenticationManager authenticationManagerBean(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.getSharedObject(AuthenticationManagerBuilder.class).build();
     }
 
-	/*
+    /*
 	 * By default, Spring OAuth2 uses
 	 * HttpSessionOAuth2AuthorizationRequestRepository to save
 	 * the authorization request. But, since our service is stateless, we can't save
 	 * it in
 	 * the session. We'll save the request in a Base64 encoded cookie instead.
-	 */
-	@Bean
-	public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
-		return new HttpCookieOAuth2AuthorizationRequestRepository();
-	}
+     */
+    @Bean
+    public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
+        return new HttpCookieOAuth2AuthorizationRequestRepository();
+    }
 
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
-		return httpSecurity.csrf(AbstractHttpConfigurer::disable)
-				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-				.anonymous(AbstractHttpConfigurer::disable)
-				.formLogin(forms -> forms.disable())
-				.httpBasic(basic -> basic.disable())
-				.sessionManagement(session -> session
-						.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.exceptionHandling(exeption -> exeption
-						.authenticationEntryPoint(
-								new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-				.oauth2Login(oauth -> oauth.authorizationEndpoint(endpoint -> endpoint.baseUri(
-						"/oauth2/authorize").authorizationRequestRepository(
-								cookieAuthorizationRequestRepository()))
+        return httpSecurity.csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .anonymous(AbstractHttpConfigurer::disable)
+                .formLogin(forms -> forms.disable())
+                .httpBasic(basic -> basic.disable())
+                .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exeption -> exeption
+                .authenticationEntryPoint(
+                        new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .oauth2Login(oauth -> oauth.authorizationEndpoint(endpoint -> endpoint.baseUri(
+                "/oauth2/authorize").authorizationRequestRepository(
+                        cookieAuthorizationRequestRepository()))
+                .redirectionEndpoint(red -> red.baseUri("/oauth2/callback/*"))
+                .userInfoEndpoint(user -> user.userService(
+                customOAuth2UserService))
+                .successHandler(oAuth2AuthenticationSuccessHandler)
+                .failureHandler(oAuth2AuthenticationFailureHandler))
+                .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers(
+                        "/auth/**",
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/login",
+                        "/error",
+                        "/favicon.ico",
+                        "/*/*.png",
+                        "/*/*.gif",
+                        "/*/*.svg",
+                        "/*/*.jpg",
+                        "/*/*.html",
+                        "/*/*.css",
+                        "/*/*.js",
+                        "/auth/**",
+                        "/oauth2/**",
+                        "/organization/**",
+                        "/")
+                .permitAll()
+                .anyRequest().authenticated())
+                .addFilterBefore(tokenAuthenticationFilter(),
+                        UsernamePasswordAuthenticationFilter.class)
+                .build();
 
-						.redirectionEndpoint(red -> red.baseUri("/oauth2/callback/*"))
-						.userInfoEndpoint(user -> user.userService(
-								customOAuth2UserService))
-						.successHandler(oAuth2AuthenticationSuccessHandler)
-						.failureHandler(oAuth2AuthenticationFailureHandler))
-				.authorizeHttpRequests(authorize -> authorize
-						.requestMatchers(
-								"/auth/**",
-								"/v3/api-docs/**",
-								"/swagger-ui/**",
-								"/swagger-ui.html",
-								"/login",
-								"/error",
-								"/favicon.ico",
-								"/*/*.png",
-								"/*/*.gif",
-								"/*/*.svg",
-								"/*/*.jpg",
-								"/*/*.html",
-								"/*/*.css",
-								"/*/*.js",
-								"/auth/**",
-								"/oauth2/**",
-								"/organization/**",
-								"/")
-						.permitAll()
-						.anyRequest().authenticated())
-				.addFilterBefore(tokenAuthenticationFilter(),
-						UsernamePasswordAuthenticationFilter.class)
-				.build();
+    }
 
-	}
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedHeaders(List.of("Authorization"));
+        configuration.addAllowedOrigin("http://localhost:3000/");
 
-	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedHeaders(List.of("Authorization"));
-		configuration.addAllowedOrigin("http://localhost:3000/");
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Requestor-Type", "Content-Type",
+                "Access-Control-Allow-Headers", "Access-Control-Allow-Origin"));
+        configuration.setExposedHeaders(
+                Arrays.asList("X-Get-Header", "Access-Control-Allow-Methods", "Access-Control-Allow-Origin"));
+        configuration.setAllowedMethods(Collections.singletonList("*"));
 
-		configuration.setAllowCredentials(true);
-		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Requestor-Type", "Content-Type",
-				"Access-Control-Allow-Headers", "Access-Control-Allow-Origin"));
-		configuration.setExposedHeaders(
-				Arrays.asList("X-Get-Header", "Access-Control-Allow-Methods", "Access-Control-Allow-Origin"));
-		configuration.setAllowedMethods(Collections.singletonList("*"));
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
-		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
-	}
-
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-	}
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
 }

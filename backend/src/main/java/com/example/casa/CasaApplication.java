@@ -14,8 +14,8 @@ import com.example.casa.Config.AppProperties;
 @EnableConfigurationProperties(AppProperties.class)
 public class CasaApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(CasaApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(CasaApplication.class, args);
+    }
 
 }

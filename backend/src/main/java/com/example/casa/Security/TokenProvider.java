@@ -23,7 +23,6 @@ public class TokenProvider {
         this.appProperties = appProperties;
     }
 
-
     public String createToken(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
@@ -44,7 +43,7 @@ public class TokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-                return UUID.fromString(claims.getSubject());    
+        return UUID.fromString(claims.getSubject());
     }
 
     public boolean validateToken(String authToken) {
