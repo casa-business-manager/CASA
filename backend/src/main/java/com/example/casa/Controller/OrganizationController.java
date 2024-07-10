@@ -70,6 +70,11 @@ public class OrganizationController {
 
         eventRequest.setOrganization(organization);
         System.out.println(3);
+        System.out.println(eventRequest);
+        System.out.println(eventRequest.getEventCreator());
+
+        eventRequest.setEventAccessors(userRepository.findById(eventRequest));
+
         Event savedEvent = eventRepository.save(eventRequest);
         System.out.println(4);
 
