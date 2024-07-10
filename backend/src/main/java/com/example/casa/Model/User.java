@@ -1,18 +1,31 @@
 package com.example.casa.Model;
 
-import jakarta.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 
-@Table(name = "users")
 @Entity
+@Table(name = "users")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User {
+
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
@@ -33,7 +46,6 @@ public class User {
 
     private String imageUrl;
 
-
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
 
@@ -45,11 +57,15 @@ public class User {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "organization_id")
     )
-    @JsonManagedReference
     private Set<Organization> organizations = new HashSet<>();
 
+    @ManyToMany(mappedBy = "eventAccessors", fetch = FetchType.LAZY)
+    private Set<Event> accessibleEvents = new HashSet<>();
 
-    //Getters and Setters
+    public User() {
+    }
+
+    // Getters and setters
     public String getId() {
         return id;
     }
@@ -118,4 +134,15 @@ public class User {
         return organizations;
     }
 
+    public void setOrganizations(Set<Organization> organizations) {
+        this.organizations = organizations;
+    }
+
+    public Set<Event> getAccessibleEvents() {
+        return accessibleEvents;
+    }
+
+    public void setAccessibleEvents(Set<Event> accessibleEvents) {
+        this.accessibleEvents = accessibleEvents;
+    }
 }

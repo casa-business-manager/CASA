@@ -63,12 +63,15 @@ public class OrganizationController {
 
     @PostMapping("/organization/{orgId}/event")
     public ResponseEntity<?> createEvent(@PathVariable String orgId, @RequestBody Event eventRequest) {
-
+        System.out.println(1);
         Organization organization = organizationRepository.findById(orgId)
             .orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
+        System.out.println(2);
 
         eventRequest.setOrganization(organization);
+        System.out.println(3);
         Event savedEvent = eventRepository.save(eventRequest);
+        System.out.println(4);
 
         return ResponseEntity.ok(savedEvent);
     }

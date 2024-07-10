@@ -6,6 +6,9 @@ import java.util.Set;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,6 +24,7 @@ import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "event")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "eventId")
 public class Event {
 
     @Id
@@ -89,8 +93,8 @@ public class Event {
         return location;
     }
 
-    public void setLocation(String loc) {
-        this.location = loc;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public Date getStart() {
