@@ -12,16 +12,12 @@ import java.io.IOException;
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private static final Logger logger = LoggerFactory.getLogger(RestAuthenticationEntryPoint.class);
-    
 
     @Override
     public void commence(jakarta.servlet.http.HttpServletRequest request,
             jakarta.servlet.http.HttpServletResponse response, AuthenticationException authException)
             throws IOException, jakarta.servlet.ServletException {
-                logger.error("Responding with unauthorized error. Message - {}", authException.getMessage());
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getLocalizedMessage());
-            }
+        logger.error("Responding with unauthorized error. Message - {}", authException.getMessage());
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getLocalizedMessage());
+    }
 }
-
-
-

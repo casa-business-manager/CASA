@@ -1,6 +1,7 @@
 package com.example.casa.Payload;
 
 public class AuthResponse {
+
     private String accessToken;
     private String tokenType = "Bearer";
 
