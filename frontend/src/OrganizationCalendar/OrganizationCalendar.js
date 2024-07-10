@@ -30,7 +30,8 @@ const OrganizationCalendar = () => {
             start: start.toISOString(),
             end: end.toISOString(),
             allDay: false,
-            eventAccessors: [currentUser.id]
+            eventCreator: currentUser.id,
+            eventAccessors: [currentUser]
           };
 
           const createdEvent = await createEvent(orgId, newEvent);

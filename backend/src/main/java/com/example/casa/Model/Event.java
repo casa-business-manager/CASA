@@ -59,7 +59,7 @@ public class Event {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_creator_id", nullable = false)
-    private User eventCreator;
+    private String eventCreator;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -137,12 +137,12 @@ public class Event {
         this.organization = organization;
     }
 
-    public User getEventCreator() {
+    public String getEventCreator() {
         return eventCreator;
     }
 
-    public void setEventCreator(User eventCreator) {
-        this.eventCreator = eventCreator;
+    public void setEventCreator(String eventCreatorId) {
+        this.eventCreator = eventCreatorId;
     }
 
     public Set<User> getEventAccessors() {
