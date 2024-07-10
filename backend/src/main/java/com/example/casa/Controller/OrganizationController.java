@@ -26,7 +26,7 @@ import com.example.casa.Repository.UserRepository;
 
 @RestController
 public class OrganizationController {
-    
+
     @Autowired
     private UserRepository userRepository;
 
@@ -59,6 +59,18 @@ public class OrganizationController {
         }
 
         return ResponseEntity.ok(new CalendarResponse(events));
+    }
+
+    @PostMapping("/organization/{orgId}/event")
+    public ResponseEntity<?> createEvent(@PathVariable String orgId, @RequestBody Event eventRequest) {
+
+        Organization organization = organizationRepository.findById(orgId)
+            .orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
+
+        eventRequest.setOrganization(organization);
+        Event savedEvent = eventRepository.save(eventRequest);
+
+        return ResponseEntity.ok(savedEvent);
     }
 
     @GetMapping("/user/{userId}/organizations")

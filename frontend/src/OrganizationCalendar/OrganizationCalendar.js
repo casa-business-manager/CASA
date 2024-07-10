@@ -8,7 +8,7 @@ import {
   momentLocalizer,
 } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { getCalendarData, getCurrentUser } from '../APIUtils/APIUtils';
+import { getCalendarData, getCurrentUser, createEvent } from '../APIUtils/APIUtils';
 
 const localizer = momentLocalizer(moment);
 
@@ -18,15 +18,30 @@ const OrganizationCalendar = () => {
   const [loading, setLoading] = useState(true);
 
   const handleSelectSlot = useCallback(
-    ({ start, end }) => {
-      console.log("select slot working");
+    async ({ start, end }) => {
       const title = window.prompt('New Event Name');
-      if (title) {
-        setEvents((prev) => [...prev, { start, end, title }]);
+      const location = window.prompt('Event Location');
+      if (title && location) {
+        try {
+          const currentUser = await getCurrentUser();
+          const newEvent = {
+            title,
+            location,
+            start: start.toISOString(),
+            end: end.toISOString(),
+            allDay: false,
+            eventAccessors: [currentUser.id]
+          };
+
+          const createdEvent = await createEvent(orgId, newEvent);
+          setEvents((prev) => [...prev, { ...createdEvent, start: new Date(createdEvent.start), end: new Date(createdEvent.end) }]);
+        } catch (error) {
+          console.error('Error creating event:', error);
+        }
       }
     },
-    [setEvents]
-  )
+    [orgId, setEvents]
+  );
 
   const handleSelectEvent = useCallback(
     (event) => window.alert(event.title),
@@ -57,6 +72,7 @@ const OrganizationCalendar = () => {
     <div className="OrganizationCalendar">
       <Calendar
         localizer={localizer}
+        selectable
         onSelectEvent={handleSelectEvent}
         onSelectSlot={handleSelectSlot}
         events={events.map(event => ({

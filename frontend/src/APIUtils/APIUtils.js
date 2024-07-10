@@ -63,9 +63,21 @@ export function signup(signupRequest) {
 
 export function getCalendarData(orgId, userId) {
     return request({
-        url: `${API_BASE_URL}/organizationCalendar/${orgId}/userId/${userId}`,
+        url: API_BASE_URL + `/organizationCalendar/${orgId}/userId/${userId}`,
         method: 'GET'
     });
+}
+
+export function createEvent(orgId, eventRequest) {
+    return request({
+        url: API_BASE_URL + `/organization/${orgId}/event`,
+        method: 'POST',
+        body: JSON.stringify(eventRequest)
+    });
+}
+
+export function deleteEvent(eventId, userId) {
+
 }
 
 export function createOrganization(organizationRequest) {
