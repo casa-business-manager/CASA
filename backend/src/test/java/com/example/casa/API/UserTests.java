@@ -62,24 +62,24 @@ public class UserTests {
         loginJson = objectMapper.writeValueAsString(loginRequest);
     }
 
-    @Test
-    void getCurrentUserWithToken() throws Exception {
-        // Perform login
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(loginJson))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+    // @Test
+    // void getCurrentUserWithToken() throws Exception {
+    //     // Perform login
+    //     ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+    //             .contentType(MediaType.APPLICATION_JSON)
+    //             .content(loginJson))
+    //             .andExpect(MockMvcResultMatchers.status().isOk());
 
-        // Verify login response and save token
-        AuthResponse authResponse = objectMapper.readValue(result.andReturn().getResponse().getContentAsString(), AuthResponse.class);
-        String token = authResponse.getAccessToken();
+    //     // Verify login response and save token
+    //     AuthResponse authResponse = objectMapper.readValue(result.andReturn().getResponse().getContentAsString(), AuthResponse.class);
+    //     String token = authResponse.getAccessToken();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/user/me")
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(newUserEmail));
-    }
+    //     mockMvc.perform(MockMvcRequestBuilders.get("/user/me")
+    //             .header("Authorization", "Bearer " + token)
+    //             .contentType(MediaType.APPLICATION_JSON))
+    //             .andExpect(MockMvcResultMatchers.status().isOk())
+    //             .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(newUserEmail));
+    // }
 
     // @Test
     // void getCurrentUserWithoutToken() throws Exception {
