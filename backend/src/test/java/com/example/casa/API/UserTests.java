@@ -1,5 +1,6 @@
 package com.example.casa.API;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -13,15 +14,17 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.casa.Model.User;
 import com.example.casa.Payload.AuthResponse;
 import com.example.casa.Payload.LoginRequest;
 import com.example.casa.Payload.SignUpRequest;
+import com.example.casa.Repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestInstance(TestInstance.Lifecycle.PER_CLASS) // Allows non-static @BeforeAll
-@Transactional // db changes are rolled back after each test
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Transactional
 public class UserTests {
 
     @Autowired
@@ -29,6 +32,9 @@ public class UserTests {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private String newUserEmail;
     private String newUserPassword;
@@ -48,7 +54,7 @@ public class UserTests {
 
         String signupJson = objectMapper.writeValueAsString(signUpRequest);
 
-        // Perform signup
+        // Perform signup outside of a transaction
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(signupJson))
@@ -62,32 +68,39 @@ public class UserTests {
         loginJson = objectMapper.writeValueAsString(loginRequest);
     }
 
-    // DO NOT RUN THESE THEY WILL CAUSE YOU TO FAIL ALL FUTURE TEST RUNS
+    @Test
+    void getCurrentUserWithToken() throws Exception {
+        // Perform login
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loginJson))
+                .andExpect(MockMvcResultMatchers.status().isOk());
 
-    // @Test
-    // void getCurrentUserWithToken() throws Exception {
-    //     // Perform login
-    //     ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
-    //             .contentType(MediaType.APPLICATION_JSON)
-    //             .content(loginJson))
-    //             .andExpect(MockMvcResultMatchers.status().isOk());
+        // Verify login response and save token
+        AuthResponse authResponse = objectMapper.readValue(result.andReturn().getResponse().getContentAsString(), AuthResponse.class);
+        String token = authResponse.getAccessToken();
 
-    //     // Verify login response and save token
-    //     AuthResponse authResponse = objectMapper.readValue(result.andReturn().getResponse().getContentAsString(), AuthResponse.class);
-    //     String token = authResponse.getAccessToken();
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/me")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(newUserEmail));
+    }
 
-    //     mockMvc.perform(MockMvcRequestBuilders.get("/user/me")
-    //             .header("Authorization", "Bearer " + token)
-    //             .contentType(MediaType.APPLICATION_JSON))
-    //             .andExpect(MockMvcResultMatchers.status().isOk())
-    //             .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(newUserEmail));
-    // }
+    @Test
+    void getCurrentUserWithoutToken() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/me")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
 
-    // @Test
-    // void getCurrentUserWithoutToken() throws Exception {
-    //     mockMvc.perform(MockMvcRequestBuilders.get("/user/me")
-    //             .header("Authorization", "Bearer")
-    //             .contentType(MediaType.APPLICATION_JSON))
-    //             .andExpect(MockMvcResultMatchers.status().isUnauthorized());
-    // }
+    // Not sure why but this causes issues in subsequent runs if not cleared
+    @AfterAll
+    void cleanup() {
+        // Clean up the database by deleting the created user
+        User user = userRepository.findByEmail(newUserEmail).orElse(null);
+        if (user != null) {
+            userRepository.delete(user);
+        }
+    }
 }
