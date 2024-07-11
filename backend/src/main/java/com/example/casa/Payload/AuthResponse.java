@@ -9,6 +9,10 @@ public class AuthResponse {
         this.accessToken = accessToken;
     }
 
+    public AuthResponse() {
+        // Default constructor required by Jackson
+    }
+
     public String getAccessToken() {
         return accessToken;
     }
