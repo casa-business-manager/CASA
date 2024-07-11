@@ -7,13 +7,13 @@ import java.util.Set;
 import org.hibernate.annotations.GenericGenerator;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -53,17 +53,16 @@ public class Event {
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_creator_id", nullable = false)
-    private User eventCreator;
+    @Column(name = "event_creator_id", nullable = false)
+    private String eventCreator;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.LAZY)
     @JoinTable(
         name = "event_accessors",
-        joinColumns = @JoinColumn(name = "event_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
+        joinColumns = @JoinColumn(name = "event_id")
     )
-    private Set<User> eventAccessors = new HashSet<>();
+    @Column(name = "user_id")
+    private Set<String> eventAccessors = new HashSet<>();
 
     public Event() {
     }
@@ -133,19 +132,19 @@ public class Event {
         this.organization = organization;
     }
 
-    public User getEventCreator() {
+    public String getEventCreator() {
         return eventCreator;
     }
 
-    public void setEventCreator(User eventCreator) {
-        this.eventCreator = eventCreator;
+    public void setEventCreator(String eventCreatorId) {
+        this.eventCreator = eventCreatorId;
     }
 
-    public Set<User> getEventAccessors() {
+    public Set<String> getEventAccessors() {
         return eventAccessors;
     }
 
-    public void setEventAccessors(Set<User> eventAccessors) {
+    public void setEventAccessors(Set<String> eventAccessors) {
         this.eventAccessors = eventAccessors;
     }
 }

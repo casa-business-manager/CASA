@@ -30,6 +30,8 @@ const OrganizationCalendar = () => {
             start: start.toISOString(),
             end: end.toISOString(),
             allDay: false,
+            resource: "",
+            eventCreator: currentUser.id,
             eventAccessors: [currentUser.id]
           };
 
