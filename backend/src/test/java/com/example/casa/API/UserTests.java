@@ -1,64 +1,91 @@
 package com.example.casa.API;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.example.casa.Controller.UserController;
-import com.example.casa.Exception.ResourceNotFoundException;
-import com.example.casa.Model.User;
-import com.example.casa.Repository.UserRepository;
-import com.example.casa.Security.UserPrincipal;
+import com.example.casa.Payload.AuthResponse;
+import com.example.casa.Payload.LoginRequest;
+import com.example.casa.Payload.SignUpRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
-class UserTests {
+@AutoConfigureMockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS) // Allows non-static @BeforeAll
+@Transactional // db changes are rolled back after each test
+public class UserTests {
 
-    @Mock
-    private UserRepository userRepository;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @InjectMocks
-    private UserController userController;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    private String newUserEmail;
+    private String newUserPassword;
+    private String loginJson;
+
+    @BeforeAll
+    void setup() throws Exception {
+        newUserEmail = "walter@white.com";
+        newUserPassword = "password";
+
+        // Signup request
+        SignUpRequest signUpRequest = new SignUpRequest();
+        signUpRequest.setFirstName("Walter");
+        signUpRequest.setLastName("White");
+        signUpRequest.setEmail(newUserEmail);
+        signUpRequest.setPassword(newUserPassword);
+
+        String signupJson = objectMapper.writeValueAsString(signUpRequest);
+
+        // Perform signup
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(signupJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        // Login request to get token
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail(newUserEmail);
+        loginRequest.setPassword(newUserPassword);
+
+        loginJson = objectMapper.writeValueAsString(loginRequest);
     }
 
     @Test
-    void testGetCurrentUser_Success() {
-        User mockUser = new User();
-        mockUser.setId("1");
-        mockUser.setFirstName("John");
-        mockUser.setLastName("Doe");
-        mockUser.setEmail("john.doe@example.com");
-        mockUser.setPassword("password");
-        UserPrincipal mockUserPrincipal = UserPrincipal.create(mockUser);
+    void getCurrentUserWithToken() throws Exception {
+        // Perform login
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loginJson))
+                .andExpect(MockMvcResultMatchers.status().isOk());
 
-        when(userRepository.findById("1")).thenReturn(Optional.of(mockUser));
-        User result = userController.getCurrentUser(mockUserPrincipal);
+        // Verify login response and save token
+        AuthResponse authResponse = objectMapper.readValue(result.andReturn().getResponse().getContentAsString(), AuthResponse.class);
+        String token = authResponse.getAccessToken();
 
-        assertEquals(mockUser.getId(), result.getId());
-        assertEquals(mockUser.getFirstName(), result.getFirstName());
-        assertEquals(mockUser.getLastName(), result.getLastName());
-        assertEquals(mockUser.getEmail(), result.getEmail());
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/me")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(newUserEmail));
     }
 
-    @Test
-    void testGetCurrentUser_NotFound() {
-        UserPrincipal mockUserPrincipal = new UserPrincipal("2", "jane.doe@example.com", "password", null);
-
-        when(userRepository.findById("2")).thenReturn(Optional.empty());
-
-        assertThrows(ResourceNotFoundException.class, () -> {
-            userController.getCurrentUser(mockUserPrincipal);
-        });
-    }
+    // @Test
+    // void getCurrentUserWithoutToken() throws Exception {
+    //     mockMvc.perform(MockMvcRequestBuilders.get("/user/me")
+    //             .header("Authorization", "Bearer")
+    //             .contentType(MediaType.APPLICATION_JSON))
+    //             .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    // }
 }

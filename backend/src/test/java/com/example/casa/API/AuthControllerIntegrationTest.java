@@ -36,17 +36,17 @@ public class AuthControllerIntegrationTest {
 
     @BeforeAll
     void setup() throws Exception {
-        this.newUserEmail = "walter@white.com";
-        this.newUserPassword = "password";
+        newUserEmail = "walter@white.com";
+        newUserPassword = "password";
 
         // Signup request
         SignUpRequest signUpRequest = new SignUpRequest();
         signUpRequest.setFirstName("Walter");
         signUpRequest.setLastName("White");
-        signUpRequest.setEmail(this.newUserEmail);
-        signUpRequest.setPassword(this.newUserPassword);
+        signUpRequest.setEmail(newUserEmail);
+        signUpRequest.setPassword(newUserPassword);
 
-        this.signupJson = objectMapper.writeValueAsString(signUpRequest);
+        signupJson = objectMapper.writeValueAsString(signUpRequest);
     }
 
     @Test
@@ -54,13 +54,13 @@ public class AuthControllerIntegrationTest {
         // Perform signup
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(this.signupJson))
+                .content(signupJson))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
         // Second signup request
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(this.signupJson))
+                .content(signupJson))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
@@ -73,7 +73,7 @@ public class AuthControllerIntegrationTest {
         String loginJson = objectMapper.writeValueAsString(loginRequest);
 
         // Perform login
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(loginJson))
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
@@ -84,13 +84,13 @@ public class AuthControllerIntegrationTest {
         // Perform signup
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(this.signupJson))
+                .content(signupJson))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
         // Login request
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setEmail(this.newUserEmail);
-        loginRequest.setPassword(this.newUserPassword);
+        loginRequest.setEmail(newUserEmail);
+        loginRequest.setPassword(newUserPassword);
         String loginJson = objectMapper.writeValueAsString(loginRequest);
 
         // Perform login
