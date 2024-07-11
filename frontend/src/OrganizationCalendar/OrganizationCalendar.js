@@ -23,15 +23,15 @@ const OrganizationCalendar = () => {
       const location = window.prompt('Event Location');
       if (title && location) {
         try {
-          const currentUser = await getCurrentUser();
+          // const currentUser = await getCurrentUser();
           const newEvent = {
             title,
             location,
             start: start.toISOString(),
             end: end.toISOString(),
             allDay: false,
-            eventCreator: currentUser.id,
-            eventAccessors: [currentUser]
+            // eventCreator: currentUser,
+            // eventAccessors: [currentUser]
           };
 
           const createdEvent = await createEvent(orgId, newEvent);

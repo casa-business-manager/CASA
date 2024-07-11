@@ -58,10 +58,10 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "organization_id")
     )
     private Set<Organization> organizations = new HashSet<>();
-
+    /* 
     @ManyToMany(mappedBy = "eventAccessors", fetch = FetchType.LAZY)
     private Set<Event> accessibleEvents = new HashSet<>();
-
+    */
     public User() {
     }
 
@@ -138,6 +138,7 @@ public class User {
         this.organizations = organizations;
     }
 
+    /*
     public Set<Event> getAccessibleEvents() {
         return accessibleEvents;
     }
@@ -145,4 +146,5 @@ public class User {
     public void setAccessibleEvents(Set<Event> accessibleEvents) {
         this.accessibleEvents = accessibleEvents;
     }
+    */
 }
