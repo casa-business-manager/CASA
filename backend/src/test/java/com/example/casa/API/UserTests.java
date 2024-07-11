@@ -62,6 +62,8 @@ public class UserTests {
         loginJson = objectMapper.writeValueAsString(loginRequest);
     }
 
+    // DO NOT RUN THESE THEY WILL CAUSE YOU TO FAIL ALL FUTURE TEST RUNS
+
     // @Test
     // void getCurrentUserWithToken() throws Exception {
     //     // Perform login
