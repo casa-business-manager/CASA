@@ -3,14 +3,20 @@ package com.example.casa.Model;
 import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.persistence.*;
-
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-@Table(name = "organization")
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+
 @Entity
+@Table(name = "organization")
 public class Organization {
 
     @Id
@@ -29,9 +35,10 @@ public class Organization {
     private String orgLocation;
 
     @ManyToMany(mappedBy = "organizations", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonBackReference(value = "userOrgs")
     private Set<User> users = new HashSet<>();
 
+    // Default constructor
     public Organization() {
         this.users = new HashSet<>();
     }
@@ -40,8 +47,10 @@ public class Organization {
         this.orgName = orgName;
         this.orgDescription = orgDescription;
         this.orgLocation = orgLocation;
+        this.users = new HashSet<>();
     }
 
+    // Getters and setters...
     public String getOrgId() {
         return orgId;
     }

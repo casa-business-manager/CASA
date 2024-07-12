@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class CasaApplicationTests {
 
     @Test
-    void contextLoads() {
+    void testsCanRun() {
     }
 
 }
