@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.casa.Model.AuthProvider;
 import com.example.casa.Model.User;
 import com.example.casa.Payload.AuthResponse;
 import com.example.casa.Payload.LoginRequest;
@@ -90,31 +89,37 @@ public class OrganizationTests {
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(newUserEmail));
-        System.out.println(12345);
-        System.out.println(userDataResult.andReturn().getResponse().getContentAsString());
-        User pooper = new User();
-        pooper.setEmail("a");
-        pooper.setFirstName("a");
-        pooper.setLastName("a");
-        pooper.setPassword("a");
-        pooper.setId("a");
-        pooper.setProvider(AuthProvider.local);
-        System.out.println(objectMapper.writeValueAsString(pooper));
-        System.out.println(objectMapper.readValue(objectMapper.writeValueAsString(pooper), User.class));
-        User userDataResponse = objectMapper.readValue(userDataResult.andReturn().getResponse().getContentAsString(), User.class);
-        userId = userDataResponse.getId();
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(newUserEmail))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
+
+        // Deserialize and extract userId
+        //      It won't deserialize with objectMapper
+        //      Cannot handle managed/back reference 'userOrgs': back reference type (`java.util.Set<com.example.casa.Model.User>`) not compatible with managed type (com.example.casa.Model.User) at [Source: (String)"{"id":"70e3198f-ff71-41dc-a633-d01b79c36526","firstName":"Walter","lastName":"White","email":"walter@white.com","password":"{bcrypt}$2a$10$23nCy68.GLZEv9r6S5dPd.ggYE18EJIm31.6BwsHok5jvYrzDvDt.","imageUrl":null,"provider":"local","providerId":null,"organizations":[]}"; line: 1, column: 1]
+        //      So temp workaround and just extract it by looking at the serialized json string
+        //      Rn it has format "{"id":"user-id-here-in-this-form","firstName":"Walter",...}"
+        // User userDataResponse = objectMapper.readValue(userDataResult.andReturn().getResponse().getContentAsString(), User.class);
+        // userId = userDataResponse.getId();
+        String jsonString = userDataResult.andReturn().getResponse().getContentAsString();
+        String idStart = "\"id\":\"";
+        int indexOfId = jsonString.indexOf(idStart);
+        int indexOfEndOfId = jsonString.indexOf('\"', indexOfId + idStart.length());
+        userId = jsonString.substring(indexOfId + idStart.length(), indexOfEndOfId);
+        // System.out.println(userId);
     }
 
     @Test
-    void testCreateOrganizationForUser() throws Exception {
-        System.out.println("cum cum cum");
+    void userGetAndCreateOrganization() throws Exception {
         OrganizationDto organizationDto = new OrganizationDto();
         organizationDto.setOrgName("Chemistry Club");
-        organizationDto.setOrgDescription("A club for chemistry enthusiasts who may or may not be also ok with cooking methanphetamine");
+        organizationDto.setOrgDescription("Not cooking meth");
         organizationDto.setOrgLocation("Albuquerque");
 
         String organizationJson = objectMapper.writeValueAsString(organizationDto);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/" + userId + "/organizations")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
 
         mockMvc.perform(MockMvcRequestBuilders.post("/user/" + userId + "/organizations")
                 .header("Authorization", "Bearer " + token)
@@ -122,15 +127,19 @@ public class OrganizationTests {
                 .content(organizationJson))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.orgName").value("Chemistry Club"));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/" + userId + "/organizations")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].orgName").value("Chemistry Club"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].orgDescription").value("Not cooking meth"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].orgLocation").value("Albuquerque"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].orgId").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].users").doesNotExist());
+
     }
 
-    // @Test
-    // void testGetOrganizationsForUser() throws Exception {
-    //     mockMvc.perform(MockMvcRequestBuilders.get("/user/" + userId + "/organizations")
-    //             .header("Authorization", "Bearer " + token)
-    //             .contentType(MediaType.APPLICATION_JSON))
-    //             .andExpect(MockMvcResultMatchers.status().isOk());
-    // }
     // @Test
     // void testUpdateOrganization() throws Exception {
     //     OrganizationDto organizationDto = new OrganizationDto();

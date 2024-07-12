@@ -15,8 +15,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
-@Table(name = "organization")
 @Entity
+@Table(name = "organization")
 public class Organization {
 
     @Id
@@ -35,9 +35,10 @@ public class Organization {
     private String orgLocation;
 
     @ManyToMany(mappedBy = "organizations", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonBackReference(value = "userOrgs")
     private Set<User> users = new HashSet<>();
 
+    // Default constructor
     public Organization() {
         this.users = new HashSet<>();
     }
@@ -46,8 +47,10 @@ public class Organization {
         this.orgName = orgName;
         this.orgDescription = orgDescription;
         this.orgLocation = orgLocation;
+        this.users = new HashSet<>();
     }
 
+    // Getters and setters...
     public String getOrgId() {
         return orgId;
     }

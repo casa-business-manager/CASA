@@ -20,8 +20,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
-@Table(name = "users")
 @Entity
+@Table(name = "users")
 public class User {
 
     @Id
@@ -55,10 +55,10 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "organization_id")
     )
-    @JsonManagedReference
+    @JsonManagedReference(value = "userOrgs")
     private Set<Organization> organizations = new HashSet<>();
 
-    //Getters and Setters
+    // Getters and setters...
     public String getId() {
         return id;
     }
