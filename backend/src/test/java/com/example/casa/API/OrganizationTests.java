@@ -137,7 +137,6 @@ public class OrganizationTests {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].orgLocation").value("Albuquerque"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].orgId").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].users").doesNotExist());
-
     }
 
     // @Test
