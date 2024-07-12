@@ -6,14 +6,17 @@ import java.util.Set;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -48,21 +51,24 @@ public class Event {
 
     @Column(name = "resource")
     private String resource;
-    
-    @Column(name = "event_creator_id", nullable = false)
-    private String eventCreator;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_creator_id", nullable = false)
+    @JsonBackReference
+    private User eventCreator;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
         name = "event_accessors",
-        joinColumns = @JoinColumn(name = "event_id")
+        joinColumns = @JoinColumn(name = "event_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    @Column(name = "user_id")
-    private Set<String> eventAccessors = new HashSet<>();
+    @JsonBackReference
+    private Set<User> eventAccessors = new HashSet<>();
 
     public Event() {
     }
@@ -88,8 +94,8 @@ public class Event {
         return location;
     }
 
-    public void setLocation(String loc) {
-        this.location = loc;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public Date getStart() {
@@ -132,19 +138,19 @@ public class Event {
         this.organization = organization;
     }
 
-    public String getEventCreator() {
+    public User getEventCreator() {
         return eventCreator;
     }
 
-    public void setEventCreator(String eventCreatorId) {
-        this.eventCreator = eventCreatorId;
+    public void setEventCreator(User eventCreator) {
+        this.eventCreator = eventCreator;
     }
 
-    public Set<String> getEventAccessors() {
+    public Set<User> getEventAccessors() {
         return eventAccessors;
     }
 
-    public void setEventAccessors(Set<String> eventAccessors) {
+    public void setEventAccessors(Set<User> eventAccessors) {
         this.eventAccessors = eventAccessors;
     }
 }

@@ -1,7 +1,5 @@
 package com.example.casa.Model;
 
-import jakarta.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,6 +7,19 @@ import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Table(name = "users")
 @Entity
@@ -19,20 +30,19 @@ public class User {
     @Column(name = "uuid", updatable = false, unique = true, nullable = false)
     private String id;
 
-    @Column(nullable = false, name = "first_name")
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(nullable = false, name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(nullable = false, unique = true, name = "email")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "password", nullable = true)
     private String password;
 
     private String imageUrl;
-
 
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
@@ -48,8 +58,20 @@ public class User {
     @JsonManagedReference
     private Set<Organization> organizations = new HashSet<>();
 
+    @OneToMany(mappedBy = "eventCreator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private Set<Event> createdEvents = new HashSet<>();
 
-    //Getters and Setters
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(
+        name = "event_accessors",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "event_id")
+    )
+    @JsonManagedReference
+    private Set<Event> accessibleEvents = new HashSet<>();
+
+    // Getters and Setters
     public String getId() {
         return id;
     }
@@ -118,4 +140,23 @@ public class User {
         return organizations;
     }
 
+    public void setOrganizations(Set<Organization> organizations) {
+        this.organizations = organizations;
+    }
+
+    public Set<Event> getAccessibleEvents() {
+        return accessibleEvents;
+    }
+
+    public void setAccessibleEvents(Set<Event> accessibleEvents) {
+        this.accessibleEvents = accessibleEvents;
+    }
+
+    public Set<Event> getCreatedEvents() {
+        return createdEvents;
+    }
+
+    public void setCreatedEvents(Set<Event> createdEvents) {
+        this.createdEvents = createdEvents;
+    }
 }

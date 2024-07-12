@@ -65,14 +65,6 @@ public class OrganizationController {
 
     @PostMapping("/organization/{orgId}/event")
     public ResponseEntity<?> createEvent(@PathVariable String orgId, @RequestBody EventDto eventRequest) {
-        System.out.println(12345);
-
-        User creator = userRepository.findById(eventRequest.getEventCreatorId())
-        .orElseThrow(() -> new RuntimeException("User not found with id: " + eventRequest.getEventCreatorId()));
-
-        Organization organization = organizationRepository.findById(orgId)
-            .orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
-
         Event newEvent = new Event();
         newEvent.setTitle(eventRequest.getTitle());
         newEvent.setLocation(eventRequest.getLocation());
@@ -80,8 +72,22 @@ public class OrganizationController {
         newEvent.setEnd(DateConverter.ISO2Date(eventRequest.getEnd()));
         newEvent.setAllDay(eventRequest.getAllDay());
         newEvent.setResource(eventRequest.getResource());
-
+        
+        Organization organization = organizationRepository.findById(orgId)
+                .orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
         newEvent.setOrganization(organization);
+
+        String creatorId = eventRequest.getEventCreatorId();
+        User creator = userRepository.findById(creatorId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + creatorId));
+        newEvent.setEventCreator(creator);
+
+        for (String accssorId : eventRequest.getEventAccessorIds()) {
+            User accessor = userRepository.findById(accssorId)
+                    .orElseThrow(() -> new RuntimeException("User not found with id: " + accssorId));
+            newEvent.getEventAccessors().add(accessor);
+        }
+        
         newEvent = eventRepository.save(newEvent);
 
         return ResponseEntity.ok(newEvent);
