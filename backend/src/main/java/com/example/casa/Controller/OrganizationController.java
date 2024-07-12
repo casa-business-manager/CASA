@@ -19,10 +19,12 @@ import com.example.casa.Model.Organization;
 import com.example.casa.Model.User;
 import com.example.casa.Payload.ApiResponse;
 import com.example.casa.Payload.CalendarResponse;
+import com.example.casa.Payload.EventDto;
 import com.example.casa.Payload.OrganizationDto;
 import com.example.casa.Repository.EventRepository;
 import com.example.casa.Repository.OrganizationRepository;
 import com.example.casa.Repository.UserRepository;
+import com.example.casa.Util.DateConverter;
 
 @RestController
 public class OrganizationController {
@@ -62,15 +64,27 @@ public class OrganizationController {
     }
 
     @PostMapping("/organization/{orgId}/event")
-    public ResponseEntity<?> createEvent(@PathVariable String orgId, @RequestBody Event eventRequest) {
+    public ResponseEntity<?> createEvent(@PathVariable String orgId, @RequestBody EventDto eventRequest) {
+        System.out.println(12345);
+
+        User creator = userRepository.findById(eventRequest.getEventCreatorId())
+        .orElseThrow(() -> new RuntimeException("User not found with id: " + eventRequest.getEventCreatorId()));
 
         Organization organization = organizationRepository.findById(orgId)
             .orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
 
-        eventRequest.setOrganization(organization);
-        Event savedEvent = eventRepository.save(eventRequest);
+        Event newEvent = new Event();
+        newEvent.setTitle(eventRequest.getTitle());
+        newEvent.setLocation(eventRequest.getLocation());
+        newEvent.setStart(DateConverter.ISO2Date(eventRequest.getStart()));
+        newEvent.setEnd(DateConverter.ISO2Date(eventRequest.getEnd()));
+        newEvent.setAllDay(eventRequest.getAllDay());
+        newEvent.setResource(eventRequest.getResource());
 
-        return ResponseEntity.ok(savedEvent);
+        newEvent.setOrganization(organization);
+        newEvent = eventRepository.save(newEvent);
+
+        return ResponseEntity.ok(newEvent);
     }
 
     @GetMapping("/user/{userId}/organizations")

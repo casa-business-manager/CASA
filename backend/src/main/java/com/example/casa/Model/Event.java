@@ -48,13 +48,13 @@ public class Event {
 
     @Column(name = "resource")
     private String resource;
+    
+    @Column(name = "event_creator_id", nullable = false)
+    private String eventCreator;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
-
-    @Column(name = "event_creator_id", nullable = false)
-    private String eventCreator;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @JoinTable(

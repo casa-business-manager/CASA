@@ -2,13 +2,10 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Spring Boot-CasaApplication<backend>",
+            "name": "CasaApplication",
             "request": "launch",
-            "cwd": "${workspaceFolder}",
             "mainClass": "com.example.casa.CasaApplication",
-            "projectName": "backend",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "projectName": "backend"
         }
     ]
 }

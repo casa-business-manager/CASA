@@ -1,32 +1,24 @@
 package com.example.casa.Payload;
 
-import jakarta.validation.constraints.NotBlank;
-
 public class EventDto {
 
     private String id;
 
-    @NotBlank
     private String title;
 
-    @NotBlank
     private String location;
 
-    @NotBlank
-    private String stateTime;
+    private String start;
 
-    @NotBlank
-    private String endTime;
+    private String end;
 
     private Boolean allDay;
 
     private String resource;
 
-    @NotBlank
-    private String eventCreator;
+    private String eventCreatorId;
 
-    @NotBlank
-    private String eventAccessors;
+    private String[] eventAccessorIds;
 
     public EventDto() {
     }
@@ -55,20 +47,20 @@ public class EventDto {
         this.location = location;
     }
 
-    public String getStateTime() {
-        return this.stateTime;
+    public String getStart() {
+        return this.start;
     }
 
-    public void setStateTime(String stateTime) {
-        this.stateTime = stateTime;
+    public void setStart(String start) {
+        this.start = start;
     }
 
-    public String getEndTime() {
-        return this.endTime;
+    public String getEnd() {
+        return this.end;
     }
 
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
+    public void setEnd(String end) {
+        this.end = end;
     }
 
     public Boolean isAllDay() {
@@ -91,20 +83,20 @@ public class EventDto {
         this.resource = resource;
     }
 
-    public String getEventCreator() {
-        return this.eventCreator;
+    public String getEventCreatorId() {
+        return this.eventCreatorId;
     }
 
-    public void setEventCreator(String eventCreator) {
-        this.eventCreator = eventCreator;
+    public void setEventCreatorId(String eventCreatorId) {
+        this.eventCreatorId = eventCreatorId;
     }
 
-    public String getEventAccessors() {
-        return this.eventAccessors;
+    public String[] getEventAccessorIds() {
+        return this.eventAccessorIds;
     }
 
-    public void setEventAccessors(String eventAccessors) {
-        this.eventAccessors = eventAccessors;
+    public void setEventAccessorIds(String[] eventAccessorIds) {
+        this.eventAccessorIds = eventAccessorIds;
     }
 
 }
