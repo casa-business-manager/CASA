@@ -1,15 +1,19 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import moment from 'moment';
 import {
   Calendar,
   Views,
   momentLocalizer,
+  DateLocalizer
 } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { getCalendarData, getCurrentUser, createEvent } from '../APIUtils/APIUtils';
 
 const localizer = momentLocalizer(moment);
+const DragAndDropCalendar = withDragAndDrop(Calendar);
 
 const OrganizationCalendar = () => {
   const { orgId } = useParams();
@@ -54,6 +58,35 @@ const OrganizationCalendar = () => {
     []
   );
 
+  const moveEvent = useCallback(
+    ({ event, start, end, isAllDay: droppedOnAllDaySlot = false }) => {
+      const { allDay } = event;
+      if (!allDay && droppedOnAllDaySlot) {
+        event.allDay = true;
+      } else if (allDay && !droppedOnAllDaySlot) {
+        event.allDay = false;
+      }
+
+      setEvents((prev) => {
+        const existing = prev.find((ev) => ev.id === event.id) ?? {};
+        const filtered = prev.filter((ev) => ev.id !== event.id);
+        return [...filtered, { ...existing, start, end, allDay: event.allDay }];
+      });
+    },
+    [setEvents]
+  );
+
+  const resizeEvent = useCallback(
+    ({ event, start, end }) => {
+      setEvents((prev) => {
+        const existing = prev.find((ev) => ev.id === event.id) ?? {};
+        const filtered = prev.filter((ev) => ev.id !== event.id);
+        return [...filtered, { ...existing, start, end }];
+      });
+    },
+    [setEvents]
+  );
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -80,7 +113,7 @@ const OrganizationCalendar = () => {
 
   return (
     <div className="OrganizationCalendar">
-      <Calendar
+      <DragAndDropCalendar
         localizer={localizer}
         selectable
         onSelectEvent={handleSelectEvent}
@@ -96,9 +129,14 @@ const OrganizationCalendar = () => {
         defaultDate={moment().toDate()}
         defaultView={Views.MONTH}
         style={{ height: '100vh' }}
+        onEventDrop={moveEvent}
+        onEventResize={resizeEvent}
+        popup
+        resizable
       />
     </div>
   );
 };
 
 export default OrganizationCalendar;
+
