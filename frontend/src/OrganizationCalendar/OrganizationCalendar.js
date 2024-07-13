@@ -1,6 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom';
 import moment from 'moment';
 import {
   Calendar,
@@ -27,8 +26,8 @@ const OrganizationCalendar = () => {
           const newEvent = {
             title,
             location,
-            start: start.toISOString(),
-            end: end.toISOString(),
+            start: moment(start).format(),  // ISO time includes time zone so it is fine
+            end: moment(end).format(),      // ISO time includes time zone so it is fine
             allDay: false,
             resource: "",
             eventCreatorId: currentUser.id,
@@ -36,7 +35,12 @@ const OrganizationCalendar = () => {
           };
 
           const createdEvent = await createEvent(orgId, newEvent);
-          setEvents((prev) => [...prev, { ...createdEvent, start: new Date(createdEvent.start), end: new Date(createdEvent.end) }]);
+
+          setEvents((prev) => [...prev, {
+            ...createdEvent,
+            start: moment(createdEvent.start).local().toDate(),  // Converting to local time
+            end: moment(createdEvent.end).local().toDate()      // Converting to local time
+          }]);
         } catch (error) {
           console.error('Error creating event:', error);
         }
@@ -48,19 +52,23 @@ const OrganizationCalendar = () => {
   const handleSelectEvent = useCallback(
     (event) => window.alert(event.title),
     []
-  )
+  );
 
   useEffect(() => {
     const fetchData = async () => {
-        try {
-            const currentUser = await getCurrentUser();
-            const calendarData = await getCalendarData(orgId, currentUser.id);
-            setEvents(calendarData.events);
-        } catch (error) {
-            console.error('Error fetching calendar data:', error);
-        } finally {
-            setLoading(false);
-        }
+      try {
+        const currentUser = await getCurrentUser();
+        const calendarData = await getCalendarData(orgId, currentUser.id);
+        setEvents(calendarData.events.map(event => ({
+          ...event,
+          start: moment(event.start).local().toDate(),
+          end: moment(event.end).local().toDate()
+        })));
+      } catch (error) {
+        console.error('Error fetching calendar data:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
@@ -80,8 +88,8 @@ const OrganizationCalendar = () => {
         events={events.map(event => ({
           title: event.title,
           location: event.location,
-          start: new Date(event.start),
-          end: new Date(event.end),
+          start: moment(event.start).local().toDate(),
+          end: moment(event.end).local().toDate(),
           allDay: event.allDay,
           resource: event.resource,
         }))}
@@ -91,9 +99,6 @@ const OrganizationCalendar = () => {
       />
     </div>
   );
-};
-
-OrganizationCalendar.propTypes = {
 };
 
 export default OrganizationCalendar;

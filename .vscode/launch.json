@@ -5,6 +5,13 @@
             "name": "CasaApplication",
             "request": "launch",
             "mainClass": "com.example.casa.CasaApplication",
+            "projectName": "casa"
+        },
+        {
+            "type": "java",
+            "name": "CasaApplication",
+            "request": "launch",
+            "mainClass": "com.example.casa.CasaApplication",
             "projectName": "backend"
         }
     ]
