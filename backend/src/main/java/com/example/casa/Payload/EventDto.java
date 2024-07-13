@@ -1,10 +1,7 @@
 package com.example.casa.Payload;
 
-import jakarta.validation.constraints.NotBlank;
-
 public class EventDto {
 
-    @NotBlank
     private String id;
 
     private String title;
