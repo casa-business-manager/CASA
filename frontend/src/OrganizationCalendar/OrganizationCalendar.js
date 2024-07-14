@@ -94,12 +94,24 @@ const OrganizationCalendar = () => {
   ); 
 
   const resizeEvent = useCallback(
-    ({ event, start, end }) => {
-      setEvents((prev) => {
-        const existing = prev.find((ev) => ev.id === event.id) ?? {};
-        const filtered = prev.filter((ev) => ev.id !== event.id);
-        return [...filtered, { ...existing, start, end }];
-      });
+    async ({ event, start, end }) => {
+      event.start = start;
+      event.end = end;
+      const modifiedEvent = await updateEvent(event.eventId, event);
+
+      setEvents(prevEvents => 
+        prevEvents.map(prevEvent => 
+          prevEvent.eventId === modifiedEvent.eventId 
+            ?
+             { 
+              ...modifiedEvent,
+              start: moment(modifiedEvent.start).toDate(),
+              end: moment(modifiedEvent.end).toDate(),
+            }
+            :
+             prevEvent
+        )
+      );
     },
     [setEvents]
   );
