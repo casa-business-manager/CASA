@@ -92,19 +92,17 @@ public class EventController {
     }
 
 	// Event Id inside the payload
-    @PutMapping("/event")
-    public ResponseEntity<?> updateEvent(@RequestBody EventDto eventRequest) {
-		String eventId = eventRequest.getId();
-		
+    @PutMapping("/event/{eventId}")
+    public ResponseEntity<?> updateEvent(@PathVariable String eventId, @RequestBody EventDto eventRequest) {
         Event event = eventRepository.findById(eventId)
             .orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
 
-        event.setTitle(eventRequest.getTitle());
-        event.setLocation(eventRequest.getLocation());
-        event.setStart(DateConverter.ISO2Date(eventRequest.getStart()));
-        event.setEnd(DateConverter.ISO2Date(eventRequest.getEnd()));
-        event.setAllDay(eventRequest.getAllDay());
-        event.setResource(eventRequest.getResource());
+        event.setTitle(eventRequest.getTitle()!=null ? eventRequest.getTitle() : event.getTitle());
+        event.setLocation(eventRequest.getLocation()!=null ? eventRequest.getLocation() : event.getLocation());
+        event.setStart(eventRequest.getStart()!=null ? DateConverter.ISO2Date(eventRequest.getStart()) : event.getStart());
+        event.setEnd(eventRequest.getEnd()!=null ? DateConverter.ISO2Date(eventRequest.getEnd()) : event.getEnd());
+        event.setAllDay(eventRequest.getAllDay()!=null ? eventRequest.getAllDay() : event.isAllDay());
+        event.setResource(eventRequest.getResource()!=null ? eventRequest.getResource() : event.getResource());
         
 		// Dont want to update this?
 
@@ -117,14 +115,16 @@ public class EventController {
         //         .orElseThrow(() -> new RuntimeException("User not found with id: " + creatorId));
         // event.setEventCreator(creator);
 
-        for (String accssorId : eventRequest.getEventAccessorIds()) {
-            User accessor = userRepository.findById(accssorId)
-                    .orElseThrow(() -> new RuntimeException("User not found with id: " + accssorId));
-            event.getEventAccessors().add(accessor);
+        if (eventRequest.getEventAccessorIds()!=null) {
+            System.out.println(2);
+            for (String accssorId : eventRequest.getEventAccessorIds()) {
+                User accessor = userRepository.findById(accssorId)
+                        .orElseThrow(() -> new RuntimeException("User not found with id: " + accssorId));
+                event.getEventAccessors().add(accessor);
+            }
         }
         
         event = eventRepository.save(event);
-
         return ResponseEntity.ok(event);
     }
 

@@ -59,6 +59,7 @@ public class Event {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)
+    @JsonBackReference
     private Organization organization;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

@@ -76,8 +76,19 @@ export function createEvent(orgId, eventRequest) {
     });
 }
 
-export function deleteEvent(eventId, userId) {
+export function updateEvent(eventId, eventRequest) {
+    return request({
+        url: API_BASE_URL + `/event/${eventId}`,
+        method: 'PUT',
+        body: JSON.stringify(eventRequest)
+    });
+}
 
+export function deleteEvent(eventId) {
+    return request({
+        url: API_BASE_URL + `/event/${eventId}`,
+        method: 'DELETE'
+    });
 }
 
 export function createOrganization(organizationRequest) {

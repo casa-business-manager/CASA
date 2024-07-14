@@ -10,7 +10,7 @@ import {
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
-import { getCalendarData, getCurrentUser, createEvent } from '../APIUtils/APIUtils';
+import { getCalendarData, getCurrentUser, createEvent, updateEvent, deleteEvent } from '../APIUtils/APIUtils';
 
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(Calendar);
@@ -40,11 +40,16 @@ const OrganizationCalendar = () => {
 
           const createdEvent = await createEvent(orgId, newEvent);
 
-          setEvents((prev) => [...prev, {
-            ...createdEvent,
-            start: moment(createdEvent.start).local().toDate(),  // Converting to local time
-            end: moment(createdEvent.end).local().toDate()      // Converting to local time
-          }]);
+          setEvents((prev) => 
+            [
+              ...prev, 
+              {
+                ...createdEvent,
+                start: moment(createdEvent.start).local().toDate(),  // Converting to local time
+                end: moment(createdEvent.end).local().toDate()      // Converting to local time
+              }
+            ]
+          );
         } catch (error) {
           console.error('Error creating event:', error);
         }
@@ -59,7 +64,7 @@ const OrganizationCalendar = () => {
   );
 
   const moveEvent = useCallback(
-    ({ event, start, end, isAllDay: droppedOnAllDaySlot = false }) => {
+    async ({ event, start, end, isAllDay: droppedOnAllDaySlot = false }) => {
       const { allDay } = event;
       if (!allDay && droppedOnAllDaySlot) {
         event.allDay = true;
@@ -67,14 +72,26 @@ const OrganizationCalendar = () => {
         event.allDay = false;
       }
 
-      setEvents((prev) => {
-        const existing = prev.find((ev) => ev.id === event.id) ?? {};
-        const filtered = prev.filter((ev) => ev.id !== event.id);
-        return [...filtered, { ...existing, start, end, allDay: event.allDay }];
-      });
+      event.start = start;
+      event.end = end;
+      const modifiedEvent = await updateEvent(event.eventId, event);
+
+      setEvents(prevEvents => 
+        prevEvents.map(prevEvent => 
+          prevEvent.eventId === modifiedEvent.eventId 
+            ?
+             { 
+              ...modifiedEvent,
+              start: moment(modifiedEvent.start).toDate(),
+              end: moment(modifiedEvent.end).toDate(),
+            }
+            :
+             prevEvent
+        )
+      );
     },
     [setEvents]
-  );
+  ); 
 
   const resizeEvent = useCallback(
     ({ event, start, end }) => {
@@ -119,6 +136,7 @@ const OrganizationCalendar = () => {
         onSelectEvent={handleSelectEvent}
         onSelectSlot={handleSelectSlot}
         events={events.map(event => ({
+          eventId: event.eventId,
           title: event.title,
           location: event.location,
           start: moment(event.start).local().toDate(),

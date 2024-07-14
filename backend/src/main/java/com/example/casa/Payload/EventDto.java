@@ -2,8 +2,6 @@ package com.example.casa.Payload;
 
 public class EventDto {
 
-    private String id;
-
     private String title;
 
     private String location;
@@ -21,14 +19,6 @@ public class EventDto {
     private String[] eventAccessorIds;
 
     public EventDto() {
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getTitle() {
