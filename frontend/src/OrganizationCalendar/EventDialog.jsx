@@ -56,7 +56,7 @@ const EventDialog = ({ open, onClose, onSave, initialTitle = '', initialDescript
 
         {/* Description */}
         <Box sx={{ display: 'flex', alignItems: 'flex-start', marginBottom: 4 }}>
-          <ViewHeadlineIcon sx={{ color: 'action.active', mr: 1, my: 2.5 }} />
+          <ViewHeadlineIcon sx={{ color: 'action.active', mr: 1.5, my: 2.5 }} />
           <TextField
             label="Description"
             multiline
@@ -68,7 +68,7 @@ const EventDialog = ({ open, onClose, onSave, initialTitle = '', initialDescript
 
         {/* Time Picker */}
         <Box sx={{ display: 'flex', alignItems: 'flex-start'}}>
-          <AccessTimeFilledIcon sx={{ color: 'action.active', mr: 1, my: 2.5 }} />
+          <AccessTimeFilledIcon sx={{ color: 'action.active', mr: 1.5, my: 2 }} />
           <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Box sx={{ mr: 2 }}>
               <TimePicker
@@ -89,7 +89,7 @@ const EventDialog = ({ open, onClose, onSave, initialTitle = '', initialDescript
 
         {/* Location */}
         <Box sx={{ display: 'flex', alignItems: 'flex-start'}}>
-          <LocationOnIcon sx={{ color: 'action.active', mr: 1, my: 3.5 }} />
+          <LocationOnIcon sx={{ color: 'action.active', mr: 1.5, my: 3.5 }} />
           <TextField
             margin="dense"
             label="Location"
@@ -105,7 +105,7 @@ const EventDialog = ({ open, onClose, onSave, initialTitle = '', initialDescript
 
         {/* People */}
         <Box sx={{ display: 'flex', alignItems: 'flex-start'}}>
-          <PeopleAltIcon sx={{ color: 'action.active', mr: 1, my: 3.5 }} />
+          <PeopleAltIcon sx={{ color: 'action.active', mr: 1.5, my: 3.5 }} />
           <TextField
             margin="dense"
             label="People"
@@ -117,7 +117,7 @@ const EventDialog = ({ open, onClose, onSave, initialTitle = '', initialDescript
 
         {/* Organization */}
         <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-          <ApartmentIcon sx={{ color: 'action.active', mr: 1, my: 2.7 }} />
+          <ApartmentIcon sx={{ color: 'action.active', mr: 1.5, my: 2.7 }} />
           <TextField
             select
             label="Organization"
