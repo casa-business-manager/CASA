@@ -96,7 +96,7 @@ const EventDialog = ({ open, onClose, onSave, initialTitle = '', initialDescript
             type="text"
             fullWidth
             multiline
-            rows={2}
+            maxRows={2}
             value={location}
             variant="standard"
             onChange={(e) => setLocation(e.target.value)}
