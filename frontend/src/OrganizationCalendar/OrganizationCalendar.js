@@ -1,16 +1,16 @@
-import React, { useCallback, useState, useEffect, useMemo } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import moment from 'moment';
 import {
   Calendar,
   Views,
-  momentLocalizer,
-  DateLocalizer
+  momentLocalizer
 } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
-import { getCalendarData, getCurrentUser, createEvent, updateEvent, deleteEvent } from '../APIUtils/APIUtils';
+import { getCalendarData, getCurrentUser, createEvent, updateEvent } from '../APIUtils/APIUtils';
+import EventDialog from './EventDialog';
 
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(Calendar);
@@ -19,19 +19,37 @@ const OrganizationCalendar = () => {
   const { orgId } = useParams();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [blockTimes, setBlockTimes] = useState({ start: null, end: null });
+  const [temporaryEvent, setTemporaryEvent] = useState(null);
 
   const handleSelectSlot = useCallback(
-    async ({ start, end }) => {
-      const title = window.prompt('New Event Name');
-      const location = window.prompt('Event Location');
+    ({ start, end }) => {
+      const fakeTempEventToKeepTheBoxOpen = {
+        title: '',
+        location: '',
+        start: moment(start).local().toDate(),
+        end: moment(end).local().toDate(),
+        allDay: false,
+        resource: '',
+      };
+      setTemporaryEvent(fakeTempEventToKeepTheBoxOpen);
+      setblockTimes({ start, end });
+      setDialogOpen(true);
+    },
+    []
+  );
+
+  const handleSaveEvent = useCallback(
+    async (title, location) => {
       if (title && location) {
         try {
           const currentUser = await getCurrentUser();
           const newEvent = {
             title,
             location,
-            start: moment(start).format(),  // ISO time includes time zone so it is fine
-            end: moment(end).format(),      // ISO time includes time zone so it is fine
+            start: moment(blockTimes.start).format(),  // ISO time includes time zone so it is fine
+            end: moment(blockTimes.end).format(),      // ISO time includes time zone so it is fine
             allDay: false,
             resource: "",
             eventCreatorId: currentUser.id,
@@ -52,11 +70,19 @@ const OrganizationCalendar = () => {
           );
         } catch (error) {
           console.error('Error creating event:', error);
+        } finally {
+          setDialogOpen(false);
+          setTemporaryEvent(null);
         }
       }
     },
-    [orgId, setEvents]
+    [orgId, blockTimes, setEvents]
   );
+
+  const handleCloseDialog = useCallback(() => {
+    setDialogOpen(false);
+    setTemporaryEvent(null);
+  }, []);
 
   const handleSelectEvent = useCallback(
     (event) => window.alert(event.title),
@@ -147,7 +173,7 @@ const OrganizationCalendar = () => {
         selectable
         onSelectEvent={handleSelectEvent}
         onSelectSlot={handleSelectSlot}
-        events={events.map(event => ({
+        events={[...events, temporaryEvent].filter(Boolean).map(event => ({
           eventId: event.eventId,
           title: event.title,
           location: event.location,
@@ -164,9 +190,13 @@ const OrganizationCalendar = () => {
         popup
         resizable
       />
+      <EventDialog 
+        open={dialogOpen} 
+        onClose={handleCloseDialog} 
+        onSave={handleSaveEvent} 
+      />
     </div>
   );
 };
 
 export default OrganizationCalendar;
-
