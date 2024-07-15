@@ -24,7 +24,7 @@ const OrganizationCalendar = () => {
   const [temporaryEvent, setTemporaryEvent] = useState(null);
 
   const handleSelectSlot = useCallback(
-    ({ start, end }) => {
+    ({ start, end }) => { 
       const fakeTempEventToKeepTheBoxOpen = {
         title: '',
         location: '',
