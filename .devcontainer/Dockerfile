@@ -32,3 +32,6 @@ ENV PATH="$M2_HOME/bin:$PATH"
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
 RUN sudo -E bash nodesource_setup.sh
 RUN sudo apt-get install -y nodejs
+
+# allow hot reloads
+ENV WATCHPACK_POLLING=true
