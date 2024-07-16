@@ -28,9 +28,9 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
   // Implement the Avatar Chips display from the design 
   const [people, setPeople] = useState([]);
 
-  // TODO: Depending on whether you're currently on the personal calendar or an org's calendar
-  // Display organizations if its personal and use the default option "Personal"
-  // If youre editing an organization's calendar, you cannot be allowed to change where this event goes
+  // TODO:
+  // Display organization selection if and only if on personal calendar
+  // Use the default option "Personal" and the dropdown contains user's orgs
   const [organizations, setOrganizations] = useState(["Personal", "org 1", "Org 2"]);
   
   // TODO: GET organization's meeting services/saved locations
@@ -194,23 +194,26 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
           />
         </Box>
 
-        {/* Organization */}
-        <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-          <ApartmentIcon sx={{ color: 'action.active', mr: 1, my: 2.7 }} />
-          <TextField
-            select
-            label="Organization"
-            defaultValue="Personal"
-            variant="standard"
-            sx={{ width: '30%' }}
-          >
-            {organizations.map((org, index) => (
-              <MenuItem key={index} value={org}>
-                {org}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Box>
+        {/* Organization - only shown in user calendar */}
+        {
+          !isOrganizationCalendar &&
+          <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
+            <ApartmentIcon sx={{ color: 'action.active', mr: 1, my: 2.7 }} />
+            <TextField
+              select
+              label="Organization"
+              defaultValue="Personal"
+              variant="standard"
+              sx={{ width: '30%' }}
+            >
+              {organizations.map((org, index) => (
+                <MenuItem key={index} value={org}>
+                  {org}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Box>
+        }
 
       </DialogContent>
 
