@@ -1,41 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Box, MenuItem } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Box, MenuItem, IconButton } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Autocomplete } from '@mui/material';
 import dayjs from 'dayjs';
+import CloseIcon from '@mui/icons-material/Close';
 import ViewHeadlineIcon from '@mui/icons-material/ViewHeadline';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 
-const EventDialog = ({ open, onClose, onSave, initialStartTime, initialEndTime}) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [startTime, setStartTime] = useState(dayjs(initialStartTime));
-  const [endTime, setEndTime] = useState(dayjs(initialEndTime));
-  const [location, setLocation] = useState('');
+const EventDialog = ({ open, onClose, onSave, initialEvent, isEditing = false, isOrganizationCalendar = true}) => {
+  const [title, setTitle] = useState(initialEvent.title ?? '');
+  const [description, setDescription] = useState(initialEvent.description ?? '');
+  const [startTime, setStartTime] = useState(dayjs(initialEvent.start));
+  const [endTime, setEndTime] = useState(dayjs(initialEvent.end));
+  const [location, setLocation] = useState(initialEvent.location ?? '');
+
+  // TODO: Initialize this to a list of User Objects and email strings depending on accessors
+  // Make sure event.eventCreator is the first in the list
+  // Implement the Avatar Chips display from the design 
+  const [people, setPeople] = useState([]);
+
+  // TODO: Depending on whether you're currently on the personal calendar or an org's calendar
+  // Display organizations if its personal and use the default option "Personal"
+  // If youre editing an organization's calendar, you cannot be allowed to change where this event goes
+  const [organizations, setOrganizations] = useState(["Personal", "org 1", "Org 2"]);
+  
+  // TODO: GET organization's meeting services/saved locations
+  // Want to turn this into a map for "Create Zoom" -> GET new link -> text field has link now
+  const [meetingLocations, setMeetingLocations] = useState(["Location 1", "Location 2", "Location 3"]); 
 
   useEffect(() => {
-    setStartTime(dayjs(initialStartTime));
-    setEndTime(dayjs(initialEndTime));
-  }, [initialStartTime, initialEndTime]);
+    setTitle(initialEvent.title ?? '');
+    setDescription(initialEvent.description ?? '');
+    setStartTime(dayjs(initialEvent.start));
+    setEndTime(dayjs(initialEvent.end));
+    setLocation(initialEvent.location ?? '');
+  }, [initialEvent]);
 
   const handleSave = () => {
-    onSave(title, location);
+    if (!title || !description || !location) {
+      // TODO: Use Textfield Error colors to show missing fields
+      // TODO: Check End time is after start time
+      return;
+    }
+    onSave(title, description, location); // Will need people. Maybe org too?
     setTitle('');
     setDescription('');
     setLocation('');
   };
 
-  const organizations = ["Personal", "org 1", "Org 2"];
-  const locationSuggestions = ["Location 1", "Location 2", "Location 3"]; // can turn this into a map for "Create Zoom" -> GET new link
-
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
-      <DialogTitle>New Event</DialogTitle>
+      <DialogTitle>
+        <Box display="flex" alignItems="center">
+          <Box flexGrow={1} >{ isEditing ? "Edit Event" : "New event" }</Box>
+          <Box>
+            <IconButton onClick={onClose}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </Box>
+      </DialogTitle>
+
       <DialogContent>
         
         {/* Title */}
@@ -92,7 +122,7 @@ const EventDialog = ({ open, onClose, onSave, initialStartTime, initialEndTime})
           <LocationOnIcon sx={{ color: 'action.active', mr: 1, my: 3.5 }} />
           <Autocomplete
             freeSolo
-            options={locationSuggestions}
+            options={meetingLocations}
             inputValue={location}
             fullWidth
             onInputChange={(event, newInputValue) => setLocation(newInputValue)}

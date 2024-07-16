@@ -22,6 +22,7 @@ const OrganizationCalendar = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [blockTimes, setBlockTimes] = useState({ start: null, end: null });
   const [temporaryEvent, setTemporaryEvent] = useState(null);
+  const [menuEvent, setMenuEvent] = useState({});
 
   const handleSelectSlot = useCallback(
     ({ start, end }) => { 
@@ -34,6 +35,7 @@ const OrganizationCalendar = () => {
         resource: '',
       };
       setTemporaryEvent(fakeTempEventToKeepTheBoxOpen);
+      setMenuEvent(fakeTempEventToKeepTheBoxOpen);
       setDialogOpen(true);
       setBlockTimes({ start, end });
     },
@@ -41,38 +43,36 @@ const OrganizationCalendar = () => {
   );
 
   const handleSaveEvent = useCallback(
-    async (title, location) => {
-      if (title && location) {
-        try {
-          const currentUser = await getCurrentUser();
-          const newEvent = {
-            title,
-            location,
-            start: moment(blockTimes.start).format(),  // ISO time includes time zone so it is fine
-            end: moment(blockTimes.end).format(),      // ISO time includes time zone so it is fine
-            allDay: false,
-            resource: "",
-            eventCreatorId: currentUser.id,
-            eventAccessorIds: [currentUser.id]
-          };
+    async (title, description, location) => {
+      try {
+        const currentUser = await getCurrentUser();
+        const newEvent = {
+          title,
+          location,
+          start: moment(blockTimes.start).format(),  // ISO time includes time zone so it is fine
+          end: moment(blockTimes.end).format(),      // ISO time includes time zone so it is fine
+          allDay: false,
+          resource: "", // Turn this into description?
+          eventCreatorId: currentUser.id,
+          eventAccessorIds: [currentUser.id]
+        };
 
-          const createdEvent = await createEvent(orgId, newEvent);
-          setEvents((prev) => 
-            [
-              ...prev, 
-              {
-                ...createdEvent,
-                start: moment(createdEvent.start).local().toDate(),  // Converting to local time
-                end: moment(createdEvent.end).local().toDate()      // Converting to local time
-              }
-            ]
-          );
-        } catch (error) {
-          console.error('Error creating event:', error);
-        } finally {
-          setDialogOpen(false);
-          setTemporaryEvent(null);
-        }
+        const createdEvent = await createEvent(orgId, newEvent);
+        setEvents((prev) => 
+          [
+            ...prev, 
+            {
+              ...createdEvent,
+              start: moment(createdEvent.start).local().toDate(),  // Converting to local time
+              end: moment(createdEvent.end).local().toDate()      // Converting to local time
+            }
+          ]
+        );
+      } catch (error) {
+        console.error('Error creating event:', error);
+      } finally {
+        setDialogOpen(false);
+        setTemporaryEvent(null);
       }
     },
     [orgId, blockTimes, setEvents]
@@ -85,7 +85,8 @@ const OrganizationCalendar = () => {
 
   const handleSelectEvent = useCallback(
     (event) => {
-      window.alert(event.title);
+      setMenuEvent(event);
+      setDialogOpen(true);
     },
     []
   );
@@ -198,8 +199,7 @@ const OrganizationCalendar = () => {
         open={dialogOpen} 
         onClose={handleCloseDialog} 
         onSave={handleSaveEvent} 
-        initialStartTime={blockTimes.start}
-        initialEndTime={blockTimes.end}
+        initialEvent={menuEvent}
       />
     </div>
   );
