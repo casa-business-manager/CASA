@@ -17,6 +17,7 @@ const DragAndDropCalendar = withDragAndDrop(Calendar);
 
 const OrganizationCalendar = () => {
   const { orgId } = useParams();
+  const [currentUser, setCurrentUser] = useState(null);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -25,8 +26,44 @@ const OrganizationCalendar = () => {
   const [menuEvent, setMenuEvent] = useState({}); // passed to the menu
   const [editMenu, setEditMenu] = useState(false); // passed to the menu
 
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const user = await getCurrentUser();
+        setCurrentUser(user);
+      } catch (error) {
+        console.error('Error fetching current user:', error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
+
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const fetchData = async () => {
+      try {
+        const calendarData = await getCalendarData(orgId, currentUser.id);
+        setEvents(calendarData.events.map(event => ({
+          ...event,
+          start: moment(event.start).local().toDate(),
+          end: moment(event.end).local().toDate()
+        })));
+      } catch (error) {
+        console.error('Error fetching calendar data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [orgId, currentUser]);
+
   const handleSelectSlot = useCallback(
-    ({ start, end }) => { 
+    ({ start, end }) => {
+      if (!currentUser) return;
+
       const fakeTempEventToKeepTheBoxOpen = {
         title: '',
         location: '',
@@ -34,6 +71,8 @@ const OrganizationCalendar = () => {
         end: moment(end).local().toDate(),
         allDay: false,
         description: '',
+        eventCreatorId: currentUser.id,
+        eventAccessorIds: [currentUser.id]
       };
       setTemporaryEvent(fakeTempEventToKeepTheBoxOpen);
       setMenuEvent(fakeTempEventToKeepTheBoxOpen);
@@ -41,22 +80,23 @@ const OrganizationCalendar = () => {
       setDialogOpen(true);
       setBlockTimes({ start, end });
     },
-    []
+    [currentUser]
   );
 
   const handleSaveEvent = useCallback(
-    async (title, description, location) => {
+    async (title, description, location, people) => {
+      if (!currentUser) return;
+
       try {
-        const currentUser = await getCurrentUser();
         const newEvent = {
           title,
-          description: description,
+          description,
           location,
           start: moment(blockTimes.start).format(),  // ISO time includes time zone so it is fine
           end: moment(blockTimes.end).format(),      // ISO time includes time zone so it is fine
           allDay: false,
           eventCreatorId: currentUser.id,
-          eventAccessorIds: [currentUser.id]
+          eventAccessorIds: people
         };
 
         const createdEvent = await createEvent(orgId, newEvent);
@@ -77,7 +117,7 @@ const OrganizationCalendar = () => {
         setTemporaryEvent(null);
       }
     },
-    [orgId, blockTimes, setEvents]
+    [orgId, blockTimes, setEvents, currentUser]
   );
 
   const handleCloseDialog = useCallback(() => {
@@ -85,7 +125,6 @@ const OrganizationCalendar = () => {
     setTemporaryEvent(null);
   }, []);
 
-  // TODO: Need to find a way to make it so "save" in this menu makes the right call...
   const handleSelectEvent = useCallback(
     (event) => {
       setMenuEvent(event);
@@ -111,19 +150,17 @@ const OrganizationCalendar = () => {
       setEvents(prevEvents => 
         prevEvents.map(prevEvent => 
           prevEvent.eventId === modifiedEvent.eventId 
-            ?
-             { 
+            ? { 
               ...modifiedEvent,
               start: moment(modifiedEvent.start).toDate(),
               end: moment(modifiedEvent.end).toDate(),
             }
-            :
-             prevEvent
+            : prevEvent
         )
       );
     },
     [setEvents]
-  ); 
+  );
 
   const resizeEvent = useCallback(
     async ({ event, start, end }) => {
@@ -134,41 +171,19 @@ const OrganizationCalendar = () => {
       setEvents(prevEvents => 
         prevEvents.map(prevEvent => 
           prevEvent.eventId === modifiedEvent.eventId 
-            ?
-             { 
+            ? { 
               ...modifiedEvent,
               start: moment(modifiedEvent.start).toDate(),
               end: moment(modifiedEvent.end).toDate(),
             }
-            :
-             prevEvent
+            : prevEvent
         )
       );
     },
     [setEvents]
   );
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const currentUser = await getCurrentUser();
-        const calendarData = await getCalendarData(orgId, currentUser.id);
-        setEvents(calendarData.events.map(event => ({
-          ...event,
-          start: moment(event.start).local().toDate(),
-          end: moment(event.end).local().toDate()
-        })));
-      } catch (error) {
-        console.error('Error fetching calendar data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [orgId]);
-
-  if (loading) {
+  if (loading || !currentUser) {
     return <div>Loading...</div>;
   }
 
@@ -205,9 +220,12 @@ const OrganizationCalendar = () => {
         onSave={handleSaveEvent} 
         initialEvent={menuEvent}
         initialIsEditing={editMenu}
+        organizationId={orgId}
+        currentUser={currentUser}
       />
     </div>
   );
 };
 
 export default OrganizationCalendar;
+
