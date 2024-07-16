@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Box, MenuItem, IconButton } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Box, MenuItem, IconButton, Chip } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -11,40 +11,71 @@ import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ApartmentIcon from '@mui/icons-material/Apartment';
+import { getUsersInOrganization } from '../APIUtils/APIUtils';
 
-// TODO: Integrate delete button with onDelete parameter
-const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsEditing = false, isOrganizationCalendar = true }) => {
-  const [title, setTitle] = useState(initialEvent.title ?? '');
-  const [description, setDescription] = useState(initialEvent.description ?? '');
-  const [startTime, setStartTime] = useState(dayjs(initialEvent.start));
-  const [endTime, setEndTime] = useState(dayjs(initialEvent.end));
-  const [location, setLocation] = useState(initialEvent.location ?? '');
+const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsEditing = false, isOrganizationCalendar = true , organizationId, currentUser }) => {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [startTime, setStartTime] = useState(dayjs());
+  const [endTime, setEndTime] = useState(dayjs());
+  const [location, setLocation] = useState('');
 
   const [titleError, setTitleError] = useState(false);
   const [locationError, setLocationError] = useState(false);
   const [deleteConfirmed, setDeleteConfirmed] = useState(false);
-
-  // TODO: Initialize this to a list of User Objects and email strings depending on accessors
-  // Make sure event.eventCreator is the first in the list
-  // Implement the Avatar Chips display from the design 
   const [people, setPeople] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
 
   // TODO:
   // Display organization selection if and only if on personal calendar
   // Use the default option "Personal" and the dropdown contains user's orgs
   const [organizations, setOrganizations] = useState(["Personal", "org 1", "Org 2"]);
-  
-  // TODO: GET organization's meeting services/saved locations
-  // Want to turn this into a map for "Create Zoom" -> GET new link -> text field has link now
   const [meetingLocations, setMeetingLocations] = useState(["Location 1", "Location 2", "Location 3"]);
 
   useEffect(() => {
-    setTitle(initialEvent.title ?? '');
-    setDescription(initialEvent.description ?? '');
-    setStartTime(dayjs(initialEvent.start));
-    setEndTime(dayjs(initialEvent.end));
-    setLocation(initialEvent.location ?? '');
-  }, [initialEvent]);
+    const fetchUsers = async () => {
+      try {
+        const response = await getUsersInOrganization(organizationId);
+        const usersWithFullName = response.map(user => ({
+          ...user,
+          fullName: `${user.firstName} ${user.lastName}`
+        }));
+        setAllUsers(usersWithFullName);
+
+        // Set default people based on initialEvent.eventAccessorIds
+        if (initialEvent && initialEvent.eventAccessorIds) {
+          const defaultPeople = usersWithFullName.filter(user =>
+            initialEvent.eventAccessorIds.includes(user.id)
+          ).map(user => user.id);
+          setPeople(defaultPeople);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    if (open) {
+      setTitle(initialEvent.title ?? '');
+      setDescription(initialEvent.description ?? '');
+      setStartTime(dayjs(initialEvent.start));
+      setEndTime(dayjs(initialEvent.end));
+      setLocation(initialEvent.location ?? '');
+      setIsEditing(initialIsEditing);
+      fetchUsers();
+      if (!initialIsEditing && currentUser) {
+        setPeople([currentUser.id]);
+      }
+    } else {
+      setTitle('');
+      setDescription('');
+      setStartTime(dayjs());
+      setEndTime(dayjs());
+      setLocation('');
+      setPeople([]);
+      setIsEditing(false);
+      setAllUsers([]);
+    }
+  }, [open, initialEvent, initialIsEditing, organizationId, currentUser]);
 
   const handleSave = () => {
     let hasError = false;
@@ -71,10 +102,23 @@ const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsE
       return;
     }
 
-    onSave(title, description, startTime.toDate(), endTime.toDate(), location); // Will need people. Maybe org too?
-    setTitle('');
-    setDescription('');
-    setLocation('');
+    onSave(title, description, startTime.toDate(), endTime.toDate(), location, people);
+    onClose();
+  };
+
+  const handleAddPerson = (event, newValue) => {
+    const validUsers = newValue.filter(value => {
+      const user = allUsers.find(user => user.fullName.toLowerCase() === value.toLowerCase());
+      return user && !people.includes(user.id);
+    }).map(value => {
+      return allUsers.find(user => user.fullName.toLowerCase() === value.toLowerCase()).id;
+    });
+
+    setPeople(prevPeople => [...new Set([...prevPeople, ...validUsers])]);
+  };
+
+  const handleDeletePerson = (userId) => {
+    setPeople(people.filter(id => id !== userId));
   };
 
   const onCloseWrapper = () => {
@@ -185,14 +229,41 @@ const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsE
         </Box>
 
         {/* People */}
-        <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-          <PeopleAltIcon sx={{ color: 'action.active', mr: 1, my: 3.5 }} />
-          <TextField
-            margin="dense"
-            label="People"
-            type="text"
-            fullWidth
-            variant="standard"
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+          <PeopleAltIcon sx={{ color: 'action.active', mr: 1, my: 2.5 }} />
+          <Autocomplete
+            multiple
+            freeSolo
+            disableClearable
+            options={allUsers.map(user => user.fullName)}
+            getOptionLabel={(option) => option}
+            value={allUsers.filter(user => people.includes(user.id)).map(user => user.fullName)}
+            onChange={handleAddPerson}
+            renderTags={(value, getTagProps) =>
+              value.map((option, index) => {
+                const user = allUsers.find(user => user.fullName === option);
+                return (
+                  <Chip
+                    label={option}
+                    {...getTagProps({ index })}
+                    onDelete={() => handleDeletePerson(user.id)}
+                  />
+                );
+              })
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="standard"
+                label="People"
+                placeholder="Add people"
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: null
+                }}
+                sx={{ width: '500px' }} // Fixed width
+              />
+            )}
           />
         </Box>
 
