@@ -55,25 +55,10 @@ const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsE
     };
 
     if (open) {
-      setTitle(initialEvent.title ?? '');
-      setDescription(initialEvent.description ?? '');
-      setStartTime(dayjs(initialEvent.start));
-      setEndTime(dayjs(initialEvent.end));
-      setLocation(initialEvent.location ?? '');
-      setIsEditing(initialIsEditing);
       fetchUsers();
       if (!initialIsEditing && currentUser) {
         setPeople([currentUser.id]);
       }
-    } else {
-      setTitle('');
-      setDescription('');
-      setStartTime(dayjs());
-      setEndTime(dayjs());
-      setLocation('');
-      setPeople([]);
-      setIsEditing(false);
-      setAllUsers([]);
     }
   }, [open, initialEvent, initialIsEditing, organizationId, currentUser]);
 
@@ -103,7 +88,7 @@ const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsE
     }
 
     onSave(title, description, startTime.toDate(), endTime.toDate(), location, people);
-    onClose();
+    onCloseWrapper();
   };
 
   const handleAddPerson = (event, newValue) => {
