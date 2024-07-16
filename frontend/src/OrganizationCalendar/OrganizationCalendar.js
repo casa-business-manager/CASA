@@ -45,15 +45,17 @@ const OrganizationCalendar = () => {
   );
 
   const handleSaveEvent = useCallback(
-    async (title, description, location) => {
+    async (title, description, startTime, endTime, location) => {
       try {
         const currentUser = await getCurrentUser();
+        console.log("startTime", startTime, typeof(startTime))
+        console.log("block.start", blockTimes.start, typeof(blockTimes.start))
         const newEvent = {
           title,
           description: description,
           location,
-          start: moment(blockTimes.start).format(),  // ISO time includes time zone so it is fine
-          end: moment(blockTimes.end).format(),      // ISO time includes time zone so it is fine
+          start: moment(startTime).format(),  // ISO time includes time zone so it is fine
+          end: moment(endTime).format(),      // ISO time includes time zone so it is fine
           allDay: false,
           eventCreatorId: currentUser.id,
           eventAccessorIds: [currentUser.id]

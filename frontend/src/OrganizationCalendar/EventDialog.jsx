@@ -21,7 +21,6 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
   const [location, setLocation] = useState(initialEvent.location ?? '');
 
   const [titleError, setTitleError] = useState(false);
-  const [descriptionError, setDescriptionError] = useState(false);
   const [locationError, setLocationError] = useState(false);
 
   // TODO: Initialize this to a list of User Objects and email strings depending on accessors
@@ -62,11 +61,8 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
       setTitleError(false);
     }
 
-    if (!description) {
-      setDescriptionError(true);
+    if (endTime.isBefore(startTime)) {
       hasError = true;
-    } else {
-      setDescriptionError(false);
     }
 
     if (!location) {
@@ -80,7 +76,7 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
       return;
     }
 
-    onSave(title, description, location); // Will need people. Maybe org too?
+    onSave(title, description, startTime.toDate(), endTime.toDate(), location); // Will need people. Maybe org too?
     setTitle('');
     setDescription('');
     setLocation('');
@@ -89,7 +85,6 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
   const onCloseWrapper = () => {
     onClose();
     setTitleError(false);
-    setDescriptionError(false);
     setLocationError(false);
   }
 
@@ -134,8 +129,6 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             variant="standard"
-            error={descriptionError}
-            helperText={descriptionError ? "Missing Entry" : ""}
           />
         </Box>
 
@@ -148,6 +141,12 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
                 label="Start Time"
                 value={startTime}
                 onChange={(newValue) => setStartTime(newValue)}
+                maxTime={endTime}
+                slotProps={{
+                  textField: {
+                    helperText: endTime.isBefore(startTime) ? "Please select a valid time range" : "",
+                  },
+                }}
                 sx={{ width: '60%' }}
               />
             </Box>
@@ -156,6 +155,7 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
                 label="End Time"
                 value={endTime}
                 onChange={(newValue) => setEndTime(newValue)}
+                minTime={startTime}
                 sx={{ width: '60%' }}
               />
             </Box>
