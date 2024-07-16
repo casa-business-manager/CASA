@@ -57,7 +57,6 @@ const OrganizationCalendar = () => {
           };
 
           const createdEvent = await createEvent(orgId, newEvent);
-
           setEvents((prev) => 
             [
               ...prev, 
@@ -85,7 +84,9 @@ const OrganizationCalendar = () => {
   }, []);
 
   const handleSelectEvent = useCallback(
-    (event) => window.alert(event.title),
+    (event) => {
+      window.alert(event.title);
+    },
     []
   );
 
@@ -181,6 +182,9 @@ const OrganizationCalendar = () => {
           end: moment(event.end).local().toDate(),
           allDay: event.allDay,
           resource: event.resource,
+          organization: event.organization,
+          eventCreator: event.eventCreator,
+          eventAccessors: event.eventAccessors
         }))}
         defaultDate={moment().toDate()}
         defaultView={Views.MONTH}

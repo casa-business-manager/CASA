@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -53,14 +53,14 @@ public class Event {
     private String resource;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_creator_id", nullable = false)
-    @JsonBackReference
-    private User eventCreator;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)
-    @JsonBackReference
+    @JsonManagedReference("event-organization")
     private Organization organization;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "event_creator_id", nullable = false)
+    @JsonManagedReference("user-createdEvents")
+    private User eventCreator;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
@@ -68,7 +68,7 @@ public class Event {
         joinColumns = @JoinColumn(name = "event_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    @JsonBackReference
+    @JsonManagedReference("user-accessibleEvents")
     private Set<User> eventAccessors = new HashSet<>();
 
     public Event() {
