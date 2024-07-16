@@ -30,6 +30,9 @@ const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsE
   // Display organization selection if and only if on personal calendar
   // Use the default option "Personal" and the dropdown contains user's orgs
   const [organizations, setOrganizations] = useState(["Personal", "org 1", "Org 2"]);
+
+  // TODO: GET organization's meeting services/saved locations
+  // Want to turn this into a map for "Create Zoom" -> GET new link -> text field has link now
   const [meetingLocations, setMeetingLocations] = useState(["Location 1", "Location 2", "Location 3"]);
 
   useEffect(() => {
