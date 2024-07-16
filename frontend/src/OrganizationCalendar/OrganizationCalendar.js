@@ -99,7 +99,7 @@ const OrganizationCalendar = () => {
     setDialogOpen(false);
     setTemporaryEvent(null);
     await deleteEvent(eventId);
-    setEvents((prevEvents) => prevEvents.filter(prevEvent => prevEvent.id !== eventId));
+    setEvents((prevEvents) => prevEvents.filter(prevEvent => prevEvent.eventId !== eventId));
   }, []);
 
   const moveEvent = useCallback(

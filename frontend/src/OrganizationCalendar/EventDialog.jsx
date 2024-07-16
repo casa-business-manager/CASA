@@ -22,6 +22,7 @@ const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsE
 
   const [titleError, setTitleError] = useState(false);
   const [locationError, setLocationError] = useState(false);
+  const [deleteConfirmed, setDeleteConfirmed] = useState(false);
 
   // TODO: Initialize this to a list of User Objects and email strings depending on accessors
   // Make sure event.eventCreator is the first in the list
@@ -80,6 +81,7 @@ const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsE
     onClose();
     setTitleError(false);
     setLocationError(false);
+    setDeleteConfirmed(false);
   }
 
   return (
@@ -221,9 +223,16 @@ const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsE
         {
           initialIsEditing ?
           <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-            <Button onClick={() => {onDelete(initialEvent.eventId)}} color="error" variant="contained">
-              Delete
-            </Button>
+            {
+              deleteConfirmed ? 
+                <Button onClick={() => {onDelete(initialEvent.eventId)}} color="error" variant="contained">
+                  Confirm Delete
+                </Button>
+              :
+                <Button onClick={() => {setDeleteConfirmed(true)}} color="error" variant="contained">
+                  Delete
+                </Button>
+            }
             <Box>
               <Button onClick={onCloseWrapper} color="primary">
                 Cancel
