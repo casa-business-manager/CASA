@@ -13,7 +13,7 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 
 // TODO: Integrate delete button with onDelete parameter
-const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = false, isOrganizationCalendar = true }) => {
+const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsEditing = false, isOrganizationCalendar = true }) => {
   const [title, setTitle] = useState(initialEvent.title ?? '');
   const [description, setDescription] = useState(initialEvent.description ?? '');
   const [startTime, setStartTime] = useState(dayjs(initialEvent.start));
@@ -221,7 +221,7 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
         {
           initialIsEditing ?
           <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-            <Button onClick={onCloseWrapper} color="error" variant="contained">
+            <Button onClick={() => {onDelete(initialEvent.eventId)}} color="error" variant="contained">
               Delete
             </Button>
             <Box>

@@ -118,10 +118,17 @@ public class EventController {
 
     @DeleteMapping("/event/{eventId}")
     public ResponseEntity<?> deleteOrganization(@PathVariable String eventId) {
+        System.out.println(12345);
         Event event = eventRepository.findById(eventId)
             .orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
+        System.out.println(1);
+        System.out.println(event.getEventId());
+        System.out.println(event.getEventCreator());
+        System.out.println(event.getEventAccessors());
 
         eventRepository.deleteById(eventId); // may need to delete from Org side too
+        System.out.println(2);
+
         return ResponseEntity.ok().build();
     }
 }

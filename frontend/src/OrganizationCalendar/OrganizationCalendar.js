@@ -9,7 +9,7 @@ import {
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
-import { getCalendarData, getCurrentUser, createEvent, updateEvent } from '../APIUtils/APIUtils';
+import { getCalendarData, getCurrentUser, createEvent, updateEvent, deleteEvent } from '../APIUtils/APIUtils';
 import EventDialog from './EventDialog';
 
 const localizer = momentLocalizer(moment);
@@ -48,8 +48,6 @@ const OrganizationCalendar = () => {
     async (title, description, startTime, endTime, location) => {
       try {
         const currentUser = await getCurrentUser();
-        console.log("startTime", startTime, typeof(startTime))
-        console.log("block.start", blockTimes.start, typeof(blockTimes.start))
         const newEvent = {
           title,
           description: description,
@@ -96,6 +94,13 @@ const OrganizationCalendar = () => {
     },
     []
   );
+
+  const handleDeleteEvent = useCallback(async (eventId) => {
+    setDialogOpen(false);
+    setTemporaryEvent(null);
+    await deleteEvent(eventId);
+    setEvents((prevEvents) => prevEvents.filter(prevEvent => prevEvent.id !== eventId));
+  }, []);
 
   const moveEvent = useCallback(
     async ({ event, start, end, isAllDay: droppedOnAllDaySlot = false }) => {
@@ -204,7 +209,8 @@ const OrganizationCalendar = () => {
       <EventDialog 
         open={dialogOpen} 
         onClose={handleCloseDialog} 
-        onSave={handleSaveEvent} 
+        onSave={handleSaveEvent}
+        onDelete={handleDeleteEvent}
         initialEvent={menuEvent}
         initialIsEditing={editMenu}
       />
