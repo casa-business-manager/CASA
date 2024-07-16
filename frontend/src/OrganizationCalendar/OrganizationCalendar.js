@@ -21,8 +21,9 @@ const OrganizationCalendar = () => {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [blockTimes, setBlockTimes] = useState({ start: null, end: null });
-  const [temporaryEvent, setTemporaryEvent] = useState(null);
-  const [menuEvent, setMenuEvent] = useState({});
+  const [temporaryEvent, setTemporaryEvent] = useState(null); // shows on the calendar
+  const [menuEvent, setMenuEvent] = useState({}); // passed to the menu
+  const [editMenu, setEditMenu] = useState(false); // passed to the menu
 
   const handleSelectSlot = useCallback(
     ({ start, end }) => { 
@@ -32,10 +33,11 @@ const OrganizationCalendar = () => {
         start: moment(start).local().toDate(),
         end: moment(end).local().toDate(),
         allDay: false,
-        resource: '',
+        description: '',
       };
       setTemporaryEvent(fakeTempEventToKeepTheBoxOpen);
       setMenuEvent(fakeTempEventToKeepTheBoxOpen);
+      setEditMenu(false);
       setDialogOpen(true);
       setBlockTimes({ start, end });
     },
@@ -48,11 +50,11 @@ const OrganizationCalendar = () => {
         const currentUser = await getCurrentUser();
         const newEvent = {
           title,
+          description: description,
           location,
           start: moment(blockTimes.start).format(),  // ISO time includes time zone so it is fine
           end: moment(blockTimes.end).format(),      // ISO time includes time zone so it is fine
           allDay: false,
-          resource: "", // Turn this into description?
           eventCreatorId: currentUser.id,
           eventAccessorIds: [currentUser.id]
         };
@@ -83,9 +85,11 @@ const OrganizationCalendar = () => {
     setTemporaryEvent(null);
   }, []);
 
+  // TODO: Need to find a way to make it so "save" in this menu makes the right call...
   const handleSelectEvent = useCallback(
     (event) => {
       setMenuEvent(event);
+      setEditMenu(true);
       setDialogOpen(true);
     },
     []
@@ -178,11 +182,11 @@ const OrganizationCalendar = () => {
         events={[...events, temporaryEvent].filter(Boolean).map(event => ({
           eventId: event.eventId,
           title: event.title,
+          description: event.description,
           location: event.location,
           start: moment(event.start).local().toDate(),
           end: moment(event.end).local().toDate(),
           allDay: event.allDay,
-          resource: event.resource,
           organization: event.organization,
           eventCreator: event.eventCreator,
           eventAccessors: event.eventAccessors
@@ -200,6 +204,7 @@ const OrganizationCalendar = () => {
         onClose={handleCloseDialog} 
         onSave={handleSaveEvent} 
         initialEvent={menuEvent}
+        initialIsEditing={editMenu}
       />
     </div>
   );

@@ -35,6 +35,9 @@ public class Event {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @Column(name = "description")
+    private String description;
+
     @Column(name = "location", nullable = false)
     private String location;
 
@@ -48,9 +51,6 @@ public class Event {
 
     @Column(name = "all_day")
     private boolean allDay;
-
-    @Column(name = "resource")
-    private String resource;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)
@@ -78,19 +78,27 @@ public class Event {
     public String getEventId() {
         return eventId;
     }
-
+    
     public void setEventId(String eventId) {
         this.eventId = eventId;
     }
-
+    
     public String getTitle() {
         return title;
     }
-
+    
     public void setTitle(String title) {
         this.title = title;
     }
+    
+    public String getDescription() {
+        return description;
+    }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
     public String getLocation() {
         return location;
     }
@@ -121,14 +129,6 @@ public class Event {
 
     public void setAllDay(boolean allDay) {
         this.allDay = allDay;
-    }
-
-    public String getResource() {
-        return resource;
-    }
-
-    public void setResource(String resource) {
-        this.resource = resource;
     }
 
     public Organization getOrganization() {

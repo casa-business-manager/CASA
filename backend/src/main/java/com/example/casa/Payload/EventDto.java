@@ -3,6 +3,8 @@ package com.example.casa.Payload;
 public class EventDto {
 
     private String title;
+    
+    private String description;
 
     private String location;
 
@@ -11,8 +13,6 @@ public class EventDto {
     private String end;
 
     private Boolean allDay;
-
-    private String resource;
 
     private String eventCreatorId;
 
@@ -29,10 +29,18 @@ public class EventDto {
         this.title = title;
     }
 
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getLocation() {
         return this.location;
     }
-
+    
     public void setLocation(String location) {
         this.location = location;
     }
@@ -63,14 +71,6 @@ public class EventDto {
 
     public void setAllDay(Boolean allDay) {
         this.allDay = allDay;
-    }
-
-    public String getResource() {
-        return this.resource;
-    }
-
-    public void setResource(String resource) {
-        this.resource = resource;
     }
 
     public String getEventCreatorId() {

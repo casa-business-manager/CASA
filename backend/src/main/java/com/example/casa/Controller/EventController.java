@@ -65,11 +65,11 @@ public class EventController {
     public ResponseEntity<?> createEvent(@PathVariable String orgId, @RequestBody EventDto eventRequest) {
         Event newEvent = new Event();
         newEvent.setTitle(eventRequest.getTitle());
+        newEvent.setDescription(eventRequest.getDescription());
         newEvent.setLocation(eventRequest.getLocation());
         newEvent.setStart(DateConverter.ISO2Date(eventRequest.getStart()));
         newEvent.setEnd(DateConverter.ISO2Date(eventRequest.getEnd()));
         newEvent.setAllDay(eventRequest.getAllDay());
-        newEvent.setResource(eventRequest.getResource());
         
         Organization organization = organizationRepository.findById(orgId)
                 .orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
@@ -97,11 +97,11 @@ public class EventController {
             .orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
 
         event.setTitle(eventRequest.getTitle() != null ? eventRequest.getTitle() : event.getTitle());
+        event.setDescription(eventRequest.getDescription() != null ? eventRequest.getDescription() : event.getDescription());
         event.setLocation(eventRequest.getLocation() != null ? eventRequest.getLocation() : event.getLocation());
         event.setStart(eventRequest.getStart() != null ? DateConverter.ISO2Date(eventRequest.getStart()) : event.getStart());
         event.setEnd(eventRequest.getEnd() != null ? DateConverter.ISO2Date(eventRequest.getEnd()) : event.getEnd());
         event.setAllDay(eventRequest.getAllDay() != null ? eventRequest.getAllDay() : event.isAllDay());
-        event.setResource(eventRequest.getResource() != null ? eventRequest.getResource() : event.getResource());
 
         if (eventRequest.getEventAccessorIds() != null) {
             event.getEventAccessors().clear();

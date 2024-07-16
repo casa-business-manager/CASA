@@ -12,7 +12,8 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 
-const EventDialog = ({ open, onClose, onSave, initialEvent, isEditing = false, isOrganizationCalendar = true}) => {
+// TODO: Integrate delete button with onDelete parameter
+const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = false, isOrganizationCalendar = true}) => {
   const [title, setTitle] = useState(initialEvent.title ?? '');
   const [description, setDescription] = useState(initialEvent.description ?? '');
   const [startTime, setStartTime] = useState(dayjs(initialEvent.start));
@@ -31,7 +32,9 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, isEditing = false, i
   
   // TODO: GET organization's meeting services/saved locations
   // Want to turn this into a map for "Create Zoom" -> GET new link -> text field has link now
-  const [meetingLocations, setMeetingLocations] = useState(["Location 1", "Location 2", "Location 3"]); 
+  const [meetingLocations, setMeetingLocations] = useState(["Location 1", "Location 2", "Location 3"]);
+
+  const [isEditing, setIsEditing] = useState(initialIsEditing);
 
   useEffect(() => {
     setTitle(initialEvent.title ?? '');
@@ -41,10 +44,15 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, isEditing = false, i
     setLocation(initialEvent.location ?? '');
   }, [initialEvent]);
 
+  useEffect(() => {
+    setIsEditing(initialIsEditing);
+  }, [initialIsEditing]);
+
   const handleSave = () => {
     if (!title || !description || !location) {
       // TODO: Use Textfield Error colors to show missing fields
       // TODO: Check End time is after start time
+      console.log("missing some info")
       return;
     }
     onSave(title, description, location); // Will need people. Maybe org too?
@@ -90,6 +98,8 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, isEditing = false, i
             multiline
             rows={3}
             fullWidth
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             variant="standard" // maybe outlined is better?
           />
         </Box>
