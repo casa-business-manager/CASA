@@ -37,8 +37,6 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
   // Want to turn this into a map for "Create Zoom" -> GET new link -> text field has link now
   const [meetingLocations, setMeetingLocations] = useState(["Location 1", "Location 2", "Location 3"]);
 
-  const [isEditing, setIsEditing] = useState(initialIsEditing);
-
   useEffect(() => {
     setTitle(initialEvent.title ?? '');
     setDescription(initialEvent.description ?? '');
@@ -46,10 +44,6 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
     setEndTime(dayjs(initialEvent.end));
     setLocation(initialEvent.location ?? '');
   }, [initialEvent]);
-
-  useEffect(() => {
-    setIsEditing(initialIsEditing);
-  }, [initialIsEditing]);
 
   const handleSave = () => {
     let hasError = false;
@@ -92,7 +86,7 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
     <Dialog open={open} onClose={onCloseWrapper} fullWidth>
       <DialogTitle>
         <Box display="flex" alignItems="center">
-          <Box flexGrow={1}>{isEditing ? "Edit Event" : "New event"}</Box>
+          <Box flexGrow={1}>{initialIsEditing ? "Edit Event" : "New event"}</Box>
           <Box>
             <IconButton onClick={onCloseWrapper}>
               <CloseIcon />
@@ -112,7 +106,7 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
           variant="standard"
           onChange={(e) => setTitle(e.target.value)}
           error={titleError}
-          helperText={titleError ? "Missing Entry" : ""}
+          helperText={titleError && "Missing Entry"}
           sx={{ marginBottom: 2 }}
           InputProps={{ sx: { fontSize: '1.5rem' } }}
           InputLabelProps={{ sx: { fontSize: '1.5rem' } }}
@@ -144,7 +138,7 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
                 maxTime={endTime}
                 slotProps={{
                   textField: {
-                    helperText: endTime.isBefore(startTime) ? "Please select a valid time range" : "",
+                    helperText: endTime.isBefore(startTime) && "Please select a valid time range",
                   },
                 }}
                 sx={{ width: '60%' }}
@@ -182,7 +176,7 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
                 maxRows={2}
                 variant="standard"
                 error={locationError}
-                helperText={locationError ? "Missing Entry" : ""}
+                helperText={locationError && "Missing Entry"}
               />
             )}
           />
@@ -221,19 +215,32 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
       </DialogContent>
 
       <DialogActions>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-          <Button onClick={onCloseWrapper} color="error" variant="contained">
-            Delete
-          </Button>
-          <Box>
+        {
+          initialIsEditing ?
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+            <Button onClick={onCloseWrapper} color="error" variant="contained">
+              Delete
+            </Button>
+            <Box>
+              <Button onClick={onCloseWrapper} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={handleSave} color="primary" variant="contained">
+                Save
+              </Button>
+            </Box>
+          </Box>
+          :
+          <>
             <Button onClick={onCloseWrapper} color="primary">
               Cancel
             </Button>
             <Button onClick={handleSave} color="primary" variant="contained">
               Save
             </Button>
-          </Box>
-        </Box>
+          </>
+        }
+        
       </DialogActions>
     </Dialog>
   );
