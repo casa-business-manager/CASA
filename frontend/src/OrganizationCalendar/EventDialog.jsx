@@ -11,21 +11,22 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 
-const EventDialog = ({ open, onClose, onSave, initialTitle = '', initialDescription = '', initialLocation = '' }) => {
-  const [title, setTitle] = useState(initialTitle);
-  const [description, setDescription] = useState(initialDescription);
-  const [location, setLocation] = useState(initialLocation);
-  const [startTime, setStartTime] = useState(dayjs('2022-04-17T15:30'));
-  const [endTime, setEndTime] = useState(dayjs('2022-04-17T15:30'));
+const EventDialog = ({ open, onClose, onSave, initialStartTime, initialEndTime}) => {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [startTime, setStartTime] = useState(dayjs(initialStartTime));
+  const [endTime, setEndTime] = useState(dayjs(initialEndTime));
+  const [location, setLocation] = useState('');
 
   useEffect(() => {
-    setTitle(initialTitle);
-    setLocation(initialLocation);
-  }, [initialTitle, initialLocation]);
+    setStartTime(dayjs(initialStartTime));
+    setEndTime(dayjs(initialEndTime));
+  }, [initialStartTime, initialEndTime]);
 
   const handleSave = () => {
     onSave(title, location);
     setTitle('');
+    setDescription('');
     setLocation('');
   };
 
@@ -36,6 +37,7 @@ const EventDialog = ({ open, onClose, onSave, initialTitle = '', initialDescript
     <Dialog open={open} onClose={onClose} fullWidth>
       <DialogTitle>New Event</DialogTitle>
       <DialogContent>
+        
         {/* Title */}
         <TextField
           autoFocus
@@ -63,28 +65,30 @@ const EventDialog = ({ open, onClose, onSave, initialTitle = '', initialDescript
         </Box>
 
         {/* Time Picker */}
-        <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-          <AccessTimeFilledIcon sx={{ color: 'action.active', mr: 1, my: 2 }} />
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1.5 }}>
+          <AccessTimeFilledIcon sx={{ color: 'action.active', mr: 1, mt: 2 }} />
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Box sx={{ mr: 2 }}>
+            <Box sx={{ mr: 0 }}>
               <TimePicker
                 label="Start Time"
                 value={startTime}
                 onChange={(newValue) => setStartTime(newValue)}
+                sx={{ width: '60%' }}
               />
             </Box>
-            <Box>
+            <Box sx={{ ml: -12 }}>
               <TimePicker
                 label="End Time"
                 value={endTime}
                 onChange={(newValue) => setEndTime(newValue)}
+                sx={{ width: '60%' }}
               />
             </Box>
           </LocalizationProvider>
         </Box>
 
         {/* Location */}
-        <Box sx={{ display: 'flex', alignItems: 'flex-start'}}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
           <LocationOnIcon sx={{ color: 'action.active', mr: 1, my: 3.5 }} />
           <Autocomplete
             freeSolo
@@ -136,10 +140,11 @@ const EventDialog = ({ open, onClose, onSave, initialTitle = '', initialDescript
             ))}
           </TextField>
         </Box>
+
       </DialogContent>
 
       <DialogActions>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%'}}>
           <Button onClick={onClose} color="error" variant="contained">
             Delete
           </Button>

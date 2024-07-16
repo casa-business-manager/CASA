@@ -34,8 +34,8 @@ const OrganizationCalendar = () => {
         resource: '',
       };
       setTemporaryEvent(fakeTempEventToKeepTheBoxOpen);
-      setBlockTimes({ start, end });
       setDialogOpen(true);
+      setBlockTimes({ start, end });
     },
     []
   );
@@ -198,6 +198,8 @@ const OrganizationCalendar = () => {
         open={dialogOpen} 
         onClose={handleCloseDialog} 
         onSave={handleSaveEvent} 
+        initialStartTime={blockTimes.start}
+        initialEndTime={blockTimes.end}
       />
     </div>
   );
