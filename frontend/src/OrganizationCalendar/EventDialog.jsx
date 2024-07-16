@@ -13,12 +13,16 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 
 // TODO: Integrate delete button with onDelete parameter
-const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = false, isOrganizationCalendar = true}) => {
+const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = false, isOrganizationCalendar = true }) => {
   const [title, setTitle] = useState(initialEvent.title ?? '');
   const [description, setDescription] = useState(initialEvent.description ?? '');
   const [startTime, setStartTime] = useState(dayjs(initialEvent.start));
   const [endTime, setEndTime] = useState(dayjs(initialEvent.end));
   const [location, setLocation] = useState(initialEvent.location ?? '');
+
+  const [titleError, setTitleError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
+  const [locationError, setLocationError] = useState(false);
 
   // TODO: Initialize this to a list of User Objects and email strings depending on accessors
   // Make sure event.eventCreator is the first in the list
@@ -49,25 +53,53 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
   }, [initialIsEditing]);
 
   const handleSave = () => {
-    if (!title || !description || !location) {
-      // TODO: Use Textfield Error colors to show missing fields
-      // TODO: Check End time is after start time
-      console.log("missing some info")
+    let hasError = false;
+
+    if (!title) {
+      setTitleError(true);
+      hasError = true;
+    } else {
+      setTitleError(false);
+    }
+
+    if (!description) {
+      setDescriptionError(true);
+      hasError = true;
+    } else {
+      setDescriptionError(false);
+    }
+
+    if (!location) {
+      setLocationError(true);
+      hasError = true;
+    } else {
+      setLocationError(false);
+    }
+
+    if (hasError) {
       return;
     }
+
     onSave(title, description, location); // Will need people. Maybe org too?
     setTitle('');
     setDescription('');
     setLocation('');
   };
 
+  const onCloseWrapper = () => {
+    onClose();
+    setTitleError(false);
+    setDescriptionError(false);
+    setLocationError(false);
+  }
+
   return (
-    <Dialog open={open} onClose={onClose} fullWidth>
+    <Dialog open={open} onClose={onCloseWrapper} fullWidth>
       <DialogTitle>
         <Box display="flex" alignItems="center">
-          <Box flexGrow={1} >{ isEditing ? "Edit Event" : "New event" }</Box>
+          <Box flexGrow={1}>{isEditing ? "Edit Event" : "New event"}</Box>
           <Box>
-            <IconButton onClick={onClose}>
+            <IconButton onClick={onCloseWrapper}>
               <CloseIcon />
             </IconButton>
           </Box>
@@ -75,7 +107,6 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
       </DialogTitle>
 
       <DialogContent>
-        
         {/* Title */}
         <TextField
           autoFocus
@@ -85,6 +116,8 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
           value={title}
           variant="standard"
           onChange={(e) => setTitle(e.target.value)}
+          error={titleError}
+          helperText={titleError ? "Missing Entry" : ""}
           sx={{ marginBottom: 2 }}
           InputProps={{ sx: { fontSize: '1.5rem' } }}
           InputLabelProps={{ sx: { fontSize: '1.5rem' } }}
@@ -100,7 +133,9 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
             fullWidth
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            variant="standard" // maybe outlined is better?
+            variant="standard"
+            error={descriptionError}
+            helperText={descriptionError ? "Missing Entry" : ""}
           />
         </Box>
 
@@ -146,6 +181,8 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
                 multiline
                 maxRows={2}
                 variant="standard"
+                error={locationError}
+                helperText={locationError ? "Missing Entry" : ""}
               />
             )}
           />
@@ -184,12 +221,12 @@ const EventDialog = ({ open, onClose, onSave, initialEvent, initialIsEditing = f
       </DialogContent>
 
       <DialogActions>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%'}}>
-          <Button onClick={onClose} color="error" variant="contained">
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <Button onClick={onCloseWrapper} color="error" variant="contained">
             Delete
           </Button>
           <Box>
-            <Button onClick={onClose} color="primary">
+            <Button onClick={onCloseWrapper} color="primary">
               Cancel
             </Button>
             <Button onClick={handleSave} color="primary" variant="contained">
