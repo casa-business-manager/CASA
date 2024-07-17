@@ -12,7 +12,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 
-const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsEditing = false, isOrganizationCalendar = true , knownPeople }) => {
+const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, initialIsEditing = false, isOrganizationCalendar = true , knownPeople }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startTime, setStartTime] = useState(dayjs());
@@ -42,7 +42,7 @@ const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsE
     setPeople(initialEvent.eventAccessors ?? []);
   }, [initialEvent]);
 
-  const handleSave = () => {
+  const handleBackend = (isEdit = false) => {
     let hasError = false;
 
     if (!title) {
@@ -67,9 +67,15 @@ const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsE
       return;
     }
 
-    onSave(title, description, startTime.toDate(), endTime.toDate(), location, people);
+    const saveFunction = isEdit ? onEdit(initialEvent.eventId) : onSave;
+    saveFunction(title, description, startTime.toDate(), endTime.toDate(), location, people);
+    
     onCloseWrapper();
   };
+
+  const handleSave = () => handleBackend(false); 
+
+  const handleEdit = () => handleBackend(true);
 
   const handleAddPerson = (e, newUserList) => {
     setPeople(newUserList);
@@ -268,7 +274,7 @@ const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsE
               <Button onClick={onCloseWrapper} color="primary">
                 Cancel
               </Button>
-              <Button onClick={handleSave} color="primary" variant="contained">
+              <Button onClick={handleEdit} color="primary" variant="contained">
                 Save
               </Button>
             </Box>

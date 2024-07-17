@@ -98,7 +98,7 @@ const OrganizationCalendar = () => {
     [currentUser]
   );
 
-  const handleSaveEvent = useCallback(
+  const saveEvent = (apiFunction, id) => 
     async (title, description, startTime, endTime, location, people) => {
       if (!currentUser) return;
 
@@ -116,16 +116,19 @@ const OrganizationCalendar = () => {
           eventAccessorIds: peopleIds
         };
 
-        const createdEvent = await createEvent(orgId, newEvent);
-        setEvents((prev) => 
-          [
-            ...prev, 
-            {
-              ...createdEvent,
-              start: moment(createdEvent.start).local().toDate(),  // Converting to local time
-              end: moment(createdEvent.end).local().toDate()      // Converting to local time
-            }
-          ]
+        const createdEvent = await apiFunction(id, newEvent);
+
+        setEvents((prev) => {
+            const filterOutCurrentEvent = prev.filter(event => event.eventId !== createdEvent.eventId);
+            return [
+              ...filterOutCurrentEvent, 
+              {
+                ...createdEvent,
+                start: moment(createdEvent.start).local().toDate(),  // Converting to date
+                end: moment(createdEvent.end).local().toDate()      // Converting to date
+              }
+            ];
+          }
         );
       } catch (error) {
         console.error('Error creating event:', error);
@@ -133,8 +136,16 @@ const OrganizationCalendar = () => {
         setDialogOpen(false);
         setTemporaryEvent(null);
       }
-    },
-    [orgId, blockTimes, setEvents, currentUser]
+    }
+
+  const handleSaveEvent = useCallback(
+    saveEvent(createEvent, orgId), 
+    [blockTimes]
+  );
+
+  const handleEditEvent = useCallback(
+    (eventId) => saveEvent(updateEvent, eventId), 
+    [blockTimes]
   );
 
   const handleCloseDialog = useCallback(() => {
@@ -242,6 +253,7 @@ const OrganizationCalendar = () => {
         open={dialogOpen} 
         onClose={handleCloseDialog} 
         onSave={handleSaveEvent}
+        onEdit={handleEditEvent}
         onDelete={handleDeleteEvent}
         initialEvent={menuEvent}
         initialIsEditing={editMenu}

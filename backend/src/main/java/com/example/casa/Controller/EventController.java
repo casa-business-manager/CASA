@@ -113,6 +113,7 @@ public class EventController {
         }
         
         event = eventRepository.save(event);
+
         return ResponseEntity.ok(event);
     }
 
