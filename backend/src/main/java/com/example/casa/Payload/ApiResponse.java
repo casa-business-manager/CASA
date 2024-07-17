@@ -1,6 +1,7 @@
 package com.example.casa.Payload;
 
 public class ApiResponse {
+
     private boolean success;
     private String message;
 
@@ -25,4 +26,3 @@ public class ApiResponse {
         this.message = message;
     }
 }
-

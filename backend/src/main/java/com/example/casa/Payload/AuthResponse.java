@@ -1,11 +1,16 @@
 package com.example.casa.Payload;
 
 public class AuthResponse {
+
     private String accessToken;
     private String tokenType = "Bearer";
 
     public AuthResponse(String accessToken) {
         this.accessToken = accessToken;
+    }
+
+    public AuthResponse() {
+        // Default constructor required by Jackson
     }
 
     public String getAccessToken() {

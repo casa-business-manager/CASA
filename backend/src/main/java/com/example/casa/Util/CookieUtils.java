@@ -1,6 +1,5 @@
 package com.example.casa.Util;
 
-
 import org.springframework.util.SerializationUtils;
 
 import jakarta.servlet.http.Cookie;
@@ -39,7 +38,7 @@ public class CookieUtils {
     public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null && cookies.length > 0) {
-            for (Cookie cookie: cookies) {
+            for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(name)) {
                     cookie.setValue("");
                     cookie.setPath("/");
@@ -57,8 +56,7 @@ public class CookieUtils {
 
     public static <T> T deserialize(Cookie cookie, Class<T> cls) {
         return cls.cast(SerializationUtils.deserialize(
-                        Base64.getUrlDecoder().decode(cookie.getValue())));
+                Base64.getUrlDecoder().decode(cookie.getValue())));
     }
-
 
 }

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
+
     @Autowired
     private TokenProvider tokenProvider;
 

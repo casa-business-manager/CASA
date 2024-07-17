@@ -1,6 +1,7 @@
 package com.example.casa.Payload;
 
 public class OrganizationDto {
+
     private String orgName;
     private String orgDescription;
     private String orgLocation;
@@ -29,4 +30,3 @@ public class OrganizationDto {
         this.orgLocation = orgLocation;
     }
 }
-

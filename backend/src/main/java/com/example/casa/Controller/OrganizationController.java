@@ -36,7 +36,7 @@ public class OrganizationController {
     @GetMapping("/user/{userId}/organizations")
     public ResponseEntity<?> getOrganizationsForUser(@PathVariable String userId) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
         Set<Organization> organizations = user.getOrganizations();
         if (organizations.isEmpty()) {
@@ -49,14 +49,14 @@ public class OrganizationController {
     @PostMapping("/user/{userId}/organizations")
     public ResponseEntity<?> createOrganizationForUser(@PathVariable String userId, @RequestBody OrganizationDto organizationDto) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
         Organization organization = new Organization();
         organization.setOrgName(organizationDto.getOrgName());
         organization.setOrgDescription(organizationDto.getOrgDescription());
         organization.setOrgLocation(organizationDto.getOrgLocation());
-        organization.getUsers().add(user); 
-        user.getOrganizations().add(organization); 
+        organization.getUsers().add(user);
+        user.getOrganizations().add(organization);
 
         organizationRepository.save(organization);
         userRepository.save(user); // Save user to update the relationship
@@ -65,14 +65,13 @@ public class OrganizationController {
         System.out.println("Organization created: " + organization.getOrgName());
         System.out.println("User organizations: " + user.getOrganizations().size());
 
-
         return ResponseEntity.ok(organization);
     }
 
     @PutMapping("/organization/{id}")
     public ResponseEntity<?> updateOrganization(@PathVariable String id, @RequestBody OrganizationDto organizationDto) {
         Organization organization = organizationRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Organization not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Organization not found with id: " + id));
 
         organization.setOrgName(organizationDto.getOrgName());
         organization.setOrgDescription(organizationDto.getOrgDescription());
@@ -85,17 +84,16 @@ public class OrganizationController {
     @DeleteMapping("/organization/{id}")
     public ResponseEntity<?> deleteOrganization(@PathVariable String id) {
         Organization organization = organizationRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Organization not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Organization not found with id: " + id));
 
         organizationRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
 
-
     @GetMapping("/organization/{id}/users")
     public ResponseEntity<?> getUsersInOrganization(@PathVariable String id) {
         Organization organization = organizationRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Organization not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Organization not found with id: " + id));
 
         Set<User> users = organization.getUsers();
         return ResponseEntity.ok(users);
@@ -104,13 +102,13 @@ public class OrganizationController {
     @PostMapping("/organization/{orgId}/invite")
     public ResponseEntity<?> inviteUserToOrganization(@PathVariable String orgId, @RequestParam String email) {
         Organization organization = organizationRepository.findById(orgId)
-            .orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
+                .orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
 
         User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
-        organization.getUsers().add(user); 
-        user.getOrganizations().add(organization); 
+        organization.getUsers().add(user);
+        user.getOrganizations().add(organization);
 
         organizationRepository.save(organization);
         userRepository.save(user);
@@ -121,10 +119,10 @@ public class OrganizationController {
     @DeleteMapping("/organization/{orgId}/user/{userId}")
     public ResponseEntity<?> removeUserFromOrganization(@PathVariable String orgId, @PathVariable String userId) {
         Organization organization = organizationRepository.findById(orgId)
-            .orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
+                .orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
 
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
         organization.getUsers().remove(user);
         user.getOrganizations().remove(organization);
@@ -132,7 +130,6 @@ public class OrganizationController {
         organizationRepository.save(organization);
         userRepository.save(user);
 
-        return ResponseEntity.ok(new ApiResponse(true, "User deleted successfully"));  
+        return ResponseEntity.ok(new ApiResponse(true, "User deleted successfully"));
     }
 }
-

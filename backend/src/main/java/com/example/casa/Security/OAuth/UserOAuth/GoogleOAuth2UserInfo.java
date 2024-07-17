@@ -1,4 +1,5 @@
 package com.example.casa.Security.OAuth.UserOAuth;
+
 import java.util.Map;
 
 public class GoogleOAuth2UserInfo extends OAuth2UserInfo {
