@@ -11,6 +11,7 @@ import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { getCalendarData, getCurrentUser, createEvent, updateEvent, deleteEvent } from '../APIUtils/APIUtils';
 import EventDialog from './EventDialog';
+import { getUsersInOrganization } from '../APIUtils/APIUtils';
 
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(Calendar);
@@ -25,6 +26,7 @@ const OrganizationCalendar = () => {
   const [temporaryEvent, setTemporaryEvent] = useState(null); // shows on the calendar
   const [menuEvent, setMenuEvent] = useState({}); // passed to the menu
   const [editMenu, setEditMenu] = useState(false); // passed to the menu
+  const [orgPeople, setOrgPeople] = useState([]);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -59,6 +61,19 @@ const OrganizationCalendar = () => {
 
     fetchData();
   }, [orgId, currentUser]);
+  
+  useEffect(() => {
+    const fetchPeople = async () => {
+      const response = await getUsersInOrganization(orgId);
+      const orgPeopleWithNames = response.map(user => ({
+        ...user,
+        fullName: `${user.firstName} ${user.lastName}`
+      }));
+      setOrgPeople(orgPeopleWithNames);
+    }
+
+    fetchPeople();
+  }, [orgId]);
 
   const handleSelectSlot = useCallback(
     ({ start, end }) => {
@@ -71,8 +86,8 @@ const OrganizationCalendar = () => {
         end: moment(end).local().toDate(),
         allDay: false,
         description: '',
-        eventCreatorId: currentUser.id,
-        eventAccessorIds: [currentUser.id]
+        eventCreator: currentUser,
+        eventAccessors: [currentUser]
       };
       setTemporaryEvent(fakeTempEventToKeepTheBoxOpen);
       setMenuEvent(fakeTempEventToKeepTheBoxOpen);
@@ -87,6 +102,8 @@ const OrganizationCalendar = () => {
     async (title, description, startTime, endTime, location, people) => {
       if (!currentUser) return;
 
+      const peopleIds = people.map(person => person.id);
+
       try {
         const newEvent = {
           title,
@@ -96,7 +113,7 @@ const OrganizationCalendar = () => {
           end: moment(endTime).format(),      // ISO time includes time zone so it is fine
           allDay: false,
           eventCreatorId: currentUser.id,
-          eventAccessorIds: people
+          eventAccessorIds: peopleIds
         };
 
         const createdEvent = await createEvent(orgId, newEvent);
@@ -230,6 +247,7 @@ const OrganizationCalendar = () => {
         initialIsEditing={editMenu}
         organizationId={orgId}
         currentUser={currentUser}
+        knownPeople={orgPeople}
       />
     </div>
   );

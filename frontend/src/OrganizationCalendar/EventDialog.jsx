@@ -11,20 +11,18 @@ import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ApartmentIcon from '@mui/icons-material/Apartment';
-import { getUsersInOrganization } from '../APIUtils/APIUtils';
 
-const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsEditing = false, isOrganizationCalendar = true , organizationId, currentUser }) => {
+const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsEditing = false, isOrganizationCalendar = true , knownPeople }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startTime, setStartTime] = useState(dayjs());
   const [endTime, setEndTime] = useState(dayjs());
   const [location, setLocation] = useState('');
+  const [people, setPeople] = useState([]);
 
   const [titleError, setTitleError] = useState(false);
   const [locationError, setLocationError] = useState(false);
   const [deleteConfirmed, setDeleteConfirmed] = useState(false);
-  const [people, setPeople] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
 
   // TODO:
   // Display organization selection if and only if on personal calendar
@@ -36,34 +34,13 @@ const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsE
   const [meetingLocations, setMeetingLocations] = useState(["Location 1", "Location 2", "Location 3"]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await getUsersInOrganization(organizationId);
-        const usersWithFullName = response.map(user => ({
-          ...user,
-          fullName: `${user.firstName} ${user.lastName}`
-        }));
-        setAllUsers(usersWithFullName);
-
-        // Set default people based on initialEvent.eventAccessorIds
-        if (initialEvent && initialEvent.eventAccessorIds) {
-          const defaultPeople = usersWithFullName.filter(user =>
-            initialEvent.eventAccessorIds.includes(user.id)
-          ).map(user => user.id);
-          setPeople(defaultPeople);
-        }
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-
-    if (open) {
-      fetchUsers();
-      if (!initialIsEditing && currentUser) {
-        setPeople([currentUser.id]);
-      }
-    }
-  }, [open, initialEvent, initialIsEditing, organizationId, currentUser]);
+    setTitle(initialEvent.title ?? '');
+    setDescription(initialEvent.description ?? '');
+    setStartTime(dayjs(initialEvent.start));
+    setEndTime(dayjs(initialEvent.end));
+    setLocation(initialEvent.location ?? '');
+    setPeople(initialEvent.eventAccessors ?? []);
+  }, [initialEvent]);
 
   const handleSave = () => {
     let hasError = false;
@@ -94,19 +71,12 @@ const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsE
     onCloseWrapper();
   };
 
-  const handleAddPerson = (event, newValue) => {
-    const validUsers = newValue.filter(value => {
-      const user = allUsers.find(user => user.fullName.toLowerCase() === value.toLowerCase());
-      return user && !people.includes(user.id);
-    }).map(value => {
-      return allUsers.find(user => user.fullName.toLowerCase() === value.toLowerCase()).id;
-    });
-
-    setPeople(prevPeople => [...new Set([...prevPeople, ...validUsers])]);
+  const handleAddPerson = (e, newUserList) => {
+    setPeople(newUserList);
   };
 
   const handleDeletePerson = (userId) => {
-    setPeople(people.filter(id => id !== userId));
+    setPeople(people.filter(person => person.id !== userId));
   };
 
   const onCloseWrapper = () => {
@@ -115,6 +85,8 @@ const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsE
     setLocationError(false);
     setDeleteConfirmed(false);
   }
+
+  const getUserFullName = (userObject) => userObject.firstName + ' ' + userObject.lastName;
 
   return (
     <Dialog open={open} onClose={onCloseWrapper} fullWidth>
@@ -223,16 +195,16 @@ const EventDialog = ({ open, onClose, onSave, onDelete, initialEvent, initialIsE
             multiple
             freeSolo
             disableClearable
-            options={allUsers.map(user => user.fullName)}
-            getOptionLabel={(option) => option}
-            value={allUsers.filter(user => people.includes(user.id)).map(user => user.fullName)}
+            options={knownPeople}
+            getOptionLabel={(option) => getUserFullName(option)}
+            value={knownPeople.filter(user => people.map(user => user.id).includes(user.id))}
             onChange={handleAddPerson}
             renderTags={(value, getTagProps) =>
-              value.map((option, index) => {
-                const user = allUsers.find(user => user.fullName === option);
+              value.map((user, index) => {
                 return (
                   <Chip
-                    label={option}
+                    key={user.id}
+                    label={getUserFullName(user)}
                     {...getTagProps({ index })}
                     onDelete={() => handleDeletePerson(user.id)}
                   />
