@@ -7,5 +7,6 @@
 		"ms-azuretools.vscode-docker",
 		"github.vscode-github-actions",
 		"ms-vsliveshare.vsliveshare",
+		"esbenp.prettier-vscode",
 	]
 }
