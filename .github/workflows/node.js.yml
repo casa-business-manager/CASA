@@ -3,7 +3,13 @@
 
 name: Node.js CI
 
-on: [push, workflow_dispatch]
+on: 
+  push:
+    paths:
+      - 'frontend/**'
+  workflow_dispatch:
+    paths:
+      - 'frontend/**'
 
 env: 
   CI: false # to not treat warnings as failures
