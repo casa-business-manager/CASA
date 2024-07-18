@@ -33,6 +33,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
 RUN sudo -E bash nodesource_setup.sh
 RUN sudo apt-get install -y nodejs
 
-# Useful commands
+# Useful shortcuts
 RUN alias kill3000="fuser -k -n tcp 3000"
 RUN alias kill8080="fuser -k -n tcp 8080"
+RUN alias resetDB="sudo mariadb -e 'DROP DATABASE casa;'; sudo mariadb -e 'CREATE DATABASE casa;'"

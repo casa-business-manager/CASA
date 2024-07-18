@@ -3,5 +3,14 @@
 	"java.configuration.updateBuildConfiguration": "interactive",
 	"editor.formatOnSave": true,
 	"editor.defaultFormatter": "Oracle.oracle-java",
-	"java.format.settings.url": "backend/eclipse-formatter.xml"
+	"java.format.settings.url": "backend/eclipse-formatter.xml",
+	"[javascriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[css]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	}
 }
