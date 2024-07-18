@@ -46,9 +46,6 @@ public class EventController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
 
-        System.out.println(12345);
-        System.out.println(startDate);
-        System.out.println(endDate);
         // Verify organization exists
         Organization organization = organizationRepository.findById(orgId)
                 .orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
@@ -75,7 +72,6 @@ public class EventController {
             endDate = cal.getTime();
         }
 
-        System.out.println("fetching");
         // Fetch events for the calendar and user within the specified date range
         Set<Event> events = eventRepository.findByOrganizationAndEventAccessorsContainingAndStartBetween(organization, user, startDate, endDate);
 
@@ -83,7 +79,6 @@ public class EventController {
             events = new HashSet<>();
         }
 
-        System.out.println("returning");
         return ResponseEntity.ok(new CalendarResponse(events));
     }
 

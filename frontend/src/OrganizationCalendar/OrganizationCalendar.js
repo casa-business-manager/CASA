@@ -275,7 +275,7 @@ const OrganizationCalendar = () => {
       <DragAndDropCalendar
         localizer={localizer}
         selectable
-        onSelectEvent={handleSelectEvent} 
+        onSelectEvent={handleSelectEvent}
         onSelectSlot={handleSelectSlot}
         events={deleteDuplicates([...events, temporaryEvent].filter(Boolean).map(event => ({
           eventId: event.eventId,
