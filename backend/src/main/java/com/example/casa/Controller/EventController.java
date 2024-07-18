@@ -1,5 +1,6 @@
 package com.example.casa.Controller;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,8 +43,12 @@ public class EventController {
     @GetMapping("/organizationCalendar/{orgId}/userId/{userId}")
     public ResponseEntity<?> getCalendarData(@PathVariable String orgId,
             @PathVariable String userId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
+
+        System.out.println(12345);
+        System.out.println(startDate);
+        System.out.println(endDate);
         // Verify organization exists
         Organization organization = organizationRepository.findById(orgId)
                 .orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
@@ -54,9 +59,23 @@ public class EventController {
 
         // Check if user is part of the organization
         if (!organization.getUsers().contains(user)) {
+            // What exception do we use?
             return ResponseEntity.status(403).body(new ApiResponse(false, "User does not have access to this organization's calendar"));
         }
 
+        // If start or end is not given, the query is unbounded
+        if (startDate == null) {
+            startDate = new Date(0);
+        }
+        if (endDate == null) {
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.YEAR, 9999);
+            cal.set(Calendar.MONTH, Calendar.DECEMBER);
+            cal.set(Calendar.DAY_OF_MONTH, 31);
+            endDate = cal.getTime();
+        }
+
+        System.out.println("fetching");
         // Fetch events for the calendar and user within the specified date range
         Set<Event> events = eventRepository.findByOrganizationAndEventAccessorsContainingAndStartBetween(organization, user, startDate, endDate);
 
@@ -64,6 +83,7 @@ public class EventController {
             events = new HashSet<>();
         }
 
+        System.out.println("returning");
         return ResponseEntity.ok(new CalendarResponse(events));
     }
 

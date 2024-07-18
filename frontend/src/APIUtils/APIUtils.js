@@ -61,9 +61,9 @@ export function signup(signupRequest) {
     });
 }
 
-export function getCalendarData(orgId, userId) {
+export function getCalendarData(orgId, userId, startDate=null, endDate=null) {
     return request({
-        url: API_BASE_URL + `/organizationCalendar/${orgId}/userId/${userId}`,
+        url: API_BASE_URL + `/organizationCalendar/${orgId}/userId/${userId}?${startDate ? "startDate="+startDate : ""}&${endDate ? "endDate="+endDate : ""}`,
         method: 'GET'
     });
 }
