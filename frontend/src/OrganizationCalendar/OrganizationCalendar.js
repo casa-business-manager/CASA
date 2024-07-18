@@ -58,21 +58,13 @@ const OrganizationCalendar = () => {
     }
 
     fetchPeople();
-  }, [orgId]);
+  }, [orgId]); 
 
   const fetchData = async (startDate=null, endDate=null) => {
     try {
       const calendarData = await getCalendarData(orgId, currentUser.id, startDate, endDate);
-      console.log("events", events);
-      console.log("mapped Data", calendarData.events.map(event => (
-        {
-          ...event,
-          start: moment(event.start).local().toDate(),
-          end: moment(event.end).local().toDate()
-        }
-      )));
-      console.log("combined", [
-        ...events,
+      const combinedEvents = [
+        ...events, 
         ...calendarData.events.map(event => (
           {
             ...event,
@@ -80,19 +72,9 @@ const OrganizationCalendar = () => {
             end: moment(event.end).local().toDate()
           }
         ))
-      ])
-      setEvents(
-        [
-          ...events, 
-          ...calendarData.events.map(event => (
-            {
-              ...event,
-              start: moment(event.start).local().toDate(),
-              end: moment(event.end).local().toDate()
-            }
-          ))
-        ]
-      );
+      ];
+      const deduplicated = deleteDuplicates(combinedEvents);
+      setEvents(deduplicated);
     } catch (error) {
       console.error('Error fetching calendar data:', error);
     } finally {
@@ -243,18 +225,6 @@ const OrganizationCalendar = () => {
     [setEvents]
   );
 
-  function getCalendarBlock (date) {
-    // find the first day of the month -> find the sunday before/on that
-    const firstDayMonth = moment(date).startOf('month');
-    
-    // 5 week block
-    // todo: test with daylight savings time
-    const calendarBlockStart = moment(firstDayMonth).startOf('week');
-    const calendarBlockEnd = moment(calendarBlockStart).add(4, 'weeks').endOf('week');
-
-    return {start: calendarBlockStart.toDate(), end: calendarBlockEnd.toDate()};
-  }
-
   const handleRangeChange = async (range) => {
       const startDate = moment(range.start || range[0]).startOf('day').toDate();
       const endDate = moment(range.end || range[range.length - 1]).endOf('day').toDate();
@@ -279,6 +249,22 @@ const OrganizationCalendar = () => {
         });
       }
   }
+  
+  function getCalendarBlock (date) {
+    // find the first day of the month -> find the sunday before/on that
+    const firstDayMonth = moment(date).startOf('month');
+    
+    // 5 week block
+    // todo: test with daylight savings time
+    const calendarBlockStart = moment(firstDayMonth).startOf('week');
+    const calendarBlockEnd = moment(calendarBlockStart).add(4, 'weeks').endOf('week');
+
+    return {start: calendarBlockStart.toDate(), end: calendarBlockEnd.toDate()};
+  }
+
+  function deleteDuplicates(list) {
+    return list.filter((item, pos) => list.findIndex(x => x.eventId === item.eventId) == pos);
+  }
 
   if (loading || !currentUser) {
     return <div>Loading...</div>;
@@ -289,9 +275,9 @@ const OrganizationCalendar = () => {
       <DragAndDropCalendar
         localizer={localizer}
         selectable
-        onSelectEvent={handleSelectEvent}
+        onSelectEvent={handleSelectEvent} 
         onSelectSlot={handleSelectSlot}
-        events={[...events, temporaryEvent].filter(Boolean).map(event => ({
+        events={deleteDuplicates([...events, temporaryEvent].filter(Boolean).map(event => ({
           eventId: event.eventId,
           title: event.title,
           description: event.description,
@@ -302,7 +288,7 @@ const OrganizationCalendar = () => {
           organization: event.organization,
           eventCreator: event.eventCreator,
           eventAccessors: event.eventAccessors
-        }))}
+        })))}
         defaultDate={moment().toDate()}
         defaultView={Views.WEEK}
         style={{ height: '100vh' }}
