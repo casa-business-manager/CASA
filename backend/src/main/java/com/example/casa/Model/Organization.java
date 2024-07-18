@@ -6,6 +6,18 @@ import java.util.Set;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,6 +29,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "organization")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Organization {
 
     @Id
@@ -35,10 +48,13 @@ public class Organization {
     private String orgLocation;
 
     @ManyToMany(mappedBy = "organizations", fetch = FetchType.LAZY)
-    @JsonBackReference(value = "userOrgs")
+    @JsonManagedReference("user-organizations")
     private Set<User> users = new HashSet<>();
 
-    // Default constructor
+    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonBackReference("event-organization")
+    private Set<Event> events = new HashSet<>();
+  
     public Organization() {
         this.users = new HashSet<>();
     }
@@ -89,5 +105,13 @@ public class Organization {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public Set<Event> getEvents() {
+        return events;
+    }
+
+    public void setEvents(Set<Event> events) {
+        this.events = events;
     }
 }

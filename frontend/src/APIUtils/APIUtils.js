@@ -61,6 +61,36 @@ export function signup(signupRequest) {
     });
 }
 
+export function getCalendarData(orgId, userId, startDate=null, endDate=null) {
+    return request({
+        url: API_BASE_URL + `/organizationCalendar/${orgId}/userId/${userId}?${startDate ? "startDate="+startDate : ""}&${endDate ? "endDate="+endDate : ""}`,
+        method: 'GET'
+    });
+}
+
+export function createEvent(orgId, eventRequest) {
+    return request({
+        url: API_BASE_URL + `/organization/${orgId}/event`,
+        method: 'POST',
+        body: JSON.stringify(eventRequest)
+    });
+}
+
+export function updateEvent(eventId, eventRequest) {
+    return request({
+        url: API_BASE_URL + `/event/${eventId}`,
+        method: 'PUT',
+        body: JSON.stringify(eventRequest)
+    });
+}
+
+export function deleteEvent(eventId) {
+    return request({
+        url: API_BASE_URL + `/event/${eventId}`,
+        method: 'DELETE'
+    });
+}
+
 export function createOrganization(organizationRequest) {
     return getCurrentUser()
         .then(user => {

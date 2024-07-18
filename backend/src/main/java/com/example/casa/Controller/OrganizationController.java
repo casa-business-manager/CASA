@@ -1,19 +1,23 @@
 package com.example.casa.Controller;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.casa.Model.Organization;
 import com.example.casa.Model.User;
 import com.example.casa.Payload.ApiResponse;
 import com.example.casa.Payload.OrganizationDto;
+import com.example.casa.Repository.EventRepository;
 import com.example.casa.Repository.OrganizationRepository;
 import com.example.casa.Repository.UserRepository;
 
@@ -25,6 +29,9 @@ public class OrganizationController {
 
     @Autowired
     private OrganizationRepository organizationRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
 
     @GetMapping("/user/{userId}/organizations")
     public ResponseEntity<?> getOrganizationsForUser(@PathVariable String userId) {

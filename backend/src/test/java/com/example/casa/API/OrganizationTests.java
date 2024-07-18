@@ -151,7 +151,8 @@ public class OrganizationTests {
                 .andExpect(jsonPath("$.orgDescription").value("Not cooking meth"))
                 .andExpect(jsonPath("$.orgLocation").value("Albuquerque"))
                 .andExpect(jsonPath("$.orgId").exists())
-                .andExpect(jsonPath("$.users").doesNotExist());
+                .andExpect(jsonPath("$.users").exists())
+                .andExpect(jsonPath("$.users[0].id").value(waltId));
 
         // get new org
         ResultActions newOrg = mockMvc.perform(MockMvcRequestBuilders.get("/user/" + waltId + "/organizations")
@@ -162,7 +163,8 @@ public class OrganizationTests {
                 .andExpect(jsonPath("$[0].orgDescription").value("Not cooking meth"))
                 .andExpect(jsonPath("$[0].orgLocation").value("Albuquerque"))
                 .andExpect(jsonPath("$[0].orgId").exists())
-                .andExpect(jsonPath("$[0].users").doesNotExist());
+                .andExpect(jsonPath("$[0].users").exists())
+                .andExpect(jsonPath("$[0].users[0].id").value(waltId));
         String orgId = extractJsonString(newOrg.andReturn().getResponse().getContentAsString(), "orgId");
 
         // update org
@@ -180,7 +182,8 @@ public class OrganizationTests {
                 .andExpect(jsonPath("$.orgDescription").value("Make meth"))
                 .andExpect(jsonPath("$.orgLocation").value("Albuquerque"))
                 .andExpect(jsonPath("$.orgId").exists())
-                .andExpect(jsonPath("$.users").doesNotExist());
+                .andExpect(jsonPath("$.users").exists())
+                .andExpect(jsonPath("$.users[0].id").value(waltId));
 
         // Get users - only Walter is in
         mockMvc.perform(MockMvcRequestBuilders.get("/organization/" + orgId + "/users")
