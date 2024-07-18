@@ -8,8 +8,6 @@ on:
     paths:
       - 'frontend/**'
   workflow_dispatch:
-    paths:
-      - 'frontend/**'
 
 env: 
   CI: false # to not treat warnings as failures

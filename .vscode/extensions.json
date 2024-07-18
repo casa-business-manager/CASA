@@ -4,5 +4,8 @@
 		"visualstudioexptteam.intellicode-api-usage-examples",
 		"vmware.vscode-spring-boot",
 		"oracle.oracle-java",
+		"ms-azuretools.vscode-docker",
+		"github.vscode-github-actions",
+		"ms-vsliveshare.vsliveshare",
 	]
 }
