@@ -13,8 +13,8 @@ RUN apt-get clean && apt-get update && apt-get install -y \
 # install java jdk
 RUN wget https://download.oracle.com/java/22/latest/jdk-22_linux-x64_bin.tar.gz \
   && tar -xvf jdk-22_linux-x64_bin.tar.gz
-RUN mv jdk-22.0.1 /opt/
-ENV JAVA_HOME=/opt/jdk-22.0.1
+RUN mv jdk-22.0.2 /opt/
+ENV JAVA_HOME=/opt/jdk-22.0.2
 ENV PATH="$JAVA_HOME/bin:$PATH"
 	# do not use curly braces like ${PATH} because that's apparantly the host OS's PATH variable, not the container's
 
@@ -29,7 +29,7 @@ ENV PATH="$M2_HOME/bin:$PATH"
 # TODO: run db in its own container, and expose the ports
 
 # install npm and libraries
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x -o nodesource_setup.sh
 RUN sudo -E bash nodesource_setup.sh
 RUN sudo apt-get install -y nodejs
 
