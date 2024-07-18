@@ -27,6 +27,7 @@ const OrganizationCalendar = () => {
   const [menuEvent, setMenuEvent] = useState({}); // passed to the menu
   const [editMenu, setEditMenu] = useState(false); // passed to the menu
   const [orgPeople, setOrgPeople] = useState([]);
+  const [loadedRanges, setLoadedRanges] = useState(getCalendarBlock(moment().toDate()));
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -43,23 +44,7 @@ const OrganizationCalendar = () => {
 
   useEffect(() => {
     if (!currentUser) return;
-
-    const fetchData = async () => {
-      try {
-        const calendarData = await getCalendarData(orgId, currentUser.id);
-        setEvents(calendarData.events.map(event => ({
-          ...event,
-          start: moment(event.start).local().toDate(),
-          end: moment(event.end).local().toDate()
-        })));
-      } catch (error) {
-        console.error('Error fetching calendar data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    fetchData(loadedRanges.start.toISOString(), loadedRanges.end.toISOString());
   }, [orgId, currentUser]);
   
   useEffect(() => {
@@ -74,6 +59,46 @@ const OrganizationCalendar = () => {
 
     fetchPeople();
   }, [orgId]);
+
+  const fetchData = async (startDate=null, endDate=null) => {
+    try {
+      const calendarData = await getCalendarData(orgId, currentUser.id, startDate, endDate);
+      console.log("events", events);
+      console.log("mapped Data", calendarData.events.map(event => (
+        {
+          ...event,
+          start: moment(event.start).local().toDate(),
+          end: moment(event.end).local().toDate()
+        }
+      )));
+      console.log("combined", [
+        ...events,
+        ...calendarData.events.map(event => (
+          {
+            ...event,
+            start: moment(event.start).local().toDate(),
+            end: moment(event.end).local().toDate()
+          }
+        ))
+      ])
+      setEvents(
+        [
+          ...events, 
+          ...calendarData.events.map(event => (
+            {
+              ...event,
+              start: moment(event.start).local().toDate(),
+              end: moment(event.end).local().toDate()
+            }
+          ))
+        ]
+      );
+    } catch (error) {
+      console.error('Error fetching calendar data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSelectSlot = useCallback(
     ({ start, end }) => {
@@ -218,6 +243,43 @@ const OrganizationCalendar = () => {
     [setEvents]
   );
 
+  function getCalendarBlock (date) {
+    // find the first day of the month -> find the sunday before/on that
+    const firstDayMonth = moment(date).startOf('month');
+    
+    // 5 week block
+    // todo: test with daylight savings time
+    const calendarBlockStart = moment(firstDayMonth).startOf('week');
+    const calendarBlockEnd = moment(calendarBlockStart).add(4, 'weeks').endOf('week');
+
+    return {start: calendarBlockStart.toDate(), end: calendarBlockEnd.toDate()};
+  }
+
+  const handleRangeChange = async (range) => {
+      const startDate = moment(range.start || range[0]).startOf('day').toDate();
+      const endDate = moment(range.end || range[range.length - 1]).endOf('day').toDate();
+
+      if (startDate < loadedRanges.start) {
+        const firstDayBlock = getCalendarBlock(startDate);
+        console.log("handleRangeChange firstDayBlock", firstDayBlock.start.toISOString())
+        console.log("handleRangeChange firstDayBlock type", typeof(firstDayBlock.start.toISOString()))
+        await fetchData(firstDayBlock.start.toISOString(), loadedRanges.start.toISOString());
+        setLoadedRanges(oldLoadedRange => {
+          oldLoadedRange.start = firstDayBlock.start;
+          return oldLoadedRange;
+        });
+      }
+
+      if (endDate > loadedRanges.end) {
+        const lastDayBlock = getCalendarBlock(endDate);
+        await fetchData(loadedRanges.end.toISOString(), lastDayBlock.end.toISOString());
+        setLoadedRanges(oldLoadedRange => {
+          oldLoadedRange.end = lastDayBlock.end;
+          return oldLoadedRange;
+        });
+      }
+  }
+
   if (loading || !currentUser) {
     return <div>Loading...</div>;
   }
@@ -242,12 +304,13 @@ const OrganizationCalendar = () => {
           eventAccessors: event.eventAccessors
         }))}
         defaultDate={moment().toDate()}
-        defaultView={Views.MONTH}
+        defaultView={Views.WEEK}
         style={{ height: '100vh' }}
         onEventDrop={moveEvent}
         onEventResize={resizeEvent}
         popup
         resizable
+        onRangeChange={handleRangeChange}
       />
       <EventDialog 
         open={dialogOpen} 
