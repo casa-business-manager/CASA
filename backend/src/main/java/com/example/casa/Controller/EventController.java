@@ -1,9 +1,11 @@
 package com.example.casa.Controller;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.casa.Model.Event;
@@ -37,22 +40,25 @@ public class EventController {
     private EventRepository eventRepository;
 
     @GetMapping("/organizationCalendar/{orgId}/userId/{userId}")
-    public ResponseEntity<?> getCalendarData(@PathVariable String orgId, @PathVariable String userId) {
+    public ResponseEntity<?> getCalendarData(@PathVariable String orgId,
+            @PathVariable String userId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
         // Verify organization exists
         Organization organization = organizationRepository.findById(orgId)
-            .orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
+                .orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
 
         // Verify user exists
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
         // Check if user is part of the organization
         if (!organization.getUsers().contains(user)) {
             return ResponseEntity.status(403).body(new ApiResponse(false, "User does not have access to this organization's calendar"));
         }
 
-        // Fetch events for the calendar and user
-        Set<Event> events = eventRepository.findByOrganizationAndEventAccessorsContaining(organization, user);
+        // Fetch events for the calendar and user within the specified date range
+        Set<Event> events = eventRepository.findByOrganizationAndEventAccessorsContainingAndStartBetween(organization, user, startDate, endDate);
 
         if (events.isEmpty()) {
             events = new HashSet<>();
@@ -70,7 +76,7 @@ public class EventController {
         newEvent.setStart(DateConverter.ISO2Date(eventRequest.getStart()));
         newEvent.setEnd(DateConverter.ISO2Date(eventRequest.getEnd()));
         newEvent.setAllDay(eventRequest.getAllDay());
-        
+
         Organization organization = organizationRepository.findById(orgId)
                 .orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
         newEvent.setOrganization(organization);
@@ -85,7 +91,7 @@ public class EventController {
                     .orElseThrow(() -> new RuntimeException("User not found with id: " + accssorId));
             newEvent.getEventAccessors().add(accessor);
         }
-        
+
         newEvent = eventRepository.save(newEvent);
 
         return ResponseEntity.ok(newEvent);
@@ -94,7 +100,7 @@ public class EventController {
     @PutMapping("/event/{eventId}")
     public ResponseEntity<?> updateEvent(@PathVariable String eventId, @RequestBody EventDto eventRequest) {
         Event event = eventRepository.findById(eventId)
-            .orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
+                .orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
 
         event.setTitle(eventRequest.getTitle() != null ? eventRequest.getTitle() : event.getTitle());
         event.setDescription(eventRequest.getDescription() != null ? eventRequest.getDescription() : event.getDescription());
@@ -111,7 +117,7 @@ public class EventController {
                 event.getEventAccessors().add(accessor);
             }
         }
-        
+
         event = eventRepository.save(event);
 
         return ResponseEntity.ok(event);
@@ -120,7 +126,7 @@ public class EventController {
     @DeleteMapping("/event/{eventId}")
     public ResponseEntity<?> deleteOrganization(@PathVariable String eventId) {
         Event event = eventRepository.findById(eventId)
-            .orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
+                .orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
 
         eventRepository.deleteById(eventId); // may need to delete from Org side too?
 

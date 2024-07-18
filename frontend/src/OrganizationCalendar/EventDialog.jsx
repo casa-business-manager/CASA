@@ -12,7 +12,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 
-const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, initialIsEditing = false, isOrganizationCalendar = true , knownPeople }) => {
+const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, initialIsEditing = false, isOrganizationCalendar = true, knownPeople }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startTime, setStartTime] = useState(dayjs());
@@ -42,7 +42,7 @@ const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, in
     setPeople(initialEvent.eventAccessors ?? []);
   }, [initialEvent]);
 
-  const handleBackend = (isEdit = false) => {
+  const handleBackend = async (isEdit = false) => {
     let hasError = false;
 
     if (!title) {
@@ -68,12 +68,12 @@ const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, in
     }
 
     const saveFunction = isEdit ? onEdit(initialEvent.eventId) : onSave;
-    saveFunction(title, description, startTime.toDate(), endTime.toDate(), location, people);
-    
+    await saveFunction(title, description, startTime.toDate(), endTime.toDate(), location, people);
+
     onCloseWrapper();
   };
 
-  const handleSave = () => handleBackend(false); 
+  const handleSave = () => handleBackend(false);
 
   const handleEdit = () => handleBackend(true);
 
@@ -259,37 +259,37 @@ const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, in
       <DialogActions>
         {
           initialIsEditing ?
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-            {
-              deleteConfirmed ? 
-                <Button onClick={() => {onDelete(initialEvent.eventId)}} color="error" variant="contained">
-                  Confirm Delete
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              {
+                deleteConfirmed ?
+                  <Button onClick={() => { onDelete(initialEvent.eventId) }} color="error" variant="contained">
+                    Confirm Delete
+                  </Button>
+                  :
+                  <Button onClick={() => { setDeleteConfirmed(true) }} color="error" variant="contained">
+                    Delete
+                  </Button>
+              }
+              <Box>
+                <Button onClick={onCloseWrapper} color="primary">
+                  Cancel
                 </Button>
-              :
-                <Button onClick={() => {setDeleteConfirmed(true)}} color="error" variant="contained">
-                  Delete
+                <Button onClick={handleEdit} color="primary" variant="contained">
+                  Save
                 </Button>
-            }
-            <Box>
+              </Box>
+            </Box>
+            :
+            <>
               <Button onClick={onCloseWrapper} color="primary">
                 Cancel
               </Button>
-              <Button onClick={handleEdit} color="primary" variant="contained">
+              <Button onClick={handleSave} color="primary" variant="contained">
                 Save
               </Button>
-            </Box>
-          </Box>
-          :
-          <>
-            <Button onClick={onCloseWrapper} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={handleSave} color="primary" variant="contained">
-              Save
-            </Button>
-          </>
+            </>
         }
-        
+
       </DialogActions>
     </Dialog>
   );
