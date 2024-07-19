@@ -110,6 +110,8 @@ public class EventController {
 					.orElseThrow(() -> new RuntimeException("User not found with id: " + accssorId));
 			newEvent.getEventAccessors().add(accessor);
 		}
+		// ensure the event creator is always in the set
+		newEvent.getEventAccessors().add(newEvent.getEventCreator());
 
 		newEvent = eventRepository.save(newEvent);
 
@@ -144,6 +146,8 @@ public class EventController {
 				event.getEventAccessors().add(accessor);
 			}
 		}
+		// ensure the event creator is always in the set
+		event.getEventAccessors().add(event.getEventCreator());
 
 		event = eventRepository.save(event);
 
