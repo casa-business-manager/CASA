@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,15 +23,11 @@ import com.example.casa.Model.Organization;
 import com.example.casa.Model.User;
 import com.example.casa.Payload.ApiResponse;
 import com.example.casa.Payload.CalendarResponse;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import com.example.casa.Payload.EventDto;
 import com.example.casa.Repository.EventRepository;
 import com.example.casa.Repository.OrganizationRepository;
 import com.example.casa.Repository.UserRepository;
 import com.example.casa.Util.DateConverter;
-
-import java.lang.reflect.Method;
 
 @RestController
 public class EventController {
@@ -118,21 +115,14 @@ public class EventController {
 
     @PutMapping("/event/{eventId}")
     public ResponseEntity<?> updateEvent(@PathVariable String eventId, @RequestBody EventDto eventRequest) {
-        // Get the authenticated user
-        System.out.println(12345);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("got auth");
-        System.out.println(authentication);
-        Method[] methods = (authentication.getClass().getMethods());
-        for (Method method : methods) {
-            System.out.println(method.getName());
-        }
-        // String currentUserId = authentication.getId();
-        System.out.println("getName", authentication.getName());
-        System.out.println("userId");
+        String currentUserId = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
+
+        if (currentUserId != event.getEventCreator().getId()) {
+            throw new RuntimeException("User " + currentUserId + " is not the event owner!");
+        }
 
         event.setTitle(eventRequest.getTitle() != null ? eventRequest.getTitle() : event.getTitle());
         event.setDescription(eventRequest.getDescription() != null ? eventRequest.getDescription() : event.getDescription());
