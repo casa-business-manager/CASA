@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Container, Box, TextField } from '@mui/material';
+import { Button, Container, Box, TextField, Typography } from '@mui/material';
 import { GoogleLoginButton } from 'react-social-login-buttons';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import './Login.css'; 
@@ -7,6 +7,7 @@ import { GOOGLE_AUTH_URL } from '../Constants/constants';
 import { useNavigate } from 'react-router-dom'; 
 import { login, signup } from '../APIUtils/APIUtils';
 import { ACCESS_TOKEN } from '../Constants/constants';
+import loginImage from '../Assets/loginScreen.jpg'; 
 
 function Login() {
     const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ function Login() {
         password: ''
     });
     
-    const [authState, setAuthState] = useState('signIn');
+    const [authState, setAuthState] = useState(null);
     const [nextStep, setNextStep] = useState(false);
     const navigate = useNavigate(); 
     
@@ -53,128 +54,153 @@ function Login() {
     };
 
     return (
-        <div>
-            <Container maxWidth="sm" sx={{ backgroundColor: '#f0f0f0', padding: '20px', borderRadius: '10px', marginTop: '250px' }}>
-                <div className='login-form-container'>
-                    <form onSubmit={handleSubmit}>
-                        <h2 className='text-h2'>Welcome to CASA</h2>
-                        <div className='button-div'>
+        <div className='wrapper'>
+            <div className='left-container'>
+                <nav>CASA</nav>
+                <img src={loginImage} alt="Login" className='displayImg'  /> 
+            </div>
+            <div className='right-container'>
+                {!authState && (
+                <div>
+                    <h2 className='h2'>Get Started</h2>
+                    <Button 
+                        variant={'contained'} 
+                        onClick={() => { setAuthState('signIn'); setNextStep(false); }}
+                        sx={{marginRight: '10px', height: '50px', width:'200px', borderRadius: '50px'}}
+                    >
+                        Log In
+                    </Button>
+                    <Button 
+                        variant={'contained'} 
+                        onClick={() => { setAuthState('signUp'); setNextStep(false); }}
+                        sx={{height: '50px', width:'200px', borderRadius: '50px'}}
+                    >
+                        Sign Up
+                    </Button>
+                </div>)}
+                {authState === 'signIn' && (
+                    <div>
+                        <h2 className='h2'>Welcome Back</h2>
+                        <form onSubmit={handleSubmit}>
+                            <TextField
+                                label="Email Address"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                fullWidth
+                                margin="normal"
+                            />
+                            <TextField
+                                label="Password"
+                                name="password"
+                                type="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                fullWidth
+                                margin="normal"
+                            />
+                            <Typography 
+                                variant="body2" 
+                                align="center" 
+                                sx={{ cursor: 'pointer', marginTop: '10px', ":hover":{color: '#00705b'} }} 
+                                onClick={() => setAuthState('signUp')}
+                        >
+                                Do not have an account? Sign Up
+                        </Typography>
+                            <div style={{display: 'flex', justifyContent: 'center'}}>
+                                <Button 
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                    sx={{marginTop: '20px', width:'446px'}}
+                                >
+                                    Sign In
+                                </Button>
+                            </div>
+                            <div className="hr-with-text">Or</div>
+                            <Box sx={{ display: 'flex', justifyContent: 'center'}}>
+                                <GoogleLoginButton onClick={() => window.location.href = GOOGLE_AUTH_URL} style={{justifyContent: 'center', display: 'flex', alignItems: 'center', border:'1px solid grey'}}>
+                                    &nbsp;&nbsp;<span>Continue with Google</span>
+                                </GoogleLoginButton>
+                            </Box>
+                        </form>
+                    </div>
+                )}
+                {authState === 'signUp' && (
+                    <div>
+                    <h2 className='h2'>Create An Account</h2>
+                    <form onSubmit={handleSubmit} >
+                        <TextField
+                            label="Email Address"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            margin="normal"
+                            sx={{display:'flex', width:'446px'}}
+                        />
+                        <TextField
+                            label="Password"
+                            name="password"
+                            type="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            margin="normal"
+                            sx={{display:'flex'}}
+                        />
+                        <TextField 
+                            label="First Name"
+                            id="firstName"
+                            name="firstName"
+                            value={formData.firstName}
+                            onChange={handleChange}
+                            margin="normal"
+                            sx={{display:'flex'}}
+                        />
+                        <TextField 
+                            label="Last Name"
+                            id="lastName"
+                            name="lastName"
+                            value={formData.lastName}
+                            onChange={handleChange}
+                            margin="normal"
+                            sx={{display:'flex'}}
+                        />
+                        <label>
+                            <input
+                                type="checkbox"
+                                name="termsAccepted"
+                                onChange={handleChange}
+                                />
+                                I have read and accept the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+                        </label>
+                        <Typography 
+                                variant="body2" 
+                                align="center" 
+                                sx={{ cursor: 'pointer', marginTop: '10px', ":hover":{color: '#00705b'} }} 
+                                onClick={() => setAuthState('signIn')}
+                        >
+                                Already have an account? Login
+                        </Typography>
+                        <div style={{display: 'flex', justifyContent: 'center'}}>
                             <Button 
-                                variant={authState === 'signIn' ? 'contained' : 'outlined'} 
-                                onClick={() => { setAuthState('signIn'); setNextStep(false); }}
-                                sx={{marginRight: '10px', }}
-                            >
-                                Sign In
-                            </Button>
-                            <Button 
-                                variant={authState === 'signUp' ? 'contained' : 'outlined'} 
-                                onClick={() => { setAuthState('signUp'); setNextStep(false); }}
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                sx={{marginTop: '20px', width:'446px'}}
                             >
                                 Sign Up
                             </Button>
                         </div>
-                        <div className='form-div'>
-                            <TextField 
-                                id="outlined-basic" 
-                                label="Email Address" 
-                                variant="outlined" 
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                sx={{marginTop: '30px'}}
-                            />
-                        </div>
-                        {authState === 'signUp' && nextStep && (
-                            <>
-                                <div className='form-div'>
-                                    <TextField 
-                                        id="firstName" 
-                                        label="First Name" 
-                                        variant="outlined" 
-                                        name="firstName"
-                                        value={formData.firstName}
-                                        onChange={handleChange}
-                                        sx={{marginTop: '10px'}}
-                                    />
-                                </div>
-                                <div className='form-div'>
-                                    <TextField 
-                                        id="lastName" 
-                                        label="Last Name" 
-                                        variant="outlined" 
-                                        name="lastName"
-                                        value={formData.lastName}
-                                        onChange={handleChange}
-                                        sx={{marginTop: '10px'}}
-                                    />
-                                </div>
-                            </>
-                        )}
-                        {nextStep && (
-                            <div className='form-div'>
-                                <TextField 
-                                    id="password" 
-                                    label="Password" 
-                                    type="password" 
-                                    variant="outlined" 
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    sx={{marginTop: '10px'}}
-                                />
-                            </div>
-                        )}
-                        <div className='button-div'>
-                        {nextStep ? (
-                            <Button 
-                                type="submit"
-                                variant="contained" 
-                                sx={{marginTop: '10px', marginBottom: '10px'}}
-                            >
-                                Submit
-                            </Button>
-                        ) : (
-                            <Button                         
-                                variant="contained" 
-                                endIcon={<NavigateNextIcon />} 
-                                onClick={handleStateNextStep}
-                                sx={{marginTop: '10px', marginBottom: '10px'}}
-                            >
-                                Next
-                            </Button>
-                        )}
-                        </div>
-                        {authState === 'signUp' && (
-                            <div className='form-div'>
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        name="termsAccepted"
-                                        onChange={handleChange}
-                                    />
-                                    I have read and accept the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
-                                </label>
-                            </div>
-                        )}
-                        <div className='form-div'>
-                            <label style={{display: 'left-align', alignItems: 'center'}}>
-                                <input
-                                    type="checkbox"
-                                    name="keepLoggedIn"
-                                    onChange={handleChange}
-                                />
-                                Keep me logged in for 30 days
-                            </label>
-                        </div>
                         <div className="hr-with-text">Or</div>
-                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                            <GoogleLoginButton onClick={() => window.location.href = GOOGLE_AUTH_URL} style={{justifyContent: 'center', display: 'flex', alignItems: 'center'}}>
+                        <Box sx={{ display: 'flex', justifyContent: 'center'}}>
+                            <GoogleLoginButton onClick={() => window.location.href = GOOGLE_AUTH_URL} style={{justifyContent: 'center', display: 'flex', alignItems: 'center', border:'1px solid grey'}}>
                                 &nbsp;&nbsp;<span>Continue with Google</span>
                             </GoogleLoginButton>
                         </Box>
                     </form>
                 </div>
-            </Container>
+                )}
+            </div>
         </div>
     );
 }
