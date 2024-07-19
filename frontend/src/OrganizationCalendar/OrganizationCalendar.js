@@ -297,6 +297,9 @@ const OrganizationCalendar = () => {
         popup
         resizable
         onRangeChange={handleRangeChange}
+				draggableAccessor={(event) =>
+					event.eventCreator.id === currentUser.id
+				}
       />
       <EventDialog 
         open={dialogOpen} 
