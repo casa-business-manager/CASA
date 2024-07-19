@@ -105,12 +105,12 @@ const OrganizationCalendar = () => {
     [currentUser]
   );
 
-  const saveEvent = (apiFunction, id) => 
+  const saveEvent = useCallback((apiFunction, id) => 
     async (title, description, startTime, endTime, location, people) => {
       if (!currentUser) return;
-
+      
       const peopleIds = people.map(person => person.id);
-
+      
       try {
         const newEvent = {
           title,
@@ -143,16 +143,16 @@ const OrganizationCalendar = () => {
         setDialogOpen(false);
         setTemporaryEvent(null);
       }
-    }
+    })
 
   const handleSaveEvent = useCallback(
     saveEvent(createEvent, orgId), 
-    [blockTimes]
+    [saveEvent]
   );
 
   const handleEditEvent = useCallback(
     (eventId) => saveEvent(updateEvent, eventId), 
-    [blockTimes]
+    [saveEvent]
   );
 
   const handleCloseDialog = useCallback(() => {
@@ -231,8 +231,6 @@ const OrganizationCalendar = () => {
 
       if (startDate < loadedRanges.start) {
         const firstDayBlock = getCalendarBlock(startDate);
-        console.log("handleRangeChange firstDayBlock", firstDayBlock.start.toISOString())
-        console.log("handleRangeChange firstDayBlock type", typeof(firstDayBlock.start.toISOString()))
         await fetchData(firstDayBlock.start.toISOString(), loadedRanges.start.toISOString());
         setLoadedRanges(oldLoadedRange => {
           oldLoadedRange.start = firstDayBlock.start;
@@ -297,6 +295,9 @@ const OrganizationCalendar = () => {
         popup
         resizable
         onRangeChange={handleRangeChange}
+				draggableAccessor={(event) =>
+					event.eventCreator.id === currentUser.id
+				}
       />
       <EventDialog 
         open={dialogOpen} 
