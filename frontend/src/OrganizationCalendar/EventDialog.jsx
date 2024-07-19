@@ -286,12 +286,12 @@ const EventDialog = ({
 							value.map((user, index) => {
 								return (
 									<Chip
-										key={user.id}
 										label={getUserFullName(user)}
 										{...getTagProps({ index })}
 										onDelete={() =>
 											handleDeletePerson(user.id)
 										}
+										key={user.id}
 									/>
 								);
 							})
