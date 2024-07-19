@@ -24,143 +24,135 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class User {
 
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "uuid", updatable = false, unique = true, nullable = false)
-    private String id;
+	@Id
+	@GeneratedValue(generator = "UUID")
+	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+	@Column(name = "uuid", updatable = false, unique = true, nullable = false)
+	private String id;
 
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
+	@Column(name = "first_name", nullable = false)
+	private String firstName;
 
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
+	@Column(name = "last_name", nullable = false)
+	private String lastName;
 
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
+	@Column(name = "email", nullable = false, unique = true)
+	private String email;
 
-    @Column(name = "password", nullable = true)
-    private String password;
+	@Column(name = "password", nullable = true)
+	private String password;
 
-    private String imageUrl;
+	private String imageUrl;
 
-    @Enumerated(EnumType.STRING)
-    private AuthProvider provider;
+	@Enumerated(EnumType.STRING)
+	private AuthProvider provider;
 
-    private String providerId;
+	private String providerId;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "user_organizations",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "organization_id")
-    )
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "user_organizations", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "organization_id"))
 
-    @JsonBackReference("user-organizations")
-    private Set<Organization> organizations = new HashSet<>();
+	@JsonBackReference("user-organizations")
+	private Set<Organization> organizations = new HashSet<>();
 
-    @OneToMany(mappedBy = "eventCreator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonBackReference("user-createdEvents")
-    private Set<Event> createdEvents = new HashSet<>();
+	@OneToMany(mappedBy = "eventCreator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonBackReference("user-createdEvents")
+	private Set<Event> createdEvents = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "event_accessors",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "event_id")
-    )
-    @JsonBackReference("user-accessibleEvents")
-    private Set<Event> accessibleEvents = new HashSet<>();
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "event_accessors", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
+	@JsonBackReference("user-accessibleEvents")
+	private Set<Event> accessibleEvents = new HashSet<>();
 
-    // Getters and Setters
-    public String getId() {
-        return id;
-    }
+	// Getters and Setters
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getFirstName() {
-        return firstName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public String getLastName() {
-        return lastName;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
+	public String getImageUrl() {
+		return imageUrl;
+	}
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
 
-    public AuthProvider getProvider() {
-        return provider;
-    }
+	public AuthProvider getProvider() {
+		return provider;
+	}
 
-    public void setProvider(AuthProvider provider) {
-        this.provider = provider;
-    }
+	public void setProvider(AuthProvider provider) {
+		this.provider = provider;
+	}
 
-    public String getProviderId() {
-        return providerId;
-    }
+	public String getProviderId() {
+		return providerId;
+	}
 
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
-    }
+	public void setProviderId(String providerId) {
+		this.providerId = providerId;
+	}
 
-    public Set<Organization> getOrganizations() {
-        return organizations;
-    }
+	public Set<Organization> getOrganizations() {
+		return organizations;
+	}
 
-    public void setOrganizations(Set<Organization> organizations) {
-        this.organizations = organizations;
-    }
+	public void setOrganizations(Set<Organization> organizations) {
+		this.organizations = organizations;
+	}
 
-    public Set<Event> getAccessibleEvents() {
-        return accessibleEvents;
-    }
+	public Set<Event> getAccessibleEvents() {
+		return accessibleEvents;
+	}
 
-    public void setAccessibleEvents(Set<Event> accessibleEvents) {
-        this.accessibleEvents = accessibleEvents;
-    }
+	public void setAccessibleEvents(Set<Event> accessibleEvents) {
+		this.accessibleEvents = accessibleEvents;
+	}
 
-    public Set<Event> getCreatedEvents() {
-        return createdEvents;
-    }
+	public Set<Event> getCreatedEvents() {
+		return createdEvents;
+	}
 
-    public void setCreatedEvents(Set<Event> createdEvents) {
-        this.createdEvents = createdEvents;
-    }
+	public void setCreatedEvents(Set<Event> createdEvents) {
+		this.createdEvents = createdEvents;
+	}
 }

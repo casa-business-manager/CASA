@@ -11,7 +11,8 @@ import com.example.casa.Model.User;
 
 public interface EventRepository extends JpaRepository<Event, String> {
 
-    Set<Event> findByOrganizationAndEventAccessorsContaining(Organization organization, User user);
+	Set<Event> findByOrganizationAndEventAccessorsContaining(Organization organization, User user);
 
-    Set<Event> findByOrganizationAndEventAccessorsContainingAndStartBetween(Organization organization, User user, Date startDate, Date endDate);
+	Set<Event> findByOrganizationAndEventAccessorsContainingAndStartBetween(Organization organization, User user,
+			Date startDate, Date endDate);
 }

@@ -2,91 +2,91 @@ package com.example.casa.Payload;
 
 public class EventDto {
 
-    private String title;
+	private String title;
 
-    private String description;
+	private String description;
 
-    private String location;
+	private String location;
 
-    private String start;
+	private String start;
 
-    private String end;
+	private String end;
 
-    private Boolean allDay;
+	private Boolean allDay;
 
-    private String eventCreatorId;
+	private String eventCreatorId;
 
-    private String[] eventAccessorIds;
+	private String[] eventAccessorIds;
 
-    public EventDto() {
-    }
+	public EventDto() {
+	}
 
-    public String getTitle() {
-        return this.title;
-    }
+	public String getTitle() {
+		return this.title;
+	}
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-    public String getDescription() {
-        return this.description;
-    }
+	public String getDescription() {
+		return this.description;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public String getLocation() {
-        return this.location;
-    }
+	public String getLocation() {
+		return this.location;
+	}
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
+	public void setLocation(String location) {
+		this.location = location;
+	}
 
-    public String getStart() {
-        return this.start;
-    }
+	public String getStart() {
+		return this.start;
+	}
 
-    public void setStart(String start) {
-        this.start = start;
-    }
+	public void setStart(String start) {
+		this.start = start;
+	}
 
-    public String getEnd() {
-        return this.end;
-    }
+	public String getEnd() {
+		return this.end;
+	}
 
-    public void setEnd(String end) {
-        this.end = end;
-    }
+	public void setEnd(String end) {
+		this.end = end;
+	}
 
-    public Boolean isAllDay() {
-        return this.allDay;
-    }
+	public Boolean isAllDay() {
+		return this.allDay;
+	}
 
-    public Boolean getAllDay() {
-        return this.allDay;
-    }
+	public Boolean getAllDay() {
+		return this.allDay;
+	}
 
-    public void setAllDay(Boolean allDay) {
-        this.allDay = allDay;
-    }
+	public void setAllDay(Boolean allDay) {
+		this.allDay = allDay;
+	}
 
-    public String getEventCreatorId() {
-        return this.eventCreatorId;
-    }
+	public String getEventCreatorId() {
+		return this.eventCreatorId;
+	}
 
-    public void setEventCreatorId(String eventCreatorId) {
-        this.eventCreatorId = eventCreatorId;
-    }
+	public void setEventCreatorId(String eventCreatorId) {
+		this.eventCreatorId = eventCreatorId;
+	}
 
-    public String[] getEventAccessorIds() {
-        return this.eventAccessorIds;
-    }
+	public String[] getEventAccessorIds() {
+		return this.eventAccessorIds;
+	}
 
-    public void setEventAccessorIds(String[] eventAccessorIds) {
-        this.eventAccessorIds = eventAccessorIds;
-    }
+	public void setEventAccessorIds(String[] eventAccessorIds) {
+		this.eventAccessorIds = eventAccessorIds;
+	}
 
 }
