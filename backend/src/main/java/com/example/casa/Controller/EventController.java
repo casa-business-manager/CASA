@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.casa.Exception.BadRequestException;
 import com.example.casa.Model.Event;
 import com.example.casa.Model.Organization;
 import com.example.casa.Model.User;
@@ -120,8 +121,8 @@ public class EventController {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
 
-        if (currentUserId != event.getEventCreator().getId()) {
-            throw new RuntimeException("User " + currentUserId + " is not the event owner!");
+        if (!currentUserId.equals(event.getEventCreator().getId())) {
+            throw new BadRequestException("User " + currentUserId + " is not the event owner!");
         }
 
         event.setTitle(eventRequest.getTitle() != null ? eventRequest.getTitle() : event.getTitle());
