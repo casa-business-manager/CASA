@@ -134,7 +134,7 @@ const EventDialog = ({
 		return (
 			initialEvent &&
 			initialEvent.eventCreator &&
-			currentUser.id !== initialEvent.eventCreator.id
+			currentUser.id === initialEvent.eventCreator.id
 		);
 	}
 
@@ -146,7 +146,11 @@ const EventDialog = ({
 			<DialogTitle>
 				<Box display="flex" alignItems="center">
 					<Box flexGrow={1}>
-						{initialIsEditing ? "Edit Event" : "New event"}
+						{isEventCreator()
+							? initialIsEditing
+								? "Edit event"
+								: "New event"
+							: "View event"}
 					</Box>
 					<Box>
 						<IconButton onClick={onCloseWrapper}>
@@ -159,7 +163,7 @@ const EventDialog = ({
 			<DialogContent>
 				{/* Title */}
 				<TextField
-					disabled={isEventCreator()}
+					disabled={!isEventCreator()}
 					autoFocus
 					label="Title"
 					type="text"
@@ -186,7 +190,7 @@ const EventDialog = ({
 						sx={{ color: "action.active", mr: 1, my: 2.5 }}
 					/>
 					<TextField
-						disabled={isEventCreator()}
+						disabled={!isEventCreator()}
 						label="Description"
 						multiline
 						rows={3}
@@ -207,7 +211,7 @@ const EventDialog = ({
 					<LocalizationProvider dateAdapter={AdapterDayjs}>
 						<Box sx={{ mr: 0 }}>
 							<TimePicker
-								disabled={isEventCreator()}
+								disabled={!isEventCreator()}
 								label="Start Time"
 								value={startTime}
 								onChange={(newValue) => setStartTime(newValue)}
@@ -224,7 +228,7 @@ const EventDialog = ({
 						</Box>
 						<Box sx={{ ml: -12 }}>
 							<TimePicker
-								disabled={isEventCreator()}
+								disabled={!isEventCreator()}
 								label="End Time"
 								value={endTime}
 								onChange={(newValue) => setEndTime(newValue)}
@@ -241,7 +245,7 @@ const EventDialog = ({
 						sx={{ color: "action.active", mr: 1, my: 3.5 }}
 					/>
 					<Autocomplete
-						disabled={isEventCreator()}
+						disabled={!isEventCreator()}
 						freeSolo
 						options={meetingLocations}
 						inputValue={location}
@@ -272,7 +276,7 @@ const EventDialog = ({
 						sx={{ color: "action.active", mr: 1, my: 2.5 }}
 					/>
 					<Autocomplete
-						disabled={isEventCreator()}
+						disabled={!isEventCreator()}
 						multiple
 						freeSolo
 						disableClearable
@@ -286,12 +290,14 @@ const EventDialog = ({
 							value.map((user, index) => {
 								return (
 									<Chip
-										key={user.id}
 										label={getUserFullName(user)}
 										{...getTagProps({ index })}
-										onDelete={() =>
-											handleDeletePerson(user.id)
+										onDelete={
+											isEventCreator() &&
+											user.id !== currentUser.id &&
+											(() => handleDeletePerson(user.id))
 										}
+										key={user.id}
 									/>
 								);
 							})
@@ -319,7 +325,7 @@ const EventDialog = ({
 							sx={{ color: "action.active", mr: 1, my: 2.7 }}
 						/>
 						<TextField
-							disabled={isEventCreator()}
+							disabled={!isEventCreator()}
 							select
 							label="Organization"
 							defaultValue="Personal"
@@ -357,7 +363,7 @@ const EventDialog = ({
 							</Button>
 						) : (
 							<Button
-								disabled={isEventCreator()}
+								disabled={!isEventCreator()}
 								onClick={() => {
 									setDeleteConfirmed(true);
 								}}
@@ -371,7 +377,7 @@ const EventDialog = ({
 							<Button onClick={onCloseWrapper} color="primary">
 								Cancel
 							</Button>
-							{!isEventCreator() && (
+							{isEventCreator() && (
 								<Button
 									onClick={handleEdit}
 									color="primary"
