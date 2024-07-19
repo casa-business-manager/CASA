@@ -34,6 +34,11 @@ RUN sudo -E bash nodesource_setup.sh
 RUN sudo apt-get install -y nodejs
 
 # Useful shortcuts
+RUN echo "#! /bin/sh" >> /bin/kill3000
 RUN echo "fuser -k -n tcp 3000" >> /bin/kill3000
+
+RUN echo "#! /bin/sh" >> /bin/kill8080
 RUN echo "fuser -k -n tcp 8080" >> /bin/kill8080
+
+RUN echo '#! /bin/sh' >> /bin/resetDB
 RUN echo 'sudo mariadb -e "DROP DATABASE casa;"; sudo mariadb -e "CREATE DATABASE casa;"' >> /bin/resetDB
