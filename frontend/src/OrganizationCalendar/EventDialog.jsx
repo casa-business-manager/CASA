@@ -12,7 +12,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 
-const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, initialIsEditing = false, isOrganizationCalendar = true, knownPeople }) => {
+const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, initialIsEditing = false, isOrganizationCalendar = true, currentUser, knownPeople }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startTime, setStartTime] = useState(dayjs());
@@ -53,6 +53,7 @@ const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, in
     }
 
     if (endTime.isBefore(startTime)) {
+      // errors are handled by the components themselves
       hasError = true;
     }
 
@@ -92,6 +93,10 @@ const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, in
     setDeleteConfirmed(false);
   }
 
+  function isEventCreator() {
+    return initialEvent && initialEvent.eventCreator && (currentUser.id !== initialEvent.eventCreator.id);
+  }
+
   const getUserFullName = (userObject) => userObject.firstName + ' ' + userObject.lastName;
 
   return (
@@ -110,6 +115,7 @@ const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, in
       <DialogContent>
         {/* Title */}
         <TextField
+          disabled={isEventCreator()}
           autoFocus
           label="Title"
           type="text"
@@ -128,6 +134,7 @@ const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, in
         <Box sx={{ display: 'flex', alignItems: 'flex-start', marginBottom: 4 }}>
           <ViewHeadlineIcon sx={{ color: 'action.active', mr: 1, my: 2.5 }} />
           <TextField
+            disabled={isEventCreator()}
             label="Description"
             multiline
             rows={3}
@@ -144,6 +151,7 @@ const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, in
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Box sx={{ mr: 0 }}>
               <TimePicker
+                disabled={isEventCreator()}
                 label="Start Time"
                 value={startTime}
                 onChange={(newValue) => setStartTime(newValue)}
@@ -158,6 +166,7 @@ const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, in
             </Box>
             <Box sx={{ ml: -12 }}>
               <TimePicker
+                disabled={isEventCreator()}
                 label="End Time"
                 value={endTime}
                 onChange={(newValue) => setEndTime(newValue)}
@@ -172,6 +181,7 @@ const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, in
         <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
           <LocationOnIcon sx={{ color: 'action.active', mr: 1, my: 3.5 }} />
           <Autocomplete
+            disabled={isEventCreator()}
             freeSolo
             options={meetingLocations}
             inputValue={location}
@@ -198,6 +208,7 @@ const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, in
         <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
           <PeopleAltIcon sx={{ color: 'action.active', mr: 1, my: 2.5 }} />
           <Autocomplete
+            disabled={isEventCreator()}
             multiple
             freeSolo
             disableClearable
@@ -239,6 +250,7 @@ const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, in
           <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
             <ApartmentIcon sx={{ color: 'action.active', mr: 1, my: 2.7 }} />
             <TextField
+              disabled={isEventCreator()}
               select
               label="Organization"
               defaultValue="Personal"
@@ -266,7 +278,7 @@ const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, in
                     Confirm Delete
                   </Button>
                   :
-                  <Button onClick={() => { setDeleteConfirmed(true) }} color="error" variant="contained">
+                  <Button disabled={isEventCreator()} onClick={() => { setDeleteConfirmed(true) }} color="error" variant="contained">
                     Delete
                   </Button>
               }
@@ -274,9 +286,12 @@ const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, in
                 <Button onClick={onCloseWrapper} color="primary">
                   Cancel
                 </Button>
-                <Button onClick={handleEdit} color="primary" variant="contained">
-                  Save
-                </Button>
+                {
+                  !isEventCreator() &&
+                  <Button onClick={handleEdit} color="primary" variant="contained">
+                    Save
+                  </Button>
+                }
               </Box>
             </Box>
             :
@@ -285,7 +300,7 @@ const EventDialog = ({ open, onClose, onSave, onEdit, onDelete, initialEvent, in
                 Cancel
               </Button>
               <Button onClick={handleSave} color="primary" variant="contained">
-                Save
+                Create
               </Button>
             </>
         }
