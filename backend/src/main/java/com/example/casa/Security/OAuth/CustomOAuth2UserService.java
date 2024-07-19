@@ -1,5 +1,7 @@
 package com.example.casa.Security.OAuth;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
@@ -14,11 +16,9 @@ import com.example.casa.Exception.OAuth2AuthenticationProcessingException;
 import com.example.casa.Model.AuthProvider;
 import com.example.casa.Model.User;
 import com.example.casa.Repository.UserRepository;
-import com.example.casa.Security.UserPrincipal;
 import com.example.casa.Security.OAuth.UserOAuth.OAuth2UserInfo;
 import com.example.casa.Security.OAuth.UserOAuth.OAuth2UserInfoFactory;
-
-import java.util.Optional;
+import com.example.casa.Security.UserPrincipal;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {

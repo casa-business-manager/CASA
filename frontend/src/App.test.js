@@ -1,8 +1,10 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { render, screen } from "@testing-library/react";
+import App from "./App";
 
-test('tests are able to run', () => {
-  expect('this string is equal to itself').toBe('this string is equal to itself')
+test("tests are able to run", () => {
+	expect("this string is equal to itself").toBe(
+		"this string is equal to itself"
+	);
 });
 
 // failing test :(

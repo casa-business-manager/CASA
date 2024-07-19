@@ -3,7 +3,7 @@ package com.example.casa.Payload;
 public class EventDto {
 
     private String title;
-    
+
     private String description;
 
     private String location;
@@ -40,7 +40,7 @@ public class EventDto {
     public String getLocation() {
         return this.location;
     }
-    
+
     public void setLocation(String location) {
         this.location = location;
     }

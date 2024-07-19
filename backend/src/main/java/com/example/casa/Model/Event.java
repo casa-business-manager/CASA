@@ -65,9 +65,9 @@ public class Event {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "event_accessors",
-        joinColumns = @JoinColumn(name = "event_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
+            name = "event_accessors",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     @JsonManagedReference("user-accessibleEvents")
     private Set<User> eventAccessors = new HashSet<>();
@@ -79,19 +79,19 @@ public class Event {
     public String getEventId() {
         return eventId;
     }
-    
+
     public void setEventId(String eventId) {
         this.eventId = eventId;
     }
-    
+
     public String getTitle() {
         return title;
     }
-    
+
     public void setTitle(String title) {
         this.title = title;
     }
-    
+
     public String getDescription() {
         return description;
     }
@@ -99,7 +99,7 @@ public class Event {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     public String getLocation() {
         return location;
     }
