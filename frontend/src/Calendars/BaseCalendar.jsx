@@ -134,7 +134,6 @@ const BaseCalendar = ({ orgIds }) => {
 				eventAccessors: [currentUser],
 				organization: orgInfo[0], // default org to add it to
 			};
-			console.log("orginfo", orgInfo);
 			setTemporaryEvent(fakeTempEventToKeepTheBoxOpen);
 			setMenuEvent(fakeTempEventToKeepTheBoxOpen);
 			setEditMenu(false);
@@ -217,7 +216,6 @@ const BaseCalendar = ({ orgIds }) => {
 
 	// control dialog for editing an event
 	const handleSelectEvent = useCallback((event) => {
-		console.log("event", event);
 		setMenuEvent(event);
 		setEditMenu(true);
 		setDialogOpen(true);
