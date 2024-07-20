@@ -10,9 +10,6 @@ RUN apt-get clean && apt-get update && apt-get install -y \
   nodejs \
   git 
 
-# Git settings
-RUN git config --global push.default current 
-
 # install java jdk
 RUN wget https://download.oracle.com/java/22/latest/jdk-22_linux-x64_bin.tar.gz \
   && tar -xvf jdk-22_linux-x64_bin.tar.gz
