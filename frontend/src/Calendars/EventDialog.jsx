@@ -64,10 +64,6 @@ const EventDialog = ({
 		setOrganization(initialEvent.organization ?? orgInfo[0]); // TODO: No orgs?
 	}, [initialEvent]);
 
-	useEffect(() => {
-		setOrganization(initialEvent.organization ?? orgInfo[0]); // TODO: No orgs?
-	}, [initialEvent]);
-
 	const handleBackend = async (isEdit = false) => {
 		let hasError = false;
 

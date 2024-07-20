@@ -55,7 +55,6 @@ const BaseCalendar = ({ orgIds }) => {
 	}, [currentUser, orgIds]);
 
 	// Get organization people
-	// TODO: parameterize: pass in list of org IDs
 	useEffect(() => {
 		if (!orgIds) {
 			return;
@@ -82,7 +81,6 @@ const BaseCalendar = ({ orgIds }) => {
 	}, [orgIds]);
 
 	// Get events for a user in an org
-	// TODO: Check all orgs
 	const fetchData = async (startDate = null, endDate = null) => {
 		try {
 			const calendarDataPromises = orgIds.map((orgId) =>
@@ -201,7 +199,6 @@ const BaseCalendar = ({ orgIds }) => {
 	);
 
 	// function to create a new event given orgID
-	// TODO: parameterize orgId like how eventId is done for edit
 	const handleSaveEvent = useCallback(
 		(orgId) => saveEvent(createEvent, orgId),
 		[saveEvent]
@@ -227,7 +224,6 @@ const BaseCalendar = ({ orgIds }) => {
 	}, []);
 
 	// control dialog for deleting an event
-	// May need to update backend to delete from user calendar
 	const handleDeleteEvent = useCallback(async (eventId) => {
 		setDialogOpen(false);
 		setTemporaryEvent(null);
