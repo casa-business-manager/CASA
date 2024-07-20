@@ -1,4 +1,4 @@
-package com.example.casa.Payload;
+package com.example.casa.Payload.User;
 
 public class AuthResponse {
 

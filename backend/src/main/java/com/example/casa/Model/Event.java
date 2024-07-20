@@ -53,7 +53,7 @@ public class Event {
 	@Column(name = "all_day")
 	private boolean allDay;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "organization_id", nullable = false)
 	@JsonManagedReference("event-organization")
 	private Organization organization;
