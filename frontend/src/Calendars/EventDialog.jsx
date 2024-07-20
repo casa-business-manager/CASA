@@ -319,8 +319,12 @@ const EventDialog = ({
 										{...getTagProps({ index })}
 										onDelete={
 											isEventCreator() &&
-											user.id !== currentUser.id &&
-											(() => handleDeletePerson(user.id))
+											user.id !== currentUser.id
+												? () =>
+														handleDeletePerson(
+															user.id
+														)
+												: () => {}
 										}
 										key={user.id}
 									/>
@@ -349,7 +353,7 @@ const EventDialog = ({
 						sx={{ color: "action.active", mr: 1, my: 2.7 }}
 					/>
 					<TextField
-						disabled={!isEventCreator()}
+						disabled={!isEventCreator() || initialIsEditing}
 						select
 						label="Organization"
 						value={organization}
