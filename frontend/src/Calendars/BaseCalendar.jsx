@@ -360,7 +360,11 @@ const BaseCalendar = ({ orgIds }) => {
 				localizer={localizer}
 				selectable
 				onSelectEvent={handleSelectEvent}
-				onSelectSlot={handleSelectSlot}
+				onSelectSlot={
+					orgIds.length > 0
+						? handleSelectSlot
+						: console.log("no organizations")
+				}
 				events={deleteDuplicates(
 					[...events, temporaryEvent]
 						.filter(Boolean)
