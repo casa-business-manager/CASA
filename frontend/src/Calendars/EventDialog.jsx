@@ -64,6 +64,10 @@ const EventDialog = ({
 		setOrganization(initialEvent.organization ?? orgInfo[0]); // TODO: No orgs?
 	}, [initialEvent]);
 
+	useEffect(() => {
+		setOrganization(initialEvent.organization ?? orgInfo[0]); // TODO: No orgs?
+	}, [initialEvent]);
+
 	const handleBackend = async (isEdit = false) => {
 		let hasError = false;
 
@@ -134,6 +138,10 @@ const EventDialog = ({
 
 	const getUserFullName = (userObject) =>
 		userObject.firstName + " " + userObject.lastName;
+
+	if (!organization) {
+		return <>Loading</>;
+	}
 
 	return (
 		<Dialog open={open} onClose={onCloseWrapper} fullWidth>

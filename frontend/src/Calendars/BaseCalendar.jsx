@@ -85,11 +85,9 @@ const BaseCalendar = ({ orgIds }) => {
 	// TODO: Check all orgs
 	const fetchData = async (startDate = null, endDate = null) => {
 		try {
-			console.log("fetching", orgIds);
 			const calendarDataPromises = orgIds.map((orgId) =>
 				getCalendarData(orgId, currentUser.id, startDate, endDate)
 			);
-			console.log("promises", calendarDataPromises);
 
 			const combinedEvents = [...events];
 			for (const orgCalendarData of calendarDataPromises) {
@@ -100,7 +98,6 @@ const BaseCalendar = ({ orgIds }) => {
 						end: moment(event.end).local().toDate(),
 					})
 				);
-				console.log("shitass", newEvents);
 				const fixedNewEvents = newEvents.map((event) => {
 					event.organization = {
 						...event.organization,
@@ -113,7 +110,6 @@ const BaseCalendar = ({ orgIds }) => {
 			}
 
 			const deduplicated = deleteDuplicates(combinedEvents);
-			console.log("events", deduplicated);
 			setEvents(deduplicated);
 		} catch (error) {
 			console.error("Error fetching calendar data:", error);
@@ -179,6 +175,11 @@ const BaseCalendar = ({ orgIds }) => {
 						const filterOutCurrentEvent = prev.filter(
 							(event) => event.eventId !== createdEvent.eventId
 						);
+						createdEvent.organization = {
+							...createdEvent.organization,
+							people: createdEvent.organization.users,
+							name: createdEvent.organization.orgName,
+						};
 						return [
 							...filterOutCurrentEvent,
 							{
