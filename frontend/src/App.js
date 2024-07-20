@@ -36,7 +36,10 @@ function App() {
 					path="/userManagement/:orgId"
 					element={<UserManagement />}
 				/>
-				<Route path="/userCalendar" element={<UserCalendar />} />
+				<Route
+					path="/userCalendar/:userId"
+					element={<UserCalendar />}
+				/>
 			</Routes>
 		</Router>
 	);

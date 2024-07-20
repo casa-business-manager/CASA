@@ -1,45 +1,34 @@
-import React from "react";
-import PropTypes from "prop-types";
-import moment from "moment";
-import {
-	Calendar,
-	Views,
-	DateLocalizer,
-	momentLocalizer,
-} from "react-big-calendar";
+import React, { useEffect, useState } from "react";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
+import BaseCalendar from "./BaseCalendar";
+import { getOrganizations } from "../APIUtils/APIUtils";
+import { useParams } from "react-router-dom";
 
-const mLocalizer = momentLocalizer(moment);
+const UserCalendar = () => {
+	const { userId } = useParams();
+	const [organizations, setOrganizations] = useState([]);
 
-export default function UserCalendar({ localizer = mLocalizer, ...props }) {
-	// ensure there are no undefined accesses in props
-	const {
-		events = [],
-		defaultDate = moment().toDate(),
-		defaultView = Views.MONTH,
-		showDemoLink = 0,
-	} = props;
+	useEffect(() => {
+		const fetchOrganizations = async () => {
+			try {
+				const organizationIds = (await getOrganizations()).map(
+					(org) => org.orgId
+				);
+				setOrganizations(organizationIds);
+			} catch (error) {
+				console.error("Error fetching organizations:", error);
+			}
+		};
+
+		fetchOrganizations();
+	}, userId);
 
 	return (
 		<div className="UserCalendar">
-			<Calendar
-				title="User Calendar"
-				events={events}
-				defaultDate={defaultDate}
-				defaultView={defaultView}
-				localizer={localizer}
-				resizable
-				style={{ height: "100vh" }}
-				{...props}
-			/>
+			<BaseCalendar orgIds={organizations} />
 		</div>
 	);
-}
-
-UserCalendar.propTypes = {
-	localizer: PropTypes.instanceOf(DateLocalizer),
-	showDemoLink: PropTypes.bool,
-	events: PropTypes.array,
-	defaultDate: PropTypes.instanceOf(Date),
-	defaultView: PropTypes.string,
 };
+
+export default UserCalendar;
