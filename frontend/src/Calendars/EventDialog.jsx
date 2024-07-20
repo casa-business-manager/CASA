@@ -313,18 +313,20 @@ const EventDialog = ({
 						onChange={handleAddPerson}
 						renderTags={(value, getTagProps) =>
 							value.map((user, index) => {
+								const deletable =
+									isEventCreator() &&
+									user.id !== currentUser.id;
 								return (
 									<Chip
 										label={getUserFullName(user)}
 										{...getTagProps({ index })}
 										onDelete={
-											isEventCreator() &&
-											user.id !== currentUser.id
+											deletable
 												? () =>
 														handleDeletePerson(
 															user.id
 														)
-												: () => {}
+												: undefined
 										}
 										key={user.id}
 									/>

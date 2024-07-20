@@ -22,7 +22,7 @@ const UserCalendar = () => {
 		};
 
 		fetchOrganizations();
-	}, userId);
+	}, [userId]);
 
 	return (
 		<div className="UserCalendar">
