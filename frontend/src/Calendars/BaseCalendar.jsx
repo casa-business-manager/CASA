@@ -1,5 +1,4 @@
 import React, { useCallback, useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import moment from "moment";
 import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -11,14 +10,15 @@ import {
 	createEvent,
 	updateEvent,
 	deleteEvent,
+	getOrganizationInfo,
 } from "../APIUtils/APIUtils";
 import EventDialog from "./EventDialog";
-import { getUsersInOrganization } from "../APIUtils/APIUtils";
 
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(Calendar);
 
-const Calendar = () => {
+// TODO: color events by org?
+const BaseCalendar = ({ orgIds }) => {
 	const [currentUser, setCurrentUser] = useState(null);
 	const [events, setEvents] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -26,7 +26,7 @@ const Calendar = () => {
 	const [temporaryEvent, setTemporaryEvent] = useState(null); // shows on the calendar
 	const [menuEvent, setMenuEvent] = useState({}); // passed to the menu
 	const [editMenu, setEditMenu] = useState(false); // passed to the menu
-	const [orgPeople, setOrgPeople] = useState([]);
+	const [orgInfo, setOrgInfo] = useState([]);
 	const [loadedRanges, setLoadedRanges] = useState(
 		getCalendarBlock(moment().toDate())
 	);
@@ -55,39 +55,53 @@ const Calendar = () => {
 	}, [currentUser]);
 
 	// Get organization people
-	// parameterize: pass in list of org IDs
+	// TODO: parameterize: pass in list of org IDs
 	useEffect(() => {
+		if (!orgIds) {
+			return;
+		}
+
 		const fetchPeople = async () => {
-			const response = await getUsersInOrganization(orgId);
-			const orgPeopleWithNames = response.map((user) => ({
-				...user,
-				fullName: `${user.firstName} ${user.lastName}`,
-			}));
-			setOrgPeople(orgPeopleWithNames);
+			const orgInfoPromises = orgIds.map((orgId) =>
+				getOrganizationInfo(orgId)
+			);
+
+			var newOrgInfoList = [];
+			for (var i = 0; i < orgIds.length; i++) {
+				const orgInfoPromise = orgInfoPromises[i];
+				newOrgInfoList.push({
+					orgId: orgIds[i],
+					...(await orgInfoPromise),
+				});
+			}
+
+			setOrgInfo(newOrgInfoList);
 		};
 
 		fetchPeople();
-	}, [orgId]);
+	}, [orgIds]);
 
 	// Get events for a user in an org
-	// store it in a list of events
+	// TODO: Check all orgs
 	const fetchData = async (startDate = null, endDate = null) => {
 		try {
-			const calendarData = await getCalendarData(
-				orgId,
-				currentUser.id,
-				startDate,
-				endDate
+			const calendarDataPromises = orgIds.map((orgId) =>
+				getCalendarData(orgId, currentUser.id, startDate, endDate)
 			);
-			const combinedEvents = [
-				...events,
-				...calendarData.events.map((event) => ({
-					...event,
-					start: moment(event.start).local().toDate(),
-					end: moment(event.end).local().toDate(),
-				})),
-			];
+
+			const combinedEvents = [...events];
+			for (const orgCalendarData of calendarDataPromises) {
+				combinedEvents.concat(
+					(await orgCalendarData).events.map((event) => ({
+						...event,
+						start: moment(event.start).local().toDate(),
+						end: moment(event.end).local().toDate(),
+					}))
+				);
+			}
+
 			const deduplicated = deleteDuplicates(combinedEvents);
+			console.log("events", deduplicated);
 			setEvents(deduplicated);
 		} catch (error) {
 			console.error("Error fetching calendar data:", error);
@@ -110,6 +124,7 @@ const Calendar = () => {
 				description: "",
 				eventCreator: currentUser,
 				eventAccessors: [currentUser],
+				organization: null, // default org to add it to
 			};
 			setTemporaryEvent(fakeTempEventToKeepTheBoxOpen);
 			setMenuEvent(fakeTempEventToKeepTheBoxOpen);
@@ -119,8 +134,7 @@ const Calendar = () => {
 		[currentUser]
 	);
 
-	// Base function for both saving and editing an event
-	// Will need ID of org to save to
+	// Base function for both saving and editing an event, needing function and id
 	const saveEvent = useCallback(
 		(apiFunction, id) =>
 			async (
@@ -174,10 +188,11 @@ const Calendar = () => {
 	);
 
 	// function to create a new event given orgID
-	// can parameterize orgId like how eventId is done for edit
-	const handleSaveEvent = useCallback(saveEvent(createEvent, orgId), [
-		saveEvent,
-	]);
+	// TODO: parameterize orgId like how eventId is done for edit
+	const handleSaveEvent = useCallback(
+		(orgId) => saveEvent(createEvent, orgId),
+		[saveEvent]
+	);
 
 	// function to save an edited event
 	const handleEditEvent = useCallback(
@@ -321,17 +336,17 @@ const Calendar = () => {
 	function deleteDuplicates(list) {
 		return list.filter(
 			(item, pos) =>
-				list.findIndex((x) => x.eventId === item.eventId) == pos
+				list.findIndex((x) => x.eventId === item.eventId) === pos
 		);
 	}
 
 	// In case calendar is still waiting on API calls
-	if (loading || !currentUser) {
+	if (loading || !currentUser || !orgIds) {
 		return <div>Loading...</div>;
 	}
 
 	return (
-		<div className="Calendar">
+		<div className="BaseCalendar">
 			<DragAndDropCalendar
 				localizer={localizer}
 				selectable
@@ -362,6 +377,7 @@ const Calendar = () => {
 				resizable
 				onRangeChange={handleRangeChange}
 				draggableAccessor={(event) =>
+					event.eventCreator &&
 					event.eventCreator.id === currentUser.id
 				}
 			/>
@@ -373,12 +389,11 @@ const Calendar = () => {
 				onDelete={handleDeleteEvent}
 				initialEvent={menuEvent}
 				initialIsEditing={editMenu}
-				organizationId={orgId}
 				currentUser={currentUser}
-				knownPeople={orgPeople}
+				orgInfo={orgInfo}
 			/>
 		</div>
 	);
 };
 
-export default Calendar;
+export default BaseCalendar;
