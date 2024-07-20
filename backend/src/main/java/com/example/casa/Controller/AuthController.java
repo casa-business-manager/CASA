@@ -25,9 +25,9 @@ import com.example.casa.Exception.BadRequestException;
 import com.example.casa.Model.AuthProvider;
 import com.example.casa.Model.User;
 import com.example.casa.Payload.ApiResponse;
-import com.example.casa.Payload.AuthResponse;
-import com.example.casa.Payload.LoginRequest;
-import com.example.casa.Payload.SignUpRequest;
+import com.example.casa.Payload.User.AuthResponse;
+import com.example.casa.Payload.User.LoginRequest;
+import com.example.casa.Payload.User.SignUpRequest;
 import com.example.casa.Repository.UserRepository;
 import com.example.casa.Security.TokenProvider;
 

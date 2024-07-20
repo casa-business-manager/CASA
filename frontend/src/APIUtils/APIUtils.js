@@ -165,6 +165,14 @@ export const getUsersInOrganization = async (organizationId) => {
 	});
 };
 
+// getUsersInOrganization + org name
+export const getOrganizationInfo = async (organizationId) => {
+	return request({
+		url: API_BASE_URL + "/organization/" + organizationId + "/info",
+		method: "GET",
+	});
+};
+
 export const inviteUserToOrganization = async (organizationId, userEmail) => {
 	return request({
 		url:

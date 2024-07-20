@@ -10,8 +10,8 @@ import Organization from "./Organization/Organization";
 import OAuth2RedirectHandler from "././Login/OAuth2RedirectHandler";
 import OrganizationLanding from "./OrganizationLanding/OrganizationLanding";
 import UserManagement from "./UserManagement/UserManagement";
-import UserCalendar from "./UserCalendar/UserCalendar";
-import OrganizationCalendar from "./OrganizationCalendar/OrganizationCalendar";
+import UserCalendar from "./Calendars/UserCalendar";
+import OrganizationCalendar from "./Calendars/OrganizationCalendar";
 
 function App() {
 	return (
@@ -36,7 +36,10 @@ function App() {
 					path="/userManagement/:orgId"
 					element={<UserManagement />}
 				/>
-				<Route path="/userCalendar" element={<UserCalendar />} />
+				<Route
+					path="/userCalendar/:userId"
+					element={<UserCalendar />}
+				/>
 			</Routes>
 		</Router>
 	);

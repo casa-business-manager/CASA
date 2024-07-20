@@ -9,6 +9,8 @@ import {
 import "./Organization.css";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import NavBar from "../NavBar/NavBar";
+import { IconButton } from "@mui/material";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 const Organization = () => {
 	const [user, setUser] = useState(null);
@@ -112,12 +114,25 @@ const Organization = () => {
 		navigate(`/organization/${orgId}`);
 	};
 
+	const handleCalendarClick = () => {
+		navigate(`/userCalendar/${user.id}`);
+	};
+
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error: {error}</div>;
 
 	return (
 		<div>
 			<NavBar />
+
+			{/* Temporary place for the button to get to user calendar. TODO: make sidebar and put this there instead */}
+			<IconButton
+				aria-label="user calendar button"
+				onClick={handleCalendarClick}
+			>
+				<CalendarTodayIcon />
+			</IconButton>
+
 			<h1>Organization</h1>
 			{organizations.length > 0 ? (
 				organizations.map((org) => (

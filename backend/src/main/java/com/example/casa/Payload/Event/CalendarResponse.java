@@ -1,4 +1,4 @@
-package com.example.casa.Payload;
+package com.example.casa.Payload.Event;
 
 import java.util.Set;
 

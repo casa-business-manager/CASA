@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.casa.Model.Organization;
 import com.example.casa.Model.User;
 import com.example.casa.Payload.ApiResponse;
-import com.example.casa.Payload.OrganizationDto;
+import com.example.casa.Payload.Organization.OrganizationDto;
+import com.example.casa.Payload.Organization.OrganizationInformation;
 import com.example.casa.Repository.EventRepository;
 import com.example.casa.Repository.OrganizationRepository;
 import com.example.casa.Repository.UserRepository;
@@ -98,6 +99,20 @@ public class OrganizationController {
 
 		Set<User> users = organization.getUsers();
 		return ResponseEntity.ok(users);
+	}
+
+	@GetMapping("/organization/{id}/info")
+	public ResponseEntity<?> getOrganizationInfo(@PathVariable String id) {
+		Organization organization = organizationRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Organization not found with id: " + id));
+
+		Set<User> users = organization.getUsers();
+
+		OrganizationInformation orgInfo = new OrganizationInformation();
+		orgInfo.setName(organization.getOrgName());
+		orgInfo.setPeople(users);
+
+		return ResponseEntity.ok(orgInfo);
 	}
 
 	@PostMapping("/organization/{orgId}/invite")

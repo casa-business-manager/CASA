@@ -1,5 +1,4 @@
 import React, { useCallback, useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import moment from "moment";
 import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -11,28 +10,28 @@ import {
 	createEvent,
 	updateEvent,
 	deleteEvent,
+	getOrganizationInfo,
 } from "../APIUtils/APIUtils";
 import EventDialog from "./EventDialog";
-import { getUsersInOrganization } from "../APIUtils/APIUtils";
 
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(Calendar);
 
-const OrganizationCalendar = () => {
-	const { orgId } = useParams();
+// TODO: color events by org?
+const BaseCalendar = ({ orgIds }) => {
 	const [currentUser, setCurrentUser] = useState(null);
 	const [events, setEvents] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [dialogOpen, setDialogOpen] = useState(false);
-	const [blockTimes, setBlockTimes] = useState({ start: null, end: null });
 	const [temporaryEvent, setTemporaryEvent] = useState(null); // shows on the calendar
 	const [menuEvent, setMenuEvent] = useState({}); // passed to the menu
 	const [editMenu, setEditMenu] = useState(false); // passed to the menu
-	const [orgPeople, setOrgPeople] = useState([]);
+	const [orgInfo, setOrgInfo] = useState([]);
 	const [loadedRanges, setLoadedRanges] = useState(
 		getCalendarBlock(moment().toDate())
 	);
 
+	// Get user
 	useEffect(() => {
 		const fetchCurrentUser = async () => {
 			try {
@@ -46,43 +45,68 @@ const OrganizationCalendar = () => {
 		fetchCurrentUser();
 	}, []);
 
+	// Call fetchData
 	useEffect(() => {
 		if (!currentUser) return;
 		fetchData(
 			loadedRanges.start.toISOString(),
 			loadedRanges.end.toISOString()
 		);
-	}, [orgId, currentUser]);
+	}, [currentUser, orgIds]);
 
+	// Get organization people
 	useEffect(() => {
+		if (!orgIds) {
+			return;
+		}
+
 		const fetchPeople = async () => {
-			const response = await getUsersInOrganization(orgId);
-			const orgPeopleWithNames = response.map((user) => ({
-				...user,
-				fullName: `${user.firstName} ${user.lastName}`,
-			}));
-			setOrgPeople(orgPeopleWithNames);
+			const orgInfoPromises = orgIds.map((orgId) =>
+				getOrganizationInfo(orgId)
+			);
+
+			var newOrgInfoList = [];
+			for (var i = 0; i < orgIds.length; i++) {
+				const orgInfoPromise = orgInfoPromises[i];
+				newOrgInfoList.push({
+					orgId: orgIds[i],
+					...(await orgInfoPromise),
+				});
+			}
+
+			setOrgInfo(newOrgInfoList);
 		};
 
 		fetchPeople();
-	}, [orgId]);
+	}, [orgIds]);
 
+	// Get events for a user in an org
 	const fetchData = async (startDate = null, endDate = null) => {
 		try {
-			const calendarData = await getCalendarData(
-				orgId,
-				currentUser.id,
-				startDate,
-				endDate
+			const calendarDataPromises = orgIds.map((orgId) =>
+				getCalendarData(orgId, currentUser.id, startDate, endDate)
 			);
-			const combinedEvents = [
-				...events,
-				...calendarData.events.map((event) => ({
-					...event,
-					start: moment(event.start).local().toDate(),
-					end: moment(event.end).local().toDate(),
-				})),
-			];
+
+			const combinedEvents = [...events];
+			for (const orgCalendarData of calendarDataPromises) {
+				const newEvents = (await orgCalendarData).events.map(
+					(event) => ({
+						...event,
+						start: moment(event.start).local().toDate(),
+						end: moment(event.end).local().toDate(),
+					})
+				);
+				const fixedNewEvents = newEvents.map((event) => {
+					event.organization = {
+						...event.organization,
+						people: event.organization.users,
+						name: event.organization.orgName,
+					};
+					return event;
+				});
+				combinedEvents.push(...fixedNewEvents);
+			}
+
 			const deduplicated = deleteDuplicates(combinedEvents);
 			setEvents(deduplicated);
 		} catch (error) {
@@ -92,6 +116,7 @@ const OrganizationCalendar = () => {
 		}
 	};
 
+	// Open Create menu on a new time block
 	const handleSelectSlot = useCallback(
 		({ start, end }) => {
 			if (!currentUser) return;
@@ -105,16 +130,17 @@ const OrganizationCalendar = () => {
 				description: "",
 				eventCreator: currentUser,
 				eventAccessors: [currentUser],
+				organization: orgInfo[0], // default org to add it to
 			};
 			setTemporaryEvent(fakeTempEventToKeepTheBoxOpen);
 			setMenuEvent(fakeTempEventToKeepTheBoxOpen);
 			setEditMenu(false);
 			setDialogOpen(true);
-			setBlockTimes({ start, end });
 		},
 		[currentUser]
 	);
 
+	// Base function for both saving and editing an event, needing function and id
 	const saveEvent = useCallback(
 		(apiFunction, id) =>
 			async (
@@ -147,6 +173,11 @@ const OrganizationCalendar = () => {
 						const filterOutCurrentEvent = prev.filter(
 							(event) => event.eventId !== createdEvent.eventId
 						);
+						createdEvent.organization = {
+							...createdEvent.organization,
+							people: createdEvent.organization.users,
+							name: createdEvent.organization.orgName,
+						};
 						return [
 							...filterOutCurrentEvent,
 							{
@@ -167,26 +198,32 @@ const OrganizationCalendar = () => {
 			}
 	);
 
-	const handleSaveEvent = useCallback(saveEvent(createEvent, orgId), [
-		saveEvent,
-	]);
+	// function to create a new event given orgID
+	const handleSaveEvent = useCallback(
+		(orgId) => saveEvent(createEvent, orgId),
+		[saveEvent]
+	);
 
+	// function to save an edited event
 	const handleEditEvent = useCallback(
 		(eventId) => saveEvent(updateEvent, eventId),
 		[saveEvent]
 	);
 
+	// control dialog closing
 	const handleCloseDialog = useCallback(() => {
 		setDialogOpen(false);
 		setTemporaryEvent(null);
 	}, []);
 
+	// control dialog for editing an event
 	const handleSelectEvent = useCallback((event) => {
 		setMenuEvent(event);
 		setEditMenu(true);
 		setDialogOpen(true);
 	}, []);
 
+	// control dialog for deleting an event
 	const handleDeleteEvent = useCallback(async (eventId) => {
 		setDialogOpen(false);
 		setTemporaryEvent(null);
@@ -196,6 +233,7 @@ const OrganizationCalendar = () => {
 		);
 	}, []);
 
+	// drag event to on calendar
 	const moveEvent = useCallback(
 		async ({
 			event,
@@ -229,6 +267,7 @@ const OrganizationCalendar = () => {
 		[setEvents]
 	);
 
+	// resize event on calendar
 	const resizeEvent = useCallback(
 		async ({ event, start, end }) => {
 			event.start = start;
@@ -250,6 +289,7 @@ const OrganizationCalendar = () => {
 		[setEvents]
 	);
 
+	// handler for going beyond the current range of lazily loaded events
 	const handleRangeChange = async (range) => {
 		const startDate = moment(range.start || range[0])
 			.startOf("day")
@@ -283,13 +323,14 @@ const OrganizationCalendar = () => {
 		}
 	};
 
+	// helper function for lazy loading to get calendar blocks
 	function getCalendarBlock(date) {
 		// find the first day of the month -> find the sunday before/on that
 		const firstDayMonth = moment(date).startOf("month");
+		const calendarBlockStart = moment(firstDayMonth).startOf("week");
 
 		// 5 week block
 		// todo: test with daylight savings time
-		const calendarBlockStart = moment(firstDayMonth).startOf("week");
 		const calendarBlockEnd = moment(calendarBlockStart)
 			.add(4, "weeks")
 			.endOf("week");
@@ -300,24 +341,30 @@ const OrganizationCalendar = () => {
 		};
 	}
 
+	// helper function to remove duplicated events (caused by hot reloads)
 	function deleteDuplicates(list) {
 		return list.filter(
 			(item, pos) =>
-				list.findIndex((x) => x.eventId === item.eventId) == pos
+				list.findIndex((x) => x.eventId === item.eventId) === pos
 		);
 	}
 
-	if (loading || !currentUser) {
+	// In case calendar is still waiting on API calls
+	if (loading || !currentUser || !orgIds) {
 		return <div>Loading...</div>;
 	}
 
 	return (
-		<div className="OrganizationCalendar">
+		<div className="BaseCalendar">
 			<DragAndDropCalendar
 				localizer={localizer}
 				selectable
 				onSelectEvent={handleSelectEvent}
-				onSelectSlot={handleSelectSlot}
+				onSelectSlot={
+					orgIds.length > 0
+						? handleSelectSlot
+						: console.log("no organizations")
+				}
 				events={deleteDuplicates(
 					[...events, temporaryEvent]
 						.filter(Boolean)
@@ -343,6 +390,7 @@ const OrganizationCalendar = () => {
 				resizable
 				onRangeChange={handleRangeChange}
 				draggableAccessor={(event) =>
+					event.eventCreator &&
 					event.eventCreator.id === currentUser.id
 				}
 			/>
@@ -354,12 +402,11 @@ const OrganizationCalendar = () => {
 				onDelete={handleDeleteEvent}
 				initialEvent={menuEvent}
 				initialIsEditing={editMenu}
-				organizationId={orgId}
 				currentUser={currentUser}
-				knownPeople={orgPeople}
+				orgInfo={orgInfo}
 			/>
 		</div>
 	);
 };
 
-export default OrganizationCalendar;
+export default BaseCalendar;

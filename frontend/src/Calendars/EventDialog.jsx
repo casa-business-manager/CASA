@@ -31,9 +31,8 @@ const EventDialog = ({
 	onDelete,
 	initialEvent,
 	initialIsEditing = false,
-	isOrganizationCalendar = true,
 	currentUser,
-	knownPeople,
+	orgInfo,
 }) => {
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
@@ -41,19 +40,11 @@ const EventDialog = ({
 	const [endTime, setEndTime] = useState(dayjs());
 	const [location, setLocation] = useState("");
 	const [people, setPeople] = useState([]);
+	const [organization, setOrganization] = useState(orgInfo[0]);
 
 	const [titleError, setTitleError] = useState(false);
 	const [locationError, setLocationError] = useState(false);
 	const [deleteConfirmed, setDeleteConfirmed] = useState(false);
-
-	// TODO:
-	// Display organization selection if and only if on personal calendar
-	// Use the default option "Personal" and the dropdown contains user's orgs
-	const [organizations, setOrganizations] = useState([
-		"Personal",
-		"org 1",
-		"Org 2",
-	]);
 
 	// TODO: GET organization's meeting services/saved locations
 	// Want to turn this into a map for "Create Zoom" -> GET new link -> text field has link now
@@ -70,6 +61,7 @@ const EventDialog = ({
 		setEndTime(dayjs(initialEvent.end));
 		setLocation(initialEvent.location ?? "");
 		setPeople(initialEvent.eventAccessors ?? []);
+		setOrganization(initialEvent.organization ?? orgInfo[0]); // TODO: No orgs?
 	}, [initialEvent]);
 
 	const handleBackend = async (isEdit = false) => {
@@ -98,7 +90,9 @@ const EventDialog = ({
 			return;
 		}
 
-		const saveFunction = isEdit ? onEdit(initialEvent.eventId) : onSave;
+		const saveFunction = isEdit
+			? onEdit(initialEvent.eventId)
+			: onSave(organization.orgId);
 		await saveFunction(
 			title,
 			description,
@@ -140,6 +134,10 @@ const EventDialog = ({
 
 	const getUserFullName = (userObject) =>
 		userObject.firstName + " " + userObject.lastName;
+
+	if (!organization) {
+		return <>Loading</>;
+	}
 
 	return (
 		<Dialog open={open} onClose={onCloseWrapper} fullWidth>
@@ -280,22 +278,51 @@ const EventDialog = ({
 						multiple
 						freeSolo
 						disableClearable
-						options={knownPeople}
+						options={
+							organization && orgInfo
+								? orgInfo
+										.find(
+											(org) =>
+												org.orgId === organization.orgId
+										)
+										.people.filter(
+											(person) =>
+												person.id !== currentUser.id
+										)
+								: []
+						}
 						getOptionLabel={(option) => getUserFullName(option)}
-						value={knownPeople.filter((user) =>
-							people.map((user) => user.id).includes(user.id)
-						)}
+						value={
+							organization && orgInfo
+								? orgInfo
+										.find(
+											(org) =>
+												org.orgId === organization.orgId
+										)
+										.people.filter((user) =>
+											people
+												.map((user) => user.id)
+												.includes(user.id)
+										)
+								: [currentUser]
+						}
 						onChange={handleAddPerson}
 						renderTags={(value, getTagProps) =>
 							value.map((user, index) => {
+								const deletable =
+									isEventCreator() &&
+									user.id !== currentUser.id;
 								return (
 									<Chip
 										label={getUserFullName(user)}
 										{...getTagProps({ index })}
 										onDelete={
-											isEventCreator() &&
-											user.id !== currentUser.id &&
-											(() => handleDeletePerson(user.id))
+											deletable
+												? () =>
+														handleDeletePerson(
+															user.id
+														)
+												: undefined
 										}
 										key={user.id}
 									/>
@@ -318,28 +345,30 @@ const EventDialog = ({
 					/>
 				</Box>
 
-				{/* Organization - only shown in user calendar */}
-				{!isOrganizationCalendar && (
-					<Box sx={{ display: "flex", alignItems: "flex-start" }}>
-						<ApartmentIcon
-							sx={{ color: "action.active", mr: 1, my: 2.7 }}
-						/>
-						<TextField
-							disabled={!isEventCreator()}
-							select
-							label="Organization"
-							defaultValue="Personal"
-							variant="standard"
-							sx={{ width: "30%" }}
-						>
-							{organizations.map((org, index) => (
-								<MenuItem key={index} value={org}>
-									{org}
-								</MenuItem>
-							))}
-						</TextField>
-					</Box>
-				)}
+				{/* Organization */}
+				<Box sx={{ display: "flex", alignItems: "flex-start" }}>
+					<ApartmentIcon
+						sx={{ color: "action.active", mr: 1, my: 2.7 }}
+					/>
+					<TextField
+						disabled={!isEventCreator() || initialIsEditing}
+						select
+						label="Organization"
+						value={organization}
+						variant="standard"
+						sx={{ width: "30%" }}
+						onChange={(e) => setOrganization(e.target.value)}
+						SelectProps={{
+							renderValue: (selected) => selected.name,
+						}}
+					>
+						{orgInfo.map((org, index) => (
+							<MenuItem key={index} value={org}>
+								{org.name}
+							</MenuItem>
+						))}
+					</TextField>
+				</Box>
 			</DialogContent>
 
 			<DialogActions>
