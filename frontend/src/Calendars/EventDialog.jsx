@@ -40,7 +40,7 @@ const EventDialog = ({
 	const [endTime, setEndTime] = useState(dayjs());
 	const [location, setLocation] = useState("");
 	const [people, setPeople] = useState([]);
-	const [organization, setOrganization] = useState(null);
+	const [organization, setOrganization] = useState(orgInfo[0]);
 
 	const [titleError, setTitleError] = useState(false);
 	const [locationError, setLocationError] = useState(false);
@@ -61,7 +61,7 @@ const EventDialog = ({
 		setEndTime(dayjs(initialEvent.end));
 		setLocation(initialEvent.location ?? "");
 		setPeople(initialEvent.eventAccessors ?? []);
-		setOrganization(initialEvent.organization ?? null); // TODO: No orgs?
+		setOrganization(initialEvent.organization ?? orgInfo[0]); // TODO: No orgs?
 	}, [initialEvent]);
 
 	const handleBackend = async (isEdit = false) => {
@@ -90,7 +90,6 @@ const EventDialog = ({
 			return;
 		}
 
-		console.log("initial", initialEvent);
 		const saveFunction = isEdit
 			? onEdit(initialEvent.eventId)
 			: onSave(organization.orgId);
@@ -301,7 +300,7 @@ const EventDialog = ({
 												.map((user) => user.id)
 												.includes(user.id)
 										)
-								: ""
+								: [currentUser]
 						}
 						onChange={handleAddPerson}
 						renderTags={(value, getTagProps) =>
@@ -349,6 +348,9 @@ const EventDialog = ({
 						variant="standard"
 						sx={{ width: "30%" }}
 						onChange={(e) => setOrganization(e.target.value)}
+						SelectProps={{
+							renderValue: (selected) => selected.name,
+						}}
 					>
 						{orgInfo.map((org, index) => (
 							<MenuItem key={index} value={org}>

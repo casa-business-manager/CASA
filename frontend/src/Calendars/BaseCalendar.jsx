@@ -91,17 +91,25 @@ const BaseCalendar = ({ orgIds }) => {
 
 			const combinedEvents = [...events];
 			for (const orgCalendarData of calendarDataPromises) {
-				combinedEvents.concat(
-					(await orgCalendarData).events.map((event) => ({
+				const newEvents = (await orgCalendarData).events.map(
+					(event) => ({
 						...event,
 						start: moment(event.start).local().toDate(),
 						end: moment(event.end).local().toDate(),
-					}))
+					})
 				);
+				const fixedNewEvents = newEvents.map((event) => {
+					event.organization = {
+						...event.organization,
+						people: event.organization.users,
+						name: event.organization.orgName,
+					};
+					return event;
+				});
+				combinedEvents.push(...fixedNewEvents);
 			}
 
 			const deduplicated = deleteDuplicates(combinedEvents);
-			console.log("events", deduplicated);
 			setEvents(deduplicated);
 		} catch (error) {
 			console.error("Error fetching calendar data:", error);
@@ -124,8 +132,9 @@ const BaseCalendar = ({ orgIds }) => {
 				description: "",
 				eventCreator: currentUser,
 				eventAccessors: [currentUser],
-				organization: null, // default org to add it to
+				organization: orgInfo[0], // default org to add it to
 			};
+			console.log("orginfo", orgInfo);
 			setTemporaryEvent(fakeTempEventToKeepTheBoxOpen);
 			setMenuEvent(fakeTempEventToKeepTheBoxOpen);
 			setEditMenu(false);
@@ -208,6 +217,7 @@ const BaseCalendar = ({ orgIds }) => {
 
 	// control dialog for editing an event
 	const handleSelectEvent = useCallback((event) => {
+		console.log("event", event);
 		setMenuEvent(event);
 		setEditMenu(true);
 		setDialogOpen(true);
