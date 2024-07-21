@@ -103,8 +103,8 @@ const Organization = () => {
 
     return (
         <div>
-            <NavBar />
-            <h1>Organization</h1>
+            <NavBar title="Organization" />
+            <div className='h1'></div>
             {organizations.length > 0 ? (
                 organizations.map(org => (
                     <div key={org.orgId} className="card" onClick={() => handleCardClick(org.orgId)}>
