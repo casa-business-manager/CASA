@@ -16,11 +16,12 @@ import IntegrationsCollapse from "./SettingsCollapses/IntegrationsCollapse";
 
 // orgId may be null
 const SettingsDialog = ({ dialogOpen, onClose, onSave, orgSettings }) => {
-	const [open, setOpen] = useState(true);
+	const defaultComponent = <Typography>Select a tab</Typography>;
+	const [settingsPage, setSettingsPage] = useState(defaultComponent);
 
-	const handleClick = () => {
-		setOpen(!open);
-	};
+	useEffect(() => {
+		dialogOpen && setSettingsPage(defaultComponent);
+	}, [dialogOpen]);
 
 	const onCloseWrapper = () => {
 		onClose();
@@ -62,27 +63,13 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgSettings }) => {
 						component="nav"
 						aria-labelledby="nested-list-subheader"
 					>
-						<OrganizationTab />
+						<OrganizationTab onClick={setSettingsPage} />
 						<IntegrationsCollapse>
 							<MeetingsTab />
 						</IntegrationsCollapse>
 					</List>
-					{/* TODO: change this to the actual setting page */}
-					<Box sx={{ flex: 3 }}>
-						<Typography>Settings page goes here</Typography>
-						<Typography>
-							balls balls balls balls balls balls balls balls
-							balls balls balls balls balls balls balls balls
-							balls balls balls balls balls balls balls balls
-							balls balls balls balls balls balls balls balls
-							balls balls balls balls balls balls balls balls
-							balls balls balls balls balls balls balls balls
-							balls balls balls balls balls balls balls balls
-							balls balls balls balls balls balls balls balls
-							balls balls balls balls balls balls balls balls
-							balls balls balls balls balls balls balls balls
-						</Typography>
-					</Box>
+
+					<Box sx={{ flex: 3, m: 2 }}>{settingsPage}</Box>
 				</Box>
 			</DialogContent>
 

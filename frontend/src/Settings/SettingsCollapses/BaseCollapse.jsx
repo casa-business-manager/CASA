@@ -8,7 +8,7 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 
 const BaseCollapse = ({ Icon, Label, indentLevel = 0, page, children }) => {
-	const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(true);
 
 	const handleClick = () => {
 		setOpen(!open);
@@ -21,8 +21,8 @@ const BaseCollapse = ({ Icon, Label, indentLevel = 0, page, children }) => {
 	return (
 		<>
 			<ListItemButton
-				sx={{ pl: 2 * indentLevel + 2 }} // also in BaseTab
 				onClick={handleClick}
+				sx={{ pl: 2 * indentLevel + 2 }} // also in BaseTab
 			>
 				<ListItemIcon>
 					<Icon />
