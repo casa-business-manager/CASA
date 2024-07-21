@@ -83,9 +83,7 @@ const Organization = () => {
 			const data = await updateOrganization(updatedOrg);
 			console.log("Organization updated:", data);
 			setOrganizations(
-				organizations.map((org) =>
-					org.orgId === data.orgId ? data : org
-				)
+				organizations.map((org) => (org.orgId === data.orgId ? data : org)),
 			);
 			setEditingOrg(null);
 			setOrgName("");
@@ -159,20 +157,11 @@ const Organization = () => {
 
 			{isDialogOpen && (
 				<div className="dialog-overlay" onClick={closeDialog}>
-					<div
-						className="dialog"
-						onClick={(e) => e.stopPropagation()}
-					>
-						<h2>
-							{editingOrg
-								? "Edit Organization"
-								: "Create Organization"}
-						</h2>
+					<div className="dialog" onClick={(e) => e.stopPropagation()}>
+						<h2>{editingOrg ? "Edit Organization" : "Create Organization"}</h2>
 						<form
 							onSubmit={
-								editingOrg
-									? handleUpdateOrganization
-									: handleCreateOrganization
+								editingOrg ? handleUpdateOrganization : handleCreateOrganization
 							}
 						>
 							<div>
@@ -189,9 +178,7 @@ const Organization = () => {
 								<input
 									type="text"
 									value={orgDescription}
-									onChange={(e) =>
-										setOrgDescription(e.target.value)
-									}
+									onChange={(e) => setOrgDescription(e.target.value)}
 									required
 								/>
 							</div>
@@ -200,15 +187,11 @@ const Organization = () => {
 								<input
 									type="text"
 									value={orgLocation}
-									onChange={(e) =>
-										setOrgLocation(e.target.value)
-									}
+									onChange={(e) => setOrgLocation(e.target.value)}
 									required
 								/>
 							</div>
-							<button type="submit">
-								{editingOrg ? "Update" : "Create"}
-							</button>
+							<button type="submit">{editingOrg ? "Update" : "Create"}</button>
 						</form>
 					</div>
 				</div>

@@ -8,7 +8,7 @@ const request = (options) => {
 	if (sessionStorage.getItem(ACCESS_TOKEN)) {
 		headers.append(
 			"Authorization",
-			"Bearer " + sessionStorage.getItem(ACCESS_TOKEN)
+			"Bearer " + sessionStorage.getItem(ACCESS_TOKEN),
 		);
 	}
 
@@ -67,7 +67,7 @@ export function getCalendarData(
 	orgId,
 	userId,
 	startDate = null,
-	endDate = null
+	endDate = null,
 ) {
 	return request({
 		url:
@@ -128,9 +128,7 @@ export function getOrganizations() {
 				method: "GET",
 				headers: {
 					"Content-Type": "application/json",
-					Authorization: `Bearer ${sessionStorage.getItem(
-						ACCESS_TOKEN
-					)}`,
+					Authorization: `Bearer ${sessionStorage.getItem(ACCESS_TOKEN)}`,
 				},
 			});
 		})
@@ -194,12 +192,7 @@ export const inviteUserToOrganization = async (organizationId, userEmail) => {
 
 export const removeUserFromOrganization = async (organizationId, userId) => {
 	return request({
-		url:
-			API_BASE_URL +
-			"/organization/" +
-			organizationId +
-			"/user/" +
-			userId,
+		url: API_BASE_URL + "/organization/" + organizationId + "/user/" + userId,
 		method: "DELETE",
 	})
 		.then((response) => {

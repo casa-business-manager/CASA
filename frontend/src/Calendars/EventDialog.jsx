@@ -99,7 +99,7 @@ const EventDialog = ({
 			startTime.toDate(),
 			endTime.toDate(),
 			location,
-			people
+			people,
 		);
 
 		onCloseWrapper();
@@ -184,9 +184,7 @@ const EventDialog = ({
 						marginBottom: 4,
 					}}
 				>
-					<ViewHeadlineIcon
-						sx={{ color: "action.active", mr: 1, my: 2.5 }}
-					/>
+					<ViewHeadlineIcon sx={{ color: "action.active", mr: 1, my: 2.5 }} />
 					<TextField
 						disabled={!isEventCreator()}
 						label="Description"
@@ -200,12 +198,8 @@ const EventDialog = ({
 				</Box>
 
 				{/* Time Picker */}
-				<Box
-					sx={{ display: "flex", alignItems: "flex-start", mb: 1.5 }}
-				>
-					<AccessTimeFilledIcon
-						sx={{ color: "action.active", mr: 1, mt: 2 }}
-					/>
+				<Box sx={{ display: "flex", alignItems: "flex-start", mb: 1.5 }}>
+					<AccessTimeFilledIcon sx={{ color: "action.active", mr: 1, mt: 2 }} />
 					<LocalizationProvider dateAdapter={AdapterDayjs}>
 						<Box sx={{ mr: 0 }}>
 							<TimePicker
@@ -239,18 +233,14 @@ const EventDialog = ({
 
 				{/* Location */}
 				<Box sx={{ display: "flex", alignItems: "flex-start" }}>
-					<LocationOnIcon
-						sx={{ color: "action.active", mr: 1, my: 3.5 }}
-					/>
+					<LocationOnIcon sx={{ color: "action.active", mr: 1, my: 3.5 }} />
 					<Autocomplete
 						disabled={!isEventCreator()}
 						freeSolo
 						options={meetingLocations}
 						inputValue={location}
 						fullWidth
-						onInputChange={(event, newInputValue) =>
-							setLocation(newInputValue)
-						}
+						onInputChange={(event, newInputValue) => setLocation(newInputValue)}
 						renderInput={(params) => (
 							<TextField
 								{...params}
@@ -270,9 +260,7 @@ const EventDialog = ({
 
 				{/* People */}
 				<Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
-					<PeopleAltIcon
-						sx={{ color: "action.active", mr: 1, my: 2.5 }}
-					/>
+					<PeopleAltIcon sx={{ color: "action.active", mr: 1, my: 2.5 }} />
 					<Autocomplete
 						disabled={!isEventCreator()}
 						multiple
@@ -281,28 +269,17 @@ const EventDialog = ({
 						options={
 							organization && orgInfo
 								? orgInfo
-										.find(
-											(org) =>
-												org.orgId === organization.orgId
-										)
-										.people.filter(
-											(person) =>
-												person.id !== currentUser.id
-										)
+										.find((org) => org.orgId === organization.orgId)
+										.people.filter((person) => person.id !== currentUser.id)
 								: []
 						}
 						getOptionLabel={(option) => getUserFullName(option)}
 						value={
 							organization && orgInfo
 								? orgInfo
-										.find(
-											(org) =>
-												org.orgId === organization.orgId
-										)
+										.find((org) => org.orgId === organization.orgId)
 										.people.filter((user) =>
-											people
-												.map((user) => user.id)
-												.includes(user.id)
+											people.map((user) => user.id).includes(user.id),
 										)
 								: [currentUser]
 						}
@@ -310,19 +287,13 @@ const EventDialog = ({
 						renderTags={(value, getTagProps) =>
 							value.map((user, index) => {
 								const deletable =
-									isEventCreator() &&
-									user.id !== currentUser.id;
+									isEventCreator() && user.id !== currentUser.id;
 								return (
 									<Chip
 										label={getUserFullName(user)}
 										{...getTagProps({ index })}
 										onDelete={
-											deletable
-												? () =>
-														handleDeletePerson(
-															user.id
-														)
-												: undefined
+											deletable ? () => handleDeletePerson(user.id) : undefined
 										}
 										key={user.id}
 									/>
@@ -347,9 +318,7 @@ const EventDialog = ({
 
 				{/* Organization */}
 				<Box sx={{ display: "flex", alignItems: "flex-start" }}>
-					<ApartmentIcon
-						sx={{ color: "action.active", mr: 1, my: 2.7 }}
-					/>
+					<ApartmentIcon sx={{ color: "action.active", mr: 1, my: 2.7 }} />
 					<TextField
 						disabled={!isEventCreator() || initialIsEditing}
 						select
@@ -422,11 +391,7 @@ const EventDialog = ({
 						<Button onClick={onCloseWrapper} color="primary">
 							Cancel
 						</Button>
-						<Button
-							onClick={handleSave}
-							color="primary"
-							variant="contained"
-						>
+						<Button onClick={handleSave} color="primary" variant="contained">
 							Create
 						</Button>
 					</>

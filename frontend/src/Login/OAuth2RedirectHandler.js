@@ -19,16 +19,10 @@ const OAuth2RedirectHandler = () => {
 
 	if (token) {
 		sessionStorage.setItem(ACCESS_TOKEN, token);
-		return (
-			<Navigate to="/organization" state={{ from: location }} replace />
-		);
+		return <Navigate to="/organization" state={{ from: location }} replace />;
 	} else {
 		return (
-			<Navigate
-				to="/login"
-				state={{ from: location, error: error }}
-				replace
-			/>
+			<Navigate to="/login" state={{ from: location, error: error }} replace />
 		);
 	}
 };
