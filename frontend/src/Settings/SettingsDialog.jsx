@@ -6,8 +6,8 @@ import {
 	DialogTitle,
 	Button,
 	Box,
+	Typography,
 } from "@mui/material";
-import Typography from "@mui/material/Typography";
 import List from "@mui/material/List";
 
 import OrganizationTab from "./SettingTabs/OrganizationTab";
@@ -15,8 +15,10 @@ import MeetingsTab from "./SettingTabs/MeetingsTab";
 import IntegrationsCollapse from "./SettingsCollapses/IntegrationsCollapse";
 
 // orgId may be null
-const SettingsDialog = ({ dialogOpen, onClose, onSave, orgSettings }) => {
-	const defaultComponent = <Typography>Select a tab</Typography>;
+const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
+	const defaultComponent = (
+		<Typography variant="h5">Select a setting</Typography>
+	);
 	const [settingsPage, setSettingsPage] = useState(defaultComponent);
 
 	useEffect(() => {
@@ -31,11 +33,6 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgSettings }) => {
 		onCloseWrapper();
 		onSave();
 	};
-
-	// TODO: replace with any awaited components
-	if (dialogOpen && !orgSettings.services) {
-		return <Dialog open={false} />;
-	}
 
 	return (
 		<Dialog
@@ -52,27 +49,37 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgSettings }) => {
 		>
 			<DialogTitle>Organization settings</DialogTitle>
 
+			{/* Scrollable list of settings */}
 			<DialogContent>
 				<Box height="65vh" sx={{ display: "flex", gap: 1 }}>
 					<List
 						sx={{
 							width: "100%",
 							maxWidth: 360,
-							bgcolor: "background.paper",
+							overflow: "auto",
 						}}
 						component="nav"
 						aria-labelledby="nested-list-subheader"
 					>
-						<OrganizationTab onClick={setSettingsPage} />
+						<OrganizationTab
+							orgId={orgId}
+							onClick={setSettingsPage}
+						/>
 						<IntegrationsCollapse>
-							<MeetingsTab />
+							<MeetingsTab
+								orgId={orgId}
+								onClick={setSettingsPage}
+							/>
 						</IntegrationsCollapse>
 					</List>
 
-					<Box sx={{ flex: 3, m: 2 }}>{settingsPage}</Box>
+					<Box sx={{ flex: 3, m: 2, overflow: "auto" }}>
+						{settingsPage}
+					</Box>
 				</Box>
 			</DialogContent>
 
+			{/* Settings page */}
 			<DialogActions>
 				<Button onClick={onCloseWrapper} color="primary">
 					Cancel

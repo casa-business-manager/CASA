@@ -5,18 +5,6 @@ import { IconButton } from "@mui/material";
 
 const SettingsButton = ({ orgId }) => {
 	const [dialogOpen, setDialogOpen] = useState(false);
-	const [orgSettings, setOrgSettings] = useState({});
-
-	useEffect(() => {
-		const fetchOrganizationSettings = async () => {
-			const settings = await (() => ({
-				services: ["zoom", "ms", "gMeets"],
-			}))();
-			setOrgSettings(settings);
-		};
-
-		fetchOrganizationSettings();
-	}, [orgId]);
 
 	// Maybe change so we only fetch settings when clicked?
 	const handleButtonClick = () => {
@@ -39,7 +27,7 @@ const SettingsButton = ({ orgId }) => {
 				dialogOpen={dialogOpen}
 				onClose={handleDialogClose}
 				onSave={handleDialogSave}
-				orgSettings={orgSettings}
+				orgId={orgId}
 			/>
 		</>
 	);
