@@ -16,9 +16,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.casa.Payload.AuthResponse;
-import com.example.casa.Payload.LoginRequest;
-import com.example.casa.Payload.SignUpRequest;
+import com.example.casa.Payload.User.AuthResponse;
+import com.example.casa.Payload.User.LoginRequest;
+import com.example.casa.Payload.User.SignUpRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
@@ -29,86 +29,87 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Isolated
 public class AuthControllerIntegrationTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+	@Autowired
+	private ObjectMapper objectMapper;
 
-    private String newUserEmail;
-    private String newUserPassword;
-    private String signupJson;
+	private String newUserEmail;
+	private String newUserPassword;
+	private String signupJson;
 
-    @BeforeAll
-    void setup() throws Exception {
-        newUserEmail = "walter@white.com";
-        newUserPassword = "password";
+	@BeforeAll
+	void setup() throws Exception {
+		newUserEmail = "walter@white.com";
+		newUserPassword = "password";
 
-        // Signup request
-        SignUpRequest signUpRequest = new SignUpRequest();
-        signUpRequest.setFirstName("Walter");
-        signUpRequest.setLastName("White");
-        signUpRequest.setEmail(newUserEmail);
-        signUpRequest.setPassword(newUserPassword);
+		// Signup request
+		SignUpRequest signUpRequest = new SignUpRequest();
+		signUpRequest.setFirstName("Walter");
+		signUpRequest.setLastName("White");
+		signUpRequest.setEmail(newUserEmail);
+		signUpRequest.setPassword(newUserPassword);
 
-        signupJson = objectMapper.writeValueAsString(signUpRequest);
-    }
+		signupJson = objectMapper.writeValueAsString(signUpRequest);
+	}
 
-    @Test
-    void signup() throws Exception {
-        // Perform signup
-        mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(signupJson))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+	@Test
+	void signup() throws Exception {
+		// Perform signup
+		mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(signupJson))
+				.andExpect(MockMvcResultMatchers.status().isCreated());
 
-        // Second signup request
-        mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(signupJson))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
+		// Second signup request
+		mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(signupJson))
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
 
-    @Test
-    void loginNewUser() throws Exception {
-        // Login request
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setEmail("heisenberg@meth.com");
-        loginRequest.setPassword("jessie");
-        String loginJson = objectMapper.writeValueAsString(loginRequest);
+	@Test
+	void loginNewUser() throws Exception {
+		// Login request
+		LoginRequest loginRequest = new LoginRequest();
+		loginRequest.setEmail("heisenberg@meth.com");
+		loginRequest.setPassword("jessie");
+		String loginJson = objectMapper.writeValueAsString(loginRequest);
 
-        // Perform login
-        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(loginJson))
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
-    }
+		// Perform login
+		mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(loginJson))
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized());
+	}
 
-    @Test
-    void loginExistingUser() throws Exception {
-        // Perform signup
-        mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(signupJson))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+	@Test
+	void loginExistingUser() throws Exception {
+		// Perform signup
+		mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(signupJson))
+				.andExpect(MockMvcResultMatchers.status().isCreated());
 
-        // Login request
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setEmail(newUserEmail);
-        loginRequest.setPassword(newUserPassword);
-        String loginJson = objectMapper.writeValueAsString(loginRequest);
+		// Login request
+		LoginRequest loginRequest = new LoginRequest();
+		loginRequest.setEmail(newUserEmail);
+		loginRequest.setPassword(newUserPassword);
+		String loginJson = objectMapper.writeValueAsString(loginRequest);
 
-        // Perform login
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(loginJson))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+		// Perform login
+		ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(loginJson))
+				.andExpect(MockMvcResultMatchers.status().isOk());
 
-        // Verify login response
-        AuthResponse authResponse = objectMapper.readValue(result.andReturn().getResponse().getContentAsString(), AuthResponse.class);
-        String token = authResponse.getAccessToken();
+		// Verify login response
+		AuthResponse authResponse = objectMapper.readValue(result.andReturn().getResponse().getContentAsString(),
+				AuthResponse.class);
+		String token = authResponse.getAccessToken();
 
-        // Assert token is not empty
-        org.junit.jupiter.api.Assertions.assertNotNull(token);
-    }
+		// Assert token is not empty
+		org.junit.jupiter.api.Assertions.assertNotNull(token);
+	}
 }

@@ -8,9 +8,9 @@ import com.example.casa.Model.Organization;
 
 public interface OrganizationRepository extends JpaRepository<Organization, String> {
 
-    Optional<Organization> findByOrgName(String orgName);
+	Optional<Organization> findByOrgName(String orgName);
 
-    Optional<Organization> findByOrgLocation(String orgLocation);
+	Optional<Organization> findByOrgLocation(String orgLocation);
 
-    Optional<Organization> findByOrgDescription(String orgDescription);
+	Optional<Organization> findByOrgDescription(String orgDescription);
 }

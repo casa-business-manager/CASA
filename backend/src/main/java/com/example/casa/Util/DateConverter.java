@@ -10,7 +10,7 @@ public class DateConverter {
 		try {
 			ZonedDateTime zonedDateTime = ZonedDateTime.parse(isoString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 			return Date.from(zonedDateTime.toInstant());
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return new Date(0);
 		}
 	}

@@ -8,15 +8,8 @@ RUN apt-get clean && apt-get update && apt-get install -y \
   curl \
   mariadb-server \
   nodejs \
-  git 
-
-# install java jdk
-RUN wget https://download.oracle.com/java/22/latest/jdk-22_linux-x64_bin.tar.gz \
-  && tar -xvf jdk-22_linux-x64_bin.tar.gz
-RUN mv jdk-22.0.2 /opt/
-ENV JAVA_HOME=/opt/jdk-22.0.2
-ENV PATH="$JAVA_HOME/bin:$PATH"
-	# do not use curly braces like ${PATH} because that's apparantly the host OS's PATH variable, not the container's
+  git \
+  openjdk-21-jdk
 
 # install maven
 RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.8/binaries/apache-maven-3.9.8-bin.tar.gz \
@@ -34,6 +27,8 @@ RUN sudo -E bash nodesource_setup.sh
 RUN sudo apt-get install -y nodejs
 
 # Useful shortcuts
-RUN alias kill3000="fuser -k -n tcp 3000"
-RUN alias kill8080="fuser -k -n tcp 8080"
-RUN alias resetDB="sudo mariadb -e 'DROP DATABASE casa;'; sudo mariadb -e 'CREATE DATABASE casa;'"
+RUN echo 'alias kill3000="fuser -k -n tcp 3000"' >> /etc/bash.bashrc
+RUN echo 'alias kill8080="fuser -k -n tcp 8080"' >> /etc/bash.bashrc
+RUN echo 'alias mvnStart="mvn spring-boot:run"' >> /etc/bash.bashrc
+RUN echo "alias resetDB='sudo mariadb -e \"DROP DATABASE casa;\"; sudo mariadb -e \"CREATE DATABASE casa;\"'" >> /etc/bash.bashrc
+
