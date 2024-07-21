@@ -36,7 +36,7 @@ const SettingsButton = ({ orgId }) => {
 			</IconButton>
 
 			<SettingsDialog
-				open={dialogOpen}
+				dialogOpen={dialogOpen}
 				onClose={handleDialogClose}
 				onSave={handleDialogSave}
 				orgSettings={orgSettings}
