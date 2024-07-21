@@ -121,11 +121,11 @@ const Organization = () => {
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error: {error}</div>;
 
-    return (
-        <div>
-            <NavBar title="Organization" />
-            <div className='h1'></div>
-            
+	return (
+		<div>
+			<NavBar title="Organization" />
+			<div className="h1"></div>
+
 			<IconButton
 				aria-label="user calendar button"
 				onClick={handleCalendarClick}
