@@ -123,9 +123,9 @@ const Organization = () => {
 
 	return (
 		<div>
-			<NavBar />
+			<NavBar title="Organization" />
+			<div className="h1"></div>
 
-			{/* Temporary place for the button to get to user calendar. TODO: make sidebar and put this there instead */}
 			<IconButton
 				aria-label="user calendar button"
 				onClick={handleCalendarClick}
@@ -133,7 +133,6 @@ const Organization = () => {
 				<CalendarTodayIcon />
 			</IconButton>
 
-			<h1>Organization</h1>
 			{organizations.length > 0 ? (
 				organizations.map((org) => (
 					<div
