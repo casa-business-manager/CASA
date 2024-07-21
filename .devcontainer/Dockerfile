@@ -11,10 +11,10 @@ RUN apt-get clean && apt-get update && apt-get install -y \
   git 
 
 # install java jdk
-RUN wget https://download.oracle.com/java/22/latest/jdk-22_linux-x64_bin.tar.gz \
-  && tar -xvf jdk-22_linux-x64_bin.tar.gz
-RUN mv jdk-22.0.2 /opt/
-ENV JAVA_HOME=/opt/jdk-22.0.2
+RUN wget https://download.oracle.com/java/22/latest/jdk-22_linux-x64_bin.tar.gz
+RUN mkdir jdk && tar -xvf jdk-22_linux-x64_bin.tar.gz -C jdk --strip-components 1
+RUN mv jdk /opt/
+ENV JAVA_HOME=/opt/jdk
 ENV PATH="$JAVA_HOME/bin:$PATH"
 	# do not use curly braces like ${PATH} because that's apparantly the host OS's PATH variable, not the container's
 
