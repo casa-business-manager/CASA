@@ -127,8 +127,8 @@ const UserManagement = () => {
 				<DialogTitle>Invite User</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
-						To invite a user to this organization, please enter
-						their email address here.
+						To invite a user to this organization, please enter their email
+						address here.
 					</DialogContentText>
 					<TextField
 						autoFocus

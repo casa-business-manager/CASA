@@ -13,7 +13,7 @@ const UserCalendar = () => {
 		const fetchOrganizations = async () => {
 			try {
 				const organizationIds = (await getOrganizations()).map(
-					(org) => org.orgId
+					(org) => org.orgId,
 				);
 				setOrganizations(organizationIds);
 			} catch (error) {

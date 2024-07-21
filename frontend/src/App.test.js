@@ -3,7 +3,7 @@ import App from "./App";
 
 test("tests are able to run", () => {
 	expect("this string is equal to itself").toBe(
-		"this string is equal to itself"
+		"this string is equal to itself",
 	);
 });
 

@@ -28,7 +28,7 @@ const BaseCalendar = ({ orgIds }) => {
 	const [editMenu, setEditMenu] = useState(false); // passed to the menu
 	const [orgInfo, setOrgInfo] = useState([]);
 	const [loadedRanges, setLoadedRanges] = useState(
-		getCalendarBlock(moment().toDate())
+		getCalendarBlock(moment().toDate()),
 	);
 
 	// Get user
@@ -48,10 +48,7 @@ const BaseCalendar = ({ orgIds }) => {
 	// Call fetchData
 	useEffect(() => {
 		if (!currentUser) return;
-		fetchData(
-			loadedRanges.start.toISOString(),
-			loadedRanges.end.toISOString()
-		);
+		fetchData(loadedRanges.start.toISOString(), loadedRanges.end.toISOString());
 	}, [currentUser, orgIds]);
 
 	// Get organization people
@@ -61,9 +58,7 @@ const BaseCalendar = ({ orgIds }) => {
 		}
 
 		const fetchPeople = async () => {
-			const orgInfoPromises = orgIds.map((orgId) =>
-				getOrganizationInfo(orgId)
-			);
+			const orgInfoPromises = orgIds.map((orgId) => getOrganizationInfo(orgId));
 
 			var newOrgInfoList = [];
 			for (var i = 0; i < orgIds.length; i++) {
@@ -84,18 +79,16 @@ const BaseCalendar = ({ orgIds }) => {
 	const fetchData = async (startDate = null, endDate = null) => {
 		try {
 			const calendarDataPromises = orgIds.map((orgId) =>
-				getCalendarData(orgId, currentUser.id, startDate, endDate)
+				getCalendarData(orgId, currentUser.id, startDate, endDate),
 			);
 
 			const combinedEvents = [...events];
 			for (const orgCalendarData of calendarDataPromises) {
-				const newEvents = (await orgCalendarData).events.map(
-					(event) => ({
-						...event,
-						start: moment(event.start).local().toDate(),
-						end: moment(event.end).local().toDate(),
-					})
-				);
+				const newEvents = (await orgCalendarData).events.map((event) => ({
+					...event,
+					start: moment(event.start).local().toDate(),
+					end: moment(event.end).local().toDate(),
+				}));
 				const fixedNewEvents = newEvents.map((event) => {
 					event.organization = {
 						...event.organization,
@@ -137,20 +130,13 @@ const BaseCalendar = ({ orgIds }) => {
 			setEditMenu(false);
 			setDialogOpen(true);
 		},
-		[currentUser]
+		[currentUser],
 	);
 
 	// Base function for both saving and editing an event, needing function and id
 	const saveEvent = useCallback(
 		(apiFunction, id) =>
-			async (
-				title,
-				description,
-				startTime,
-				endTime,
-				location,
-				people
-			) => {
+			async (title, description, startTime, endTime, location, people) => {
 				if (!currentUser) return;
 
 				const peopleIds = people.map((person) => person.id);
@@ -171,7 +157,7 @@ const BaseCalendar = ({ orgIds }) => {
 
 					setEvents((prev) => {
 						const filterOutCurrentEvent = prev.filter(
-							(event) => event.eventId !== createdEvent.eventId
+							(event) => event.eventId !== createdEvent.eventId,
 						);
 						createdEvent.organization = {
 							...createdEvent.organization,
@@ -182,9 +168,7 @@ const BaseCalendar = ({ orgIds }) => {
 							...filterOutCurrentEvent,
 							{
 								...createdEvent,
-								start: moment(createdEvent.start)
-									.local()
-									.toDate(), // Converting to date
+								start: moment(createdEvent.start).local().toDate(), // Converting to date
 								end: moment(createdEvent.end).local().toDate(), // Converting to date
 							},
 						];
@@ -195,19 +179,19 @@ const BaseCalendar = ({ orgIds }) => {
 					setDialogOpen(false);
 					setTemporaryEvent(null);
 				}
-			}
+			},
 	);
 
 	// function to create a new event given orgID
 	const handleSaveEvent = useCallback(
 		(orgId) => saveEvent(createEvent, orgId),
-		[saveEvent]
+		[saveEvent],
 	);
 
 	// function to save an edited event
 	const handleEditEvent = useCallback(
 		(eventId) => saveEvent(updateEvent, eventId),
-		[saveEvent]
+		[saveEvent],
 	);
 
 	// control dialog closing
@@ -229,18 +213,13 @@ const BaseCalendar = ({ orgIds }) => {
 		setTemporaryEvent(null);
 		await deleteEvent(eventId);
 		setEvents((prevEvents) =>
-			prevEvents.filter((prevEvent) => prevEvent.eventId !== eventId)
+			prevEvents.filter((prevEvent) => prevEvent.eventId !== eventId),
 		);
 	}, []);
 
 	// drag event to on calendar
 	const moveEvent = useCallback(
-		async ({
-			event,
-			start,
-			end,
-			isAllDay: droppedOnAllDaySlot = false,
-		}) => {
+		async ({ event, start, end, isAllDay: droppedOnAllDaySlot = false }) => {
 			const { allDay } = event;
 			if (!allDay && droppedOnAllDaySlot) {
 				event.allDay = true;
@@ -259,12 +238,12 @@ const BaseCalendar = ({ orgIds }) => {
 								...modifiedEvent,
 								start: moment(modifiedEvent.start).toDate(),
 								end: moment(modifiedEvent.end).toDate(),
-						  }
-						: prevEvent
-				)
+							}
+						: prevEvent,
+				),
 			);
 		},
-		[setEvents]
+		[setEvents],
 	);
 
 	// resize event on calendar
@@ -281,12 +260,12 @@ const BaseCalendar = ({ orgIds }) => {
 								...modifiedEvent,
 								start: moment(modifiedEvent.start).toDate(),
 								end: moment(modifiedEvent.end).toDate(),
-						  }
-						: prevEvent
-				)
+							}
+						: prevEvent,
+				),
 			);
 		},
-		[setEvents]
+		[setEvents],
 	);
 
 	// handler for going beyond the current range of lazily loaded events
@@ -302,7 +281,7 @@ const BaseCalendar = ({ orgIds }) => {
 			const firstDayBlock = getCalendarBlock(startDate);
 			await fetchData(
 				firstDayBlock.start.toISOString(),
-				loadedRanges.start.toISOString()
+				loadedRanges.start.toISOString(),
 			);
 			setLoadedRanges((oldLoadedRange) => {
 				oldLoadedRange.start = firstDayBlock.start;
@@ -314,7 +293,7 @@ const BaseCalendar = ({ orgIds }) => {
 			const lastDayBlock = getCalendarBlock(endDate);
 			await fetchData(
 				loadedRanges.end.toISOString(),
-				lastDayBlock.end.toISOString()
+				lastDayBlock.end.toISOString(),
 			);
 			setLoadedRanges((oldLoadedRange) => {
 				oldLoadedRange.end = lastDayBlock.end;
@@ -344,8 +323,7 @@ const BaseCalendar = ({ orgIds }) => {
 	// helper function to remove duplicated events (caused by hot reloads)
 	function deleteDuplicates(list) {
 		return list.filter(
-			(item, pos) =>
-				list.findIndex((x) => x.eventId === item.eventId) === pos
+			(item, pos) => list.findIndex((x) => x.eventId === item.eventId) === pos,
 		);
 	}
 
@@ -361,25 +339,21 @@ const BaseCalendar = ({ orgIds }) => {
 				selectable
 				onSelectEvent={handleSelectEvent}
 				onSelectSlot={
-					orgIds.length > 0
-						? handleSelectSlot
-						: console.log("no organizations")
+					orgIds.length > 0 ? handleSelectSlot : console.log("no organizations")
 				}
 				events={deleteDuplicates(
-					[...events, temporaryEvent]
-						.filter(Boolean)
-						.map((event) => ({
-							eventId: event.eventId,
-							title: event.title,
-							description: event.description,
-							location: event.location,
-							start: moment(event.start).local().toDate(),
-							end: moment(event.end).local().toDate(),
-							allDay: event.allDay,
-							organization: event.organization,
-							eventCreator: event.eventCreator,
-							eventAccessors: event.eventAccessors,
-						}))
+					[...events, temporaryEvent].filter(Boolean).map((event) => ({
+						eventId: event.eventId,
+						title: event.title,
+						description: event.description,
+						location: event.location,
+						start: moment(event.start).local().toDate(),
+						end: moment(event.end).local().toDate(),
+						allDay: event.allDay,
+						organization: event.organization,
+						eventCreator: event.eventCreator,
+						eventAccessors: event.eventAccessors,
+					})),
 				)}
 				defaultDate={moment().toDate()}
 				defaultView={Views.WEEK}
@@ -390,8 +364,7 @@ const BaseCalendar = ({ orgIds }) => {
 				resizable
 				onRangeChange={handleRangeChange}
 				draggableAccessor={(event) =>
-					event.eventCreator &&
-					event.eventCreator.id === currentUser.id
+					event.eventCreator && event.eventCreator.id === currentUser.id
 				}
 			/>
 			<EventDialog
