@@ -55,7 +55,7 @@ const OrganizationTabSettings = (orgSettings) => {
 	);
 };
 
-const OrganizationTab = ({ onClick, orgId, indentLevel = 0 }) => {
+const OrganizationTab = ({ orgId, onClick, selected, indentLevel = 0 }) => {
 	const [orgSettings, setOrgSettings] = useState({});
 
 	useEffect(() => {
@@ -69,7 +69,6 @@ const OrganizationTab = ({ onClick, orgId, indentLevel = 0 }) => {
 				orgDescription: "org Description",
 				orgLocation: "org Location",
 			};
-			console.log(settings);
 			setOrgSettings(settings);
 		};
 
@@ -81,7 +80,10 @@ const OrganizationTab = ({ onClick, orgId, indentLevel = 0 }) => {
 			Icon={ApartmentIcon}
 			Label={"Organization"}
 			indentLevel={indentLevel}
-			onClick={() => onClick(OrganizationTabSettings(orgSettings))}
+			onClick={() =>
+				onClick("Organization", OrganizationTabSettings(orgSettings))
+			}
+			selected={selected === "Organization"}
 		/>
 	);
 };

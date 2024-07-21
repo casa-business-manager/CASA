@@ -20,10 +20,16 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 		<Typography variant="h5">Select a setting</Typography>
 	);
 	const [settingsPage, setSettingsPage] = useState(defaultComponent);
+	const [selected, setSelected] = useState("");
 
 	useEffect(() => {
 		dialogOpen && setSettingsPage(defaultComponent);
 	}, [dialogOpen]);
+
+	const handleTabClick = (tabName, SettingComponent) => {
+		setSelected(tabName);
+		setSettingsPage(SettingComponent);
+	};
 
 	const onCloseWrapper = () => {
 		onClose();
@@ -49,37 +55,42 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 		>
 			<DialogTitle>Organization settings</DialogTitle>
 
-			{/* Scrollable list of settings */}
 			<DialogContent>
 				<Box height="65vh" sx={{ display: "flex", gap: 1 }}>
+					{/* Scrollable list of settings */}
 					<List
 						sx={{
 							width: "100%",
 							maxWidth: 360,
 							overflow: "auto",
+							// bgcolor: "lightgray", // looks ass with the light blue select color
 						}}
 						component="nav"
 						aria-labelledby="nested-list-subheader"
 					>
 						<OrganizationTab
 							orgId={orgId}
-							onClick={setSettingsPage}
+							onClick={handleTabClick}
+							selected={selected}
+							setSelected={setSelected}
 						/>
 						<IntegrationsCollapse>
 							<MeetingsTab
 								orgId={orgId}
-								onClick={setSettingsPage}
+								onClick={handleTabClick}
+								selected={selected}
+								setSelected={setSelected}
 							/>
 						</IntegrationsCollapse>
 					</List>
 
+					{/* Settings page */}
 					<Box sx={{ flex: 3, m: 2, overflow: "auto" }}>
 						{settingsPage}
 					</Box>
 				</Box>
 			</DialogContent>
 
-			{/* Settings page */}
 			<DialogActions>
 				<Button onClick={onCloseWrapper} color="primary">
 					Cancel
