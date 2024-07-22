@@ -20,26 +20,14 @@ function App() {
 				<Route path="/" element={<Navigate replace to="/login" />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="/organization" element={<Organization />} />
-				<Route
-					path="/oauth2/redirect"
-					element={<OAuth2RedirectHandler />}
-				/>
-				<Route
-					path="/organization/:orgId"
-					element={<OrganizationLanding />}
-				/>
+				<Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
+				<Route path="/organization/:orgId" element={<OrganizationLanding />} />
 				<Route
 					path="/organizationCalendar/:orgId"
 					element={<OrganizationCalendar />}
 				/>
-				<Route
-					path="/userManagement/:orgId"
-					element={<UserManagement />}
-				/>
-				<Route
-					path="/userCalendar/:userId"
-					element={<UserCalendar />}
-				/>
+				<Route path="/userManagement/:orgId" element={<UserManagement />} />
+				<Route path="/userCalendar/:userId" element={<UserCalendar />} />
 			</Routes>
 		</Router>
 	);

@@ -44,21 +44,13 @@ function Login() {
 		}
 		try {
 			const response =
-				authState === "signUp"
-					? await signup(formData)
-					: await login(formData);
-			alert(
-				`${authState === "signUp" ? "Signup" : "Signin"} successful!`
-			);
+				authState === "signUp" ? await signup(formData) : await login(formData);
+			alert(`${authState === "signUp" ? "Signup" : "Signin"} successful!`);
 			console.log("Access Token:", response.accessToken);
 			sessionStorage.setItem(ACCESS_TOKEN, response.accessToken);
 			navigate("/organization");
 		} catch (error) {
-			alert(
-				`${
-					authState === "signUp" ? "Signup" : "Signin"
-				} failed: ${error}`
-			);
+			alert(`${authState === "signUp" ? "Signup" : "Signin"} failed: ${error}`);
 		}
 	};
 
@@ -159,9 +151,7 @@ function Login() {
 								}}
 							>
 								<GoogleLoginButton
-									onClick={() =>
-										(window.location.href = GOOGLE_AUTH_URL)
-									}
+									onClick={() => (window.location.href = GOOGLE_AUTH_URL)}
 									style={{
 										justifyContent: "center",
 										display: "flex",
@@ -221,8 +211,7 @@ function Login() {
 									name="termsAccepted"
 									onChange={handleChange}
 								/>
-								I have read and accept the{" "}
-								<a href="#">Terms of Service</a> and{" "}
+								I have read and accept the <a href="#">Terms of Service</a> and{" "}
 								<a href="#">Privacy Policy</a>.
 							</label>
 							<Typography
@@ -260,9 +249,7 @@ function Login() {
 								}}
 							>
 								<GoogleLoginButton
-									onClick={() =>
-										(window.location.href = GOOGLE_AUTH_URL)
-									}
+									onClick={() => (window.location.href = GOOGLE_AUTH_URL)}
 									style={{
 										justifyContent: "center",
 										display: "flex",

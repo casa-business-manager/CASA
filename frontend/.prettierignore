@@ -1,0 +1,8 @@
+# Ignore artifacts:
+build
+coverage
+.github
+.idea
+.vscode
+package.json
+package-lock.json

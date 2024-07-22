@@ -8,43 +8,43 @@ import UserManagement from '../UserManagement/UserManagement';
 import SettingsButton from '../Settings/SettingsButton';
 
 const OrganizationLanding = () => {
-    const { orgId } = useParams();
-    const navigate = useNavigate();
+	const { orgId } = useParams();
+	const navigate = useNavigate();
 
-    const handleGroupsIconClick = () => {
-        if (orgId) {
-            navigate(`/userManagement/${orgId}`);
-        } else {
-            console.error("Organization ID is undefined");
-        }
-    };
+	const handleGroupsIconClick = () => {
+		if (orgId) {
+			navigate(`/userManagement/${orgId}`);
+		} else {
+			console.error("Organization ID is undefined");
+		}
+	};
 
-    const handleCalendarIconClick = () => {
-        navigate(`/organizationCalendar/${orgId}`);
-    };
+	const handleCalendarIconClick = () => {
+		navigate(`/organizationCalendar/${orgId}`);
+	};
 
-    return (
-        <div>
-            <h1>Applications</h1>
-			{/* Temp button for meeting locations */}
+	return (
+		<div>
+			<h1>Applications</h1>
+      {/* Temp button for meeting locations */}
 			<SettingsButton orgId={orgId}/>
-            <p>Organization ID: {orgId}</p>
-            <div className="icon-container">
-                <div className="icon-box" onClick={handleGroupsIconClick}>
-                    <GroupsIcon className="icon" />
-                    <div className="icon-label">Users</div>
-                </div>
-                <div className="icon-box" onClick={handleCalendarIconClick}>
-                    <CalendarTodayIcon className="icon" />
-                    <div className="icon-label">Calendar</div>
-                </div>
-                <div className="icon-box">
-                    <AccountBoxIcon className="icon" />
-                    <div className="icon-label">Account</div>
-                </div>
-            </div>
-        </div>
-    );
+			<p>Organization ID: {orgId}</p>
+			<div className="icon-container">
+				<div className="icon-box" onClick={handleGroupsIconClick}>
+					<GroupsIcon className="icon" />
+					<div className="icon-label">Users</div>
+				</div>
+				<div className="icon-box" onClick={handleCalendarIconClick}>
+					<CalendarTodayIcon className="icon" />
+					<div className="icon-label">Calendar</div>
+				</div>
+				<div className="icon-box">
+					<AccountBoxIcon className="icon" />
+					<div className="icon-label">Account</div>
+				</div>
+			</div>
+		</div>
+	);
 };
 
 export default OrganizationLanding;
