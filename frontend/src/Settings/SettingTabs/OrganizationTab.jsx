@@ -3,8 +3,8 @@ import BaseTab from "./BaseTab";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import Typography from "@mui/material/Typography";
 
-const OrganizationTabSettings = (orgSettings) => {
-	if (!orgSettings || !orgSettings.orgName) {
+const OrganizationTabSettings = (settings) => {
+	if (!settings || !settings.orgName) {
 		return <>Loading</>;
 	}
 
@@ -31,7 +31,7 @@ const OrganizationTabSettings = (orgSettings) => {
 					mt: 2,
 				}}
 			>
-				Name: {orgSettings.orgName}
+				Name: {settings.orgName}
 			</Typography>
 			<Typography
 				sx={{
@@ -40,7 +40,7 @@ const OrganizationTabSettings = (orgSettings) => {
 					mt: 2,
 				}}
 			>
-				Description: {orgSettings.orgDescription}
+				Description: {settings.orgDescription}
 			</Typography>
 			<Typography
 				sx={{
@@ -49,39 +49,20 @@ const OrganizationTabSettings = (orgSettings) => {
 					mt: 2,
 				}}
 			>
-				Location: {orgSettings.orgLocation}
+				Location: {settings.orgLocation}
 			</Typography>
 		</>
 	);
 };
 
-const OrganizationTab = ({ orgId, onClick, selected, indentLevel = 0 }) => {
-	const [orgSettings, setOrgSettings] = useState({});
-
-	useEffect(() => {
-		const fetchOrganizationSettings = async () => {
-			// TODO: Make real backend function
-			// const settings = await SomeAPICallHere(orgId);
-
-			// hard code returns for now
-			const settings = {
-				orgName: "org name",
-				orgDescription: "org Description",
-				orgLocation: "org Location",
-			};
-			setOrgSettings(settings);
-		};
-
-		fetchOrganizationSettings();
-	}, [orgId]);
-
+const OrganizationTab = ({ settings, onClick, selected, indentLevel = 0 }) => {
 	return (
 		<BaseTab
 			Icon={ApartmentIcon}
 			Label={"Organization"}
 			indentLevel={indentLevel}
 			onClick={() =>
-				onClick("Organization", OrganizationTabSettings(orgSettings))
+				onClick("Organization", OrganizationTabSettings(settings))
 			}
 			selected={selected === "Organization"}
 		/>

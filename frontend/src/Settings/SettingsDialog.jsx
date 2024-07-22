@@ -21,10 +21,33 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 	);
 	const [settingsPage, setSettingsPage] = useState(defaultComponent);
 	const [selected, setSelected] = useState("");
+	const [orgSettings, setOrgSettings] = useState({});
 
+	// Always open to defaultComponent
 	useEffect(() => {
 		dialogOpen && setSettingsPage(defaultComponent);
 	}, [dialogOpen]);
+
+	// get settings if clicked
+	useEffect(() => {
+		const fetchOrganizationSettings = async () => {
+			// TODO: Make real backend function
+			// const settings = await SomeAPICallHere(orgId);
+
+			// hard code returns for now
+			const settings = {
+				orgName: "org name",
+				orgDescription: "org Description",
+				orgLocation: "org Location",
+				integrations: ["Zoom", "Google Meet", "Microsoft Teams"],
+			};
+			setOrgSettings(settings);
+		};
+
+		if (dialogOpen) {
+			fetchOrganizationSettings();
+		}
+	}, [dialogOpen, orgId]);
 
 	const handleTabClick = (tabName, SettingComponent) => {
 		setSelected(tabName);
@@ -63,23 +86,22 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 							width: "100%",
 							maxWidth: 360,
 							overflow: "auto",
-							// bgcolor: "lightgray", // looks ass with the light blue select color
+							// looks ass with the light blue select color
+							// bgcolor: "lightgray",
 						}}
 						component="nav"
 						aria-labelledby="nested-list-subheader"
 					>
 						<OrganizationTab
-							orgId={orgId}
 							onClick={handleTabClick}
+							settings={orgSettings}
 							selected={selected}
-							setSelected={setSelected}
 						/>
 						<IntegrationsCollapse>
 							<MeetingsTab
-								orgId={orgId}
 								onClick={handleTabClick}
+								settings={orgSettings}
 								selected={selected}
-								setSelected={setSelected}
 							/>
 						</IntegrationsCollapse>
 					</List>
