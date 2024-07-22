@@ -19,13 +19,18 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 	const defaultComponent = (
 		<Typography variant="h5">Select a setting</Typography>
 	);
-	const [settingsPage, setSettingsPage] = useState(defaultComponent);
-	const [selected, setSelected] = useState("");
+
 	const [orgSettings, setOrgSettings] = useState({});
+	const [availableIntegrations, setAvailableIntegrations] = useState({});
+	const [selected, setSelected] = useState(-1);
+	const [settingsPage, setSettingsPage] = useState(defaultComponent);
 
 	// Always open to defaultComponent
 	useEffect(() => {
-		dialogOpen && setSettingsPage(defaultComponent);
+		if (dialogOpen) {
+			setSettingsPage(defaultComponent);
+			setSelected(-1);
+		}
 	}, [dialogOpen]);
 
 	// get settings if clicked
@@ -39,13 +44,27 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 				orgName: "org name",
 				orgDescription: "org Description",
 				orgLocation: "org Location",
-				integrations: ["Zoom", "Google Meet", "Microsoft Teams"],
+				integrations: {
+					meetings: ["Zoom"],
+				},
 			};
 			setOrgSettings(settings);
 		};
 
+		const fetchAvailableIntegrations = async () => {
+			// TODO: Make real backend function
+			// const integrations = await SomeAPIOtherCallHere(orgId);
+
+			// hard code returns for now
+			const integrations = {
+				meetings: ["Zoom", "Google Meet", "Microsoft Teams"],
+			};
+			setAvailableIntegrations(integrations);
+		};
+
 		if (dialogOpen) {
 			fetchOrganizationSettings();
+			fetchAvailableIntegrations();
 		}
 	}, [dialogOpen, orgId]);
 
@@ -62,6 +81,10 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 		onCloseWrapper();
 		onSave();
 	};
+
+	if (!orgSettings.integrations || !availableIntegrations) {
+		return <Dialog open={false}>Loading</Dialog>;
+	}
 
 	return (
 		<Dialog
@@ -93,14 +116,17 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 						aria-labelledby="nested-list-subheader"
 					>
 						<OrganizationTab
-							onClick={handleTabClick}
 							settings={orgSettings}
+							onClick={handleTabClick}
 							selected={selected}
 						/>
 						<IntegrationsCollapse>
 							<MeetingsTab
+								settings={orgSettings.integrations.meetings}
+								availableMeetings={
+									availableIntegrations.meetings
+								}
 								onClick={handleTabClick}
-								settings={orgSettings}
 								selected={selected}
 							/>
 						</IntegrationsCollapse>
@@ -117,7 +143,8 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 				<Button onClick={onCloseWrapper} color="primary">
 					Cancel
 				</Button>
-				<Button // Only show if there is something to save. Move into the DialogContent?
+				<Button
+					// Only show if there is something to save. Warn if not saved. Move into the DialogContent?
 					onClick={onSaveWrapper}
 					color="primary"
 					variant="contained"

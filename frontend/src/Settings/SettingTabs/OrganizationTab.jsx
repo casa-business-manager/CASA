@@ -3,7 +3,7 @@ import BaseTab from "./BaseTab";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import Typography from "@mui/material/Typography";
 
-const OrganizationTabSettings = (settings) => {
+const OrganizationTabSettings = ({ settings }) => {
 	if (!settings || !settings.orgName) {
 		return <>Loading</>;
 	}
@@ -19,10 +19,11 @@ const OrganizationTabSettings = (settings) => {
 				}}
 			>
 				Ian can you do this part? I think its just to edit the name,
-				description, location, users. Maybe whatever else you thing
+				description, location, picture. Maybe whatever else you thing
 				would be good here. I did most of the data propagation so if you
 				could just make these into TextField or whatever, and integrate
-				it with backend, that would be good.
+				it with backend, that would be good. Users and roles will be big
+				so maybe put that in another tab.
 			</Typography>
 			<Typography
 				sx={{
@@ -60,11 +61,14 @@ const OrganizationTab = ({ settings, onClick, selected, indentLevel = 0 }) => {
 		<BaseTab
 			Icon={ApartmentIcon}
 			Label={"Organization"}
+			selected={selected === "Organization"}
 			indentLevel={indentLevel}
 			onClick={() =>
-				onClick("Organization", OrganizationTabSettings(settings))
+				onClick(
+					"Organization",
+					<OrganizationTabSettings settings={settings} />
+				)
 			}
-			selected={selected === "Organization"}
 		/>
 	);
 };
