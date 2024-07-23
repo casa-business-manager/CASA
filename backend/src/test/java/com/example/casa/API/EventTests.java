@@ -210,7 +210,7 @@ public class EventTests {
 		String startISO;
 		String endISO;
 
-		// Create event before the start of the [6/30,8/3] block
+		// Create event start and ending before the [6/30,8/3] block
 		startISO = DateConverter.numbers2ISO(2024, 6, 29, 23, 0, 0);
 		endISO = DateConverter.numbers2ISO(2024, 6, 29, 23, 59, 59);
 		newEventDto.setTitle("Cooking");
@@ -248,10 +248,10 @@ public class EventTests {
 
 		// Create event starting and ending in the [6/30,8/3] block
 		startISO = DateConverter.numbers2ISO(2024, 7, 5, 3, 0, 0);
-		endISO = DateConverter.numbers2ISO(2024, 7, 5, 9, 0, 0);
+		endISO = DateConverter.numbers2ISO(2024, 7, 5, 6, 0, 0);
 		newEventDto.setTitle("Try a little bit of our own supply");
 		newEventDto.setDescription("😉");
-		newEventDto.setLocation("[REDACTED]");
+		newEventDto.setLocation("Jessie's parents' house");
 		newEventDto.setStart(startISO);
 		newEventDto.setEnd(endISO);
 		newEventDto.setAllDay(false);
@@ -264,12 +264,48 @@ public class EventTests {
 				.content(newEventJson))
 				.andExpect(status().isOk());
 
-		// Create event after the end of the [6/30,8/3] block
+		// Create event starting in and ending after the [6/30,8/3] block
+		startISO = DateConverter.numbers2ISO(2024, 8, 3, 23, 0, 0);
+		endISO = DateConverter.numbers2ISO(2024, 8, 4, 1, 0, 0);
+		newEventDto.setTitle("Contact Gussy");
+		newEventDto.setDescription("Call Gus and confirm selling plans");
+		newEventDto.setLocation("Basement");
+		newEventDto.setStart(startISO);
+		newEventDto.setEnd(endISO);
+		newEventDto.setAllDay(false);
+		newEventDto.setEventCreatorId(waltId);
+		newEventDto.setEventAccessorIds(new String[] { waltId });
+		newEventJson = objectMapper.writeValueAsString(newEventDto);
+		mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/event")
+				.header("Authorization", "Bearer " + waltToken)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(newEventJson))
+				.andExpect(status().isOk());
+
+		// Create event starting and ending after the [6/30,8/3] block
 		startISO = DateConverter.numbers2ISO(2024, 8, 4, 0, 0, 0);
 		endISO = DateConverter.numbers2ISO(2024, 8, 4, 1, 0, 0);
 		newEventDto.setTitle("Selling");
 		newEventDto.setDescription("Time to sell meth to Gussy");
 		newEventDto.setLocation("35.6802172,-107.4555926");
+		newEventDto.setStart(startISO);
+		newEventDto.setEnd(endISO);
+		newEventDto.setAllDay(false);
+		newEventDto.setEventCreatorId(waltId);
+		newEventDto.setEventAccessorIds(new String[] { waltId });
+		newEventJson = objectMapper.writeValueAsString(newEventDto);
+		mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/event")
+				.header("Authorization", "Bearer " + waltToken)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(newEventJson))
+				.andExpect(status().isOk());
+
+		// Create event starting before and ending after the [6/30,8/3] block
+		startISO = DateConverter.numbers2ISO(2024, 6, 1, 0, 0, 0);
+		endISO = DateConverter.numbers2ISO(2024, 9, 1, 0, 0, 0);
+		newEventDto.setTitle("Gaslight Hank");
+		newEventDto.setDescription("Gaslight the shit out of this dude lmao");
+		newEventDto.setLocation("Hank's house");
 		newEventDto.setStart(startISO);
 		newEventDto.setEnd(endISO);
 		newEventDto.setAllDay(false);
@@ -288,8 +324,20 @@ public class EventTests {
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.events", hasSize(6)))
-				.andExpect(jsonPath("$.events[0].title", anyOf(is("Cooking"), is("Selling"))))
-				.andExpect(jsonPath("$.events[1].title", anyOf(is("Cooking"), is("Selling"))));
+				.andExpect(jsonPath("$.events[0].title", anyOf(
+						is("Cooking"),
+						is("Packing up"),
+						is("Try a little bit of our own supply"),
+						is("Contact Gussy"),
+						is("Selling"),
+						is("Gaslight Hank"))))
+				.andExpect(jsonPath("$.events[1].title", anyOf(
+						is("Cooking"),
+						is("Packing up"),
+						is("Try a little bit of our own supply"),
+						is("Contact Gussy"),
+						is("Selling"),
+						is("Gaslight Hank"))));
 	}
 
 	// Not sure why but this causes issues in subsequent runs if not cleared

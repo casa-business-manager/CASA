@@ -76,9 +76,9 @@ public class EventController {
 		}
 
 		// Fetch events for the calendar and user within the specified date range
-		Set<Event> events = eventRepository.findByOrganizationAndEventAccessorsContainingAndStartBetween(organization,
-				user, startDate, endDate);
+		Set<Event> events = eventRepository.findAccessibleEventsInBlock(organization, user, startDate, endDate);
 
+		System.out.println("12345" + events);
 		if (events.isEmpty()) {
 			events = new HashSet<>();
 		}
