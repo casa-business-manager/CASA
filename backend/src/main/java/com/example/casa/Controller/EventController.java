@@ -42,6 +42,8 @@ public class EventController {
 	@Autowired
 	private EventRepository eventRepository;
 
+	// Do we want to change this so you pass in [startDate, endDate] instead of
+	// [startDate, endDate) ?
 	@GetMapping("/organizationCalendar/{orgId}/userId/{userId}")
 	public ResponseEntity<?> getCalendarData(@PathVariable String orgId,
 			@PathVariable String userId,
@@ -78,7 +80,6 @@ public class EventController {
 		// Fetch events for the calendar and user within the specified date range
 		Set<Event> events = eventRepository.findAccessibleEventsInBlock(organization, user, startDate, endDate);
 
-		System.out.println("12345" + events);
 		if (events.isEmpty()) {
 			events = new HashSet<>();
 		}

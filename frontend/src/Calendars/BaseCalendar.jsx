@@ -311,8 +311,8 @@ const BaseCalendar = ({ orgIds }) => {
 		// 5 week block
 		// todo: test with daylight savings time
 		const calendarBlockEnd = moment(calendarBlockStart)
-			.add(4, "weeks")
-			.endOf("week");
+			.add(5.5, "weeks")
+			.startOf("week");
 
 		return {
 			start: calendarBlockStart.toDate(),

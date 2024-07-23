@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import org.junit.jupiter.api.AfterAll;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -30,6 +31,8 @@ import com.example.casa.Payload.User.SignUpRequest;
 import com.example.casa.Repository.UserRepository;
 import com.example.casa.Util.DateConverter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.ServletException;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -205,12 +208,12 @@ public class EventTests {
 	}
 
 	@Test
-	void createEditGetDeleteEvent() throws Exception {
+	void createGetEvents() throws Exception {
 		EventDto newEventDto = new EventDto();
 		String startISO;
 		String endISO;
 
-		// Create event start and ending before the [6/30,8/3] block
+		// Create event start and ending before the [6/30, 8/3] block
 		startISO = DateConverter.numbers2ISO(2024, 6, 29, 23, 0, 0);
 		endISO = DateConverter.numbers2ISO(2024, 6, 29, 23, 59, 59);
 		newEventDto.setTitle("Cooking");
@@ -228,7 +231,7 @@ public class EventTests {
 				.content(newEventJson))
 				.andExpect(status().isOk());
 
-		// Create event starting before and ending in the [6/30,8/3] block
+		// Create event starting before and ending in the [6/30, 8/3] block
 		startISO = DateConverter.numbers2ISO(2024, 6, 29, 23, 0, 0);
 		endISO = DateConverter.numbers2ISO(2024, 6, 30, 1, 0, 0);
 		newEventDto.setTitle("Packing up");
@@ -246,7 +249,7 @@ public class EventTests {
 				.content(newEventJson))
 				.andExpect(status().isOk());
 
-		// Create event starting and ending in the [6/30,8/3] block
+		// Create event starting and ending in the [6/30, 8/3] block
 		startISO = DateConverter.numbers2ISO(2024, 7, 5, 3, 0, 0);
 		endISO = DateConverter.numbers2ISO(2024, 7, 5, 6, 0, 0);
 		newEventDto.setTitle("Try a little bit of our own supply");
@@ -264,7 +267,7 @@ public class EventTests {
 				.content(newEventJson))
 				.andExpect(status().isOk());
 
-		// Create event starting in and ending after the [6/30,8/3] block
+		// Create event starting in and ending after the [6/30, 8/3] block
 		startISO = DateConverter.numbers2ISO(2024, 8, 3, 23, 0, 0);
 		endISO = DateConverter.numbers2ISO(2024, 8, 4, 1, 0, 0);
 		newEventDto.setTitle("Contact Gussy");
@@ -282,7 +285,7 @@ public class EventTests {
 				.content(newEventJson))
 				.andExpect(status().isOk());
 
-		// Create event starting and ending after the [6/30,8/3] block
+		// Create event starting and ending after the [6/30, 8/3] block
 		startISO = DateConverter.numbers2ISO(2024, 8, 4, 0, 0, 0);
 		endISO = DateConverter.numbers2ISO(2024, 8, 4, 1, 0, 0);
 		newEventDto.setTitle("Selling");
@@ -300,7 +303,7 @@ public class EventTests {
 				.content(newEventJson))
 				.andExpect(status().isOk());
 
-		// Create event starting before and ending after the [6/30,8/3] block
+		// Create event starting before and ending after the [6/30, 8/3] block
 		startISO = DateConverter.numbers2ISO(2024, 6, 1, 0, 0, 0);
 		endISO = DateConverter.numbers2ISO(2024, 9, 1, 0, 0, 0);
 		newEventDto.setTitle("Gaslight Hank");
@@ -318,7 +321,7 @@ public class EventTests {
 				.content(newEventJson))
 				.andExpect(status().isOk());
 
-		// Get Walt unbounded events - includes both events
+		// Get Walt unbounded events - includes all events
 		mockMvc.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + waltId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
@@ -337,7 +340,221 @@ public class EventTests {
 						is("Try a little bit of our own supply"),
 						is("Contact Gussy"),
 						is("Selling"),
+						is("Gaslight Hank"))))
+				.andExpect(jsonPath("$.events[2].title", anyOf(
+						is("Cooking"),
+						is("Packing up"),
+						is("Try a little bit of our own supply"),
+						is("Contact Gussy"),
+						is("Selling"),
+						is("Gaslight Hank"))))
+				.andExpect(jsonPath("$.events[3].title", anyOf(
+						is("Cooking"),
+						is("Packing up"),
+						is("Try a little bit of our own supply"),
+						is("Contact Gussy"),
+						is("Selling"),
+						is("Gaslight Hank"))))
+				.andExpect(jsonPath("$.events[4].title", anyOf(
+						is("Cooking"),
+						is("Packing up"),
+						is("Try a little bit of our own supply"),
+						is("Contact Gussy"),
+						is("Selling"),
+						is("Gaslight Hank"))))
+				.andExpect(jsonPath("$.events[5].title", anyOf(
+						is("Cooking"),
+						is("Packing up"),
+						is("Try a little bit of our own supply"),
+						is("Contact Gussy"),
+						is("Selling"),
 						is("Gaslight Hank"))));
+
+		// Get Jessie unbounded events - just one event
+		mockMvc.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + jessieId)
+				.header("Authorization", "Bearer " + jessieToken)
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.events", hasSize(1)))
+				.andExpect(jsonPath("$.events[0].title", is("Cooking")));
+
+		// Get Walt bounded events - includes only events in the [6/30, 8/3] block
+		startISO = DateConverter.numbers2ISO(2024, 6, 30);
+		endISO = DateConverter.numbers2ISO(2024, 8, 4);
+		mockMvc.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + waltId)
+				.header("Authorization", "Bearer " + waltToken)
+				.param("startDate", startISO)
+				.param("endDate", endISO)
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.events", hasSize(4)))
+				.andExpect(jsonPath("$.events[0].title", anyOf(
+						is("Packing up"),
+						is("Try a little bit of our own supply"),
+						is("Contact Gussy"),
+						is("Gaslight Hank"))))
+				.andExpect(jsonPath("$.events[1].title", anyOf(
+						is("Packing up"),
+						is("Try a little bit of our own supply"),
+						is("Contact Gussy"),
+						is("Gaslight Hank"))))
+				.andExpect(jsonPath("$.events[2].title", anyOf(
+						is("Packing up"),
+						is("Try a little bit of our own supply"),
+						is("Contact Gussy"),
+						is("Gaslight Hank"))))
+				.andExpect(jsonPath("$.events[3].title", anyOf(
+						is("Packing up"),
+						is("Try a little bit of our own supply"),
+						is("Contact Gussy"),
+						is("Gaslight Hank"))));
+
+	}
+
+	@Test
+	void createEditEvents() throws Exception {
+		EventDto eventDto = new EventDto();
+		String startISO;
+		String endISO;
+
+		// Get Jessie unbounded events - empty
+		mockMvc.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + jessieId)
+				.header("Authorization", "Bearer " + jessieToken)
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.events", hasSize(0)));
+
+		// Walt creates event with Jessie in it
+		startISO = DateConverter.numbers2ISO(2024, 7, 23);
+		endISO = DateConverter.numbers2ISO(2024, 7, 23, 1, 0, 0);
+		eventDto.setTitle("Coking");
+		eventDto.setDescription("Time to cook some delicious meth");
+		eventDto.setLocation("RV in desert");
+		eventDto.setStart(startISO);
+		eventDto.setEnd(endISO);
+		eventDto.setAllDay(false);
+		eventDto.setEventCreatorId(waltId);
+		eventDto.setEventAccessorIds(new String[] { waltId, jessieId });
+		String newEventJson = objectMapper.writeValueAsString(eventDto);
+		mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/event")
+				.header("Authorization", "Bearer " + waltToken)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(newEventJson))
+				.andExpect(status().isOk());
+
+		// Get Jessie unbounded events - Sees event
+		ResultActions events = mockMvc
+				.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + jessieId)
+						.header("Authorization", "Bearer " + jessieToken)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.events", hasSize(1)))
+				.andExpect(jsonPath("$.events[0].title", is("Coking")));
+		String eventId = extractJsonString(events.andReturn().getResponse().getContentAsString(), "eventId");
+
+		// Walt edits event
+		eventDto.setTitle("Cooking");
+		newEventJson = objectMapper.writeValueAsString(eventDto);
+		mockMvc.perform(MockMvcRequestBuilders.put("/event/" + eventId)
+				.header("Authorization", "Bearer " + waltToken)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(newEventJson))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.title", is("Cooking")));
+
+		// Get Jessie unbounded events - Sees edit
+		mockMvc.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + jessieId)
+				.header("Authorization", "Bearer " + jessieToken)
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.events", hasSize(1)))
+				.andExpect(jsonPath("$.events[0].title", is("Cooking")));
+
+		// Jessie can't edit event
+		eventDto.setTitle("Mr. White gives me all his money");
+		newEventJson = objectMapper.writeValueAsString(eventDto);
+		mockMvc.perform(MockMvcRequestBuilders.put("/event/" + eventId)
+				.header("Authorization", "Bearer " + jessieToken)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(newEventJson))
+				.andExpect(status().isBadRequest());
+
+		// Walt removes Jessie
+		eventDto.setTitle("Cooking");
+		eventDto.setEventAccessorIds(new String[] { waltId });
+		newEventJson = objectMapper.writeValueAsString(eventDto);
+		mockMvc.perform(MockMvcRequestBuilders.put("/event/" + eventId)
+				.header("Authorization", "Bearer " + waltToken)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(newEventJson))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.title", is("Cooking")));
+
+		// Get Jessie unbounded events - empty again
+		mockMvc.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + jessieId)
+				.header("Authorization", "Bearer " + jessieToken)
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.events", hasSize(0)));
+	}
+
+	@Test
+	void deleteEvents() throws Exception {
+		EventDto eventDto = new EventDto();
+		String startISO;
+		String endISO;
+
+		// Walt creates event with Jessie in it
+		startISO = DateConverter.numbers2ISO(2024, 7, 23);
+		endISO = DateConverter.numbers2ISO(2024, 7, 23, 1, 0, 0);
+		eventDto.setTitle("Cooking");
+		eventDto.setDescription("Time to cook some delicious meth");
+		eventDto.setLocation("RV in desert");
+		eventDto.setStart(startISO);
+		eventDto.setEnd(endISO);
+		eventDto.setAllDay(false);
+		eventDto.setEventCreatorId(waltId);
+		eventDto.setEventAccessorIds(new String[] { waltId, jessieId });
+		String newEventJson = objectMapper.writeValueAsString(eventDto);
+		mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/event")
+				.header("Authorization", "Bearer " + waltToken)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(newEventJson))
+				.andExpect(status().isOk());
+
+		// Walt sees event
+		ResultActions events = mockMvc
+				.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + waltId)
+						.header("Authorization", "Bearer " + waltToken)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.events", hasSize(1)))
+				.andExpect(jsonPath("$.events[0].title", is("Cooking")));
+		String eventId = extractJsonString(events.andReturn().getResponse().getContentAsString(), "eventId");
+
+		// Walt deletes event
+		mockMvc.perform(MockMvcRequestBuilders.delete("/event/" + eventId)
+				.header("Authorization", "Bearer " + waltToken)
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		// Walt no longer sees event
+		mockMvc.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + waltId)
+				.header("Authorization", "Bearer " + waltToken)
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.events", hasSize(0)));
+
+		// Walt shouldn't be able to delete again
+		try {
+			mockMvc.perform(MockMvcRequestBuilders.delete("/event/" + eventId)
+					.header("Authorization", "Bearer " + waltToken)
+					.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().is4xxClientError());
+		} catch (ServletException e) {
+			assertTrue(e.getMessage().contains(
+					"Request processing failed: java.lang.RuntimeException: Event not found with id:"));
+		}
 	}
 
 	// Not sure why but this causes issues in subsequent runs if not cleared
