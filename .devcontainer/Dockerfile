@@ -6,11 +6,11 @@ RUN apt-get clean && apt-get update && apt-get install -y \
   sudo \
   wget \
   curl \
-  mariadb-server \
+  git \
   nodejs \
-  openjdk-21-jdk \
   make \
-  git 
+  openjdk-21-jdk \
+  mariadb-server
 
 # install maven
 RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.8/binaries/apache-maven-3.9.8-bin.tar.gz \
