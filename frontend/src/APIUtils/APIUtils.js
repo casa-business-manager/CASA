@@ -102,6 +102,21 @@ export function deleteEvent(eventId) {
 	});
 }
 
+export function fetchEventsFromGoogleCalendar(startDate = null, endDate = null) {
+    return request({
+        url: API_BASE_URL + `/google/calendar/events?${startDate ? "startDate=" + startDate : ""}&${endDate ? "endDate=" + endDate : ""}`,
+        method: "GET",
+    });
+}
+
+export function postEventToGoogleCalendar(eventRequest) {
+    return request({
+        url: API_BASE_URL + "/google/calendar/events",
+        method: "POST",
+        body: JSON.stringify(eventRequest),
+    });
+}
+
 export function createOrganization(organizationRequest) {
 	return getCurrentUser()
 		.then((user) => {
