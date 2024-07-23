@@ -110,6 +110,9 @@ const EventDialog = ({
 	const handleEdit = () => handleBackend(true);
 
 	const handleAddPerson = (e, newUserList) => {
+		if (!newUserList.find((user) => user.id === initialEvent.eventCreator.id)) {
+			return;
+		}
 		setPeople(newUserList);
 	};
 
