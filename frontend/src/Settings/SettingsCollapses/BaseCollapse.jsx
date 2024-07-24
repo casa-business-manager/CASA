@@ -15,7 +15,7 @@ const BaseCollapse = ({ Icon, Label, indentLevel = 0, page, children }) => {
 	};
 
 	const indentedChildren = Children.map(children, (child) =>
-		cloneElement(child, { indentLevel: indentLevel + 1 })
+		cloneElement(child, { indentLevel: indentLevel + 1 }),
 	);
 
 	return (
