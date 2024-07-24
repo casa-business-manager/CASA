@@ -24,5 +24,4 @@
 	"remoteUser": "vscode",
 	"postStartCommand": "sed -i 's/\r//g' .devcontainer/postStartCommand.sh; bash .devcontainer/postStartCommand.sh",
 	"postCreateCommand": "sed -i 's/\r//g' .devcontainer/postCreateCommand.sh; bash .devcontainer/postCreateCommand.sh",
-	// "postAttachCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}"
 }
