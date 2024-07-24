@@ -13,6 +13,9 @@ import List from "@mui/material/List";
 import OrganizationTab from "./SettingTabs/OrganizationTab";
 import MeetingsTab from "./SettingTabs/MeetingsTab";
 import IntegrationsCollapse from "./SettingsCollapses/IntegrationsCollapse";
+import UserCollapse from "./SettingsCollapses/UserCollapse";
+import MembersTab from "./SettingTabs/MembersTab";
+import RolesTab from "./SettingTabs/RolesTab";
 
 // orgId may be null
 const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
@@ -120,12 +123,22 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 							onClick={handleTabClick}
 							selected={selected}
 						/>
+						<UserCollapse>
+							<MembersTab
+								settings={orgSettings}
+								onClick={handleTabClick}
+								selected={selected}
+							/>
+							<RolesTab
+								settings={orgSettings}
+								onClick={handleTabClick}
+								selected={selected}
+							/>
+						</UserCollapse>
 						<IntegrationsCollapse>
 							<MeetingsTab
 								settings={orgSettings.integrations.meetings}
-								availableMeetings={
-									availableIntegrations.meetings
-								}
+								availableMeetings={availableIntegrations.meetings}
 								onClick={handleTabClick}
 								selected={selected}
 							/>
@@ -133,9 +146,7 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 					</List>
 
 					{/* Settings page */}
-					<Box sx={{ flex: 3, m: 2, overflow: "auto" }}>
-						{settingsPage}
-					</Box>
+					<Box sx={{ flex: 3, m: 2, overflow: "auto" }}>{settingsPage}</Box>
 				</Box>
 			</DialogContent>
 

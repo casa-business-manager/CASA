@@ -8,8 +8,8 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Checkbox from "@mui/material/Checkbox";
-import IconButton from "@mui/material/IconButton";
-import LaunchIcon from "@mui/icons-material/Launch";
+
+const name = "Meetings";
 
 const MeetingsTabSettings = ({ settings, availableMeetings }) => {
 	const [checked, setChecked] = useState(settings);
@@ -67,9 +67,7 @@ const MeetingsTabSettings = ({ settings, availableMeetings }) => {
 								<ListItemIcon>
 									<Checkbox
 										edge="start"
-										checked={
-											checked.indexOf(service) !== -1
-										}
+										checked={checked.indexOf(service) !== -1}
 										tabIndex={-1}
 										disableRipple
 										inputProps={{
@@ -77,10 +75,7 @@ const MeetingsTabSettings = ({ settings, availableMeetings }) => {
 										}}
 									/>
 								</ListItemIcon>
-								<ListItemText
-									id={labelId}
-									primary={`${service}`}
-								/>
+								<ListItemText id={labelId} primary={`${service}`} />
 							</ListItemButton>
 						</ListItem>
 					);
@@ -100,17 +95,15 @@ const MeetingsTab = ({
 	return (
 		<BaseTab
 			Icon={VideocamIcon}
-			Label={"Meetings"}
-			selected={selected === "Meetings"}
+			Label={name}
+			selected={selected}
 			indentLevel={indentLevel}
-			onClick={() =>
-				onClick(
-					"Meetings",
-					<MeetingsTabSettings
-						settings={settings}
-						availableMeetings={availableMeetings}
-					/>
-				)
+			onClick={onClick}
+			SettingsPage={
+				<MeetingsTabSettings
+					settings={settings}
+					availableMeetings={availableMeetings}
+				/>
 			}
 		/>
 	);

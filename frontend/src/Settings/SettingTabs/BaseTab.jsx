@@ -2,11 +2,18 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 
-const BaseTab = ({ Icon, Label, selected, indentLevel = 0, onClick }) => {
+const BaseTab = ({
+	Icon,
+	Label,
+	selected,
+	indentLevel = 0,
+	onClick,
+	SettingsPage,
+}) => {
 	return (
 		<ListItemButton
-			selected={selected}
-			onClick={onClick}
+			selected={selected === Label}
+			onClick={() => onClick(Label, SettingsPage)}
 			sx={{
 				// also in CollapseTab
 				pl: 2 * indentLevel + 2,

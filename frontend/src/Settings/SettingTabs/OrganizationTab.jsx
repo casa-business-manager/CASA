@@ -19,11 +19,11 @@ const OrganizationTabSettings = ({ settings }) => {
 				}}
 			>
 				Ian can you do this part? I think its just to edit the name,
-				description, location, picture. Maybe whatever else you thing
-				would be good here. I did most of the data propagation so if you
-				could just make these into TextField or whatever, and integrate
-				it with backend, that would be good. Users and roles will be big
-				so maybe put that in another tab.
+				description, location, picture. Maybe whatever else you thing would be
+				good here. I did most of the data propagation so if you could just make
+				these into TextField or whatever, and integrate it with backend, that
+				would be good. Users and roles will be big so maybe put that in another
+				tab.
 			</Typography>
 			<Typography
 				sx={{
@@ -61,14 +61,10 @@ const OrganizationTab = ({ settings, onClick, selected, indentLevel = 0 }) => {
 		<BaseTab
 			Icon={ApartmentIcon}
 			Label={"Organization"}
-			selected={selected === "Organization"}
+			selected={selected}
 			indentLevel={indentLevel}
-			onClick={() =>
-				onClick(
-					"Organization",
-					<OrganizationTabSettings settings={settings} />
-				)
-			}
+			onClick={onClick}
+			SettingsPage={<OrganizationTabSettings settings={settings} />}
 		/>
 	);
 };
