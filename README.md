@@ -19,7 +19,7 @@ and
 ### Setup FAQ
 - "My VS Code says that the JDK was not found and the path it tries is on my local machine - not my container!"
 	1. Open your VS Code `settings.json` file (not the one in `/.vscode`)
-	2. Comment out the line with key `"java.home"`
+	2. Comment out the line with key `"java.home"`gkr fvvhkjs vbfuhkj
 	3. Restart your devcontainer
 
 - "I'm getting a permission issue with GitHub after selecting an account"
