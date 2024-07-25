@@ -38,4 +38,5 @@ These containers are also equiped with helpful shortcuts. They will be documente
 1. `kill3000` - kills processes with port 3000 (execute frontend in case you lose the terminal but it is still running).
 2. `kill8080` - kills processes with port 8080 (execute backend in case you lose the terminal but it is still running).
 3. `mvnStart` - command line shortcut to start the backend without needing the extension (must run from backend/ directory).
-4. `resetDB` - DROPs (deletes) the entire database, then creates a fresh one. May show an error if there is no database to DROP.
+4. `dualStart` - command line shortcut to start both the frontend and backend simultaneously from any directory.
+5. `resetDB` - DROPs (deletes) the entire database, then creates a fresh one. May show an error if there is no database to DROP.

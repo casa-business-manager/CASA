@@ -31,5 +31,6 @@ RUN sudo apt-get install -y nodejs
 RUN echo 'alias kill3000="fuser -k -n tcp 3000"' >> /etc/bash.bashrc
 RUN echo 'alias kill8080="fuser -k -n tcp 8080"' >> /etc/bash.bashrc
 RUN echo 'alias mvnStart="mvn spring-boot:run"' >> /etc/bash.bashrc
+RUN echo 'alias dualStart="(cd /workspaces/CASA/frontend && npm start) & (cd /workspaces/CASA/backend && mvnStart)"' >> /etc/bash.bashrc
 RUN echo "alias resetDB='sudo mariadb -e \"DROP DATABASE casa;\"; sudo mariadb -e \"CREATE DATABASE casa;\"'" >> /etc/bash.bashrc
 
