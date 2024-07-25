@@ -12,6 +12,7 @@ import OrganizationLanding from "./OrganizationLanding/OrganizationLanding";
 import UserManagement from "./UserManagement/UserManagement";
 import UserCalendar from "./Calendars/UserCalendar";
 import OrganizationCalendar from "./Calendars/OrganizationCalendar";
+import EmailEditorPage from "./EmailEditorPage/EmailEditorPage";
 
 function App() {
 	return (
@@ -28,6 +29,7 @@ function App() {
 				/>
 				<Route path="/userManagement/:orgId" element={<UserManagement />} />
 				<Route path="/userCalendar/:userId" element={<UserCalendar />} />
+				<Route path="/emailEditor/" element={<EmailEditorPage />} />
 			</Routes>
 		</Router>
 	);
