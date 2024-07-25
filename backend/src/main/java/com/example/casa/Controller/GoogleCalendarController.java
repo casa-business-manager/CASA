@@ -1,13 +1,14 @@
 package com.example.casa.Controller;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,15 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.casa.Model.AuthProvider;
 import com.example.casa.Model.Event;
 import com.example.casa.Model.User;
 import com.example.casa.Payload.Event.EventDto;
 import com.example.casa.Repository.EventRepository;
 import com.example.casa.Repository.UserRepository;
 import com.example.casa.Util.GoogleCalendarUtil;
-import com.example.casa.Exception.BadRequestException;
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Events;
 
@@ -77,7 +76,7 @@ public class GoogleCalendarController {
 			}).collect(Collectors.toList());
 
 			return ResponseEntity.ok(eventList);
-		} catch (IOException e) {
+		} catch (IOException | GeneralSecurityException e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Failed to fetch events from Google Calendar: " + e.getMessage());
 		}
@@ -116,7 +115,7 @@ public class GoogleCalendarController {
 			eventRepository.save(newEvent);
 
 			return ResponseEntity.ok(newEvent);
-		} catch (IOException e) {
+		} catch (IOException | GeneralSecurityException e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Failed to post event to Google Calendar: " + e.getMessage());
 		}
