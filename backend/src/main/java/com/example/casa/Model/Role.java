@@ -23,7 +23,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "permissionSet")
+@Table(name = "role")
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Role {
 
@@ -31,7 +31,7 @@ public class Role {
 	@GeneratedValue(generator = "UUID")
 	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
 	@Column(name = "uuid", updatable = false, unique = true, nullable = false)
-	private String permissionSetId;
+	private String roleId;
 
 	@Column(name = "name", nullable = false)
 	private String name;
@@ -54,7 +54,7 @@ public class Role {
 	@JsonManagedReference("user-roles")
 	private Set<User> users = new HashSet<>();
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinColumn(name = "organization_id")
 	@JsonBackReference("organization-roles")
 	private Organization organization;
@@ -62,12 +62,12 @@ public class Role {
 	public Role() {
 	}
 
-	public String getPermissionSetId() {
-		return permissionSetId;
+	public String getRoleId() {
+		return roleId;
 	}
 
-	public void setPermissionSetId(String permissionSetId) {
-		this.permissionSetId = permissionSetId;
+	public void setRoleId(String roleId) {
+		this.roleId = roleId;
 	}
 
 	public String getName() {
