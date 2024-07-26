@@ -2,20 +2,17 @@ package com.example.casa.Payload.Role;
 
 import java.util.Set;
 
-import com.example.casa.Model.Role;
-import com.example.casa.Model.User;
-
 public class RoleDto {
 
 	private String name;
 
 	private String permissions;
 
-	private Role managedBy;
+	private String managedById;
 
-	private Set<Role> managedRoles;
+	private Set<String> managedRoleIds;
 
-	private Set<User> users;
+	private Set<String> userIds;
 
 	public RoleDto() {
 	}
@@ -36,28 +33,28 @@ public class RoleDto {
 		this.permissions = permissions;
 	}
 
-	public Role getManagedBy() {
-		return managedBy;
+	public String getManagedById() {
+		return managedById;
 	}
 
-	public void setManagedBy(Role managedBy) {
-		this.managedBy = managedBy;
+	public void setManagedById(String managedBy) {
+		this.managedById = managedBy;
 	}
 
-	public Set<Role> getManagedRoles() {
-		return managedRoles;
+	public Set<String> getManagedRoleIds() {
+		return managedRoleIds;
 	}
 
-	public void setManagedRoles(Set<Role> managedRoles) {
-		this.managedRoles = managedRoles;
+	public void setManagedRoleIds(Set<String> managedRoles) {
+		this.managedRoleIds = managedRoles;
 	}
 
-	public Set<User> getUsers() {
-		return users;
+	public Set<String> getUserIds() {
+		return userIds;
 	}
 
-	public void setUsers(Set<User> users) {
-		this.users = users;
+	public void setUserIds(Set<String> users) {
+		this.userIds = users;
 	}
 
 }
