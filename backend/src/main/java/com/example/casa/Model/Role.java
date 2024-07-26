@@ -54,6 +54,11 @@ public class Role {
 	@JsonManagedReference("user-roles")
 	private Set<User> users = new HashSet<>();
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "organization_id")
+	@JsonBackReference("organization-roles")
+	private Organization organization;
+
 	public Role() {
 	}
 
@@ -103,6 +108,14 @@ public class Role {
 
 	public void setUsers(Set<User> users) {
 		this.users = users;
+	}
+
+	public Organization getOrganization() {
+		return organization;
+	}
+
+	public void setOrganization(Organization organization) {
+		this.organization = organization;
 	}
 
 }
