@@ -15,6 +15,61 @@ import BaseCollapse from "../SettingsCollapses/BaseCollapse";
 import PeopleIcon from "@mui/icons-material/People";
 import ShieldIcon from "@mui/icons-material/Shield";
 import CloseIcon from "@mui/icons-material/Close";
+import { GraphCanvas } from "reagraph";
+
+const RolesGraph = ({ roles }) => {
+	const nodes = [];
+	const edges = [];
+
+	roles.forEach((role) => {
+		nodes.push({
+			id: role.roleId,
+			label: role.name,
+		});
+
+		role.managedRoles.forEach((managedRole) => {
+			edges.push({
+				source: role.roleId,
+				target: managedRole.roleId,
+			});
+		});
+	});
+
+	return (
+		<Box
+			sx={{
+				position: "relative",
+				width: "99%",
+				height: "99%",
+				border: 1,
+			}}
+		>
+			<GraphCanvas
+				nodes={nodes}
+				edges={edges}
+				node={
+					// Customize the node appearance
+					{
+						style: {
+							width: 100,
+							height: 50,
+							fill: "#1f77b4",
+						},
+					}
+				}
+				edge={
+					// Customize the edge appearance
+					{
+						style: {
+							stroke: "#999",
+							strokeWidth: 2,
+						},
+					}
+				}
+			/>
+		</Box>
+	);
+};
 
 const PermissionRow = ({ permission, value }) => {
 	return (
@@ -55,6 +110,31 @@ const UserRow = ({ user }) => {
 const RolesTabSettings = ({ settings }) => {
 	const [selectedRole, setSelectedRole] = useState({});
 	const [name, setName] = useState("initial role name");
+	const [roles, setRoles] = useState([
+		{
+			roleId: "1",
+			name: "Admin",
+			managedRoles: [
+				{ roleId: "2", name: "Manager" },
+				{ roleId: "3", name: "Supervisor" },
+			],
+		},
+		{
+			roleId: "2",
+			name: "Manager",
+			managedRoles: [{ roleId: "4", name: "Team Lead" }],
+		},
+		{
+			roleId: "3",
+			name: "Supervisor",
+			managedRoles: [],
+		},
+		{
+			roleId: "4",
+			name: "Team Lead",
+			managedRoles: [],
+		},
+	]);
 	const [permissions, setPermissions] = useState({
 		"Can poop": true,
 		"can fart": true,
@@ -63,12 +143,13 @@ const RolesTabSettings = ({ settings }) => {
 		"Can pee": true,
 	});
 	const [users, setUsers] = useState([
-		{ id: "aaaa", firstName: "Waltuh", lastName: "White" },
-		{ id: "bbbb", firstName: "Jessie", lastName: "Pinkman" },
+		{ roleId: "aaaa", firstName: "Waltuh", lastName: "White" },
+		{ roleId: "bbbb", firstName: "Jessie", lastName: "Pinkman" },
 	]);
 
 	// useEffect(() => {
 	// 	setName(selectedRole.name);
+	//	setRoles(settings.roles);
 	// 	setPermissions(selectedRole.permissions);
 	// 	setUsers(selectedRole.users);
 	// }, [selectedRole]);
@@ -85,7 +166,7 @@ const RolesTabSettings = ({ settings }) => {
 	return (
 		<>
 			<Typography variant="h5">Roles</Typography>
-			<Box sx={{ height: "55vh", display: "flex" }}>
+			<Box sx={{ height: "55vh", display: "flex", gap: 1 }}>
 				<Box
 					sx={{
 						width: "45%",
@@ -93,7 +174,7 @@ const RolesTabSettings = ({ settings }) => {
 						overflow: "auto",
 					}}
 				>
-					<Typography variant="h6">insert graph here</Typography>
+					<RolesGraph roles={roles} />
 				</Box>
 				<Box
 					sx={{
