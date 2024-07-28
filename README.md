@@ -10,7 +10,7 @@ There are many benefits to developing in a container. We all have the same envir
 2. If you are using WSL, make sure you have an SSH key within it that is connected to GitHub.
 3. Ensure Docker is running. Within VS Code, press F1 and select **Dev Containers: Clone Repository in Container Volume**, and it should bring up an option to select a repository to clone. Either paste in the repository URL or select an option through GitHub (you may need to sign in through GitHub). This will reopen your VS Code to the cloned repository inside the container. The first time might take longer to load because it has to download and cache things.
 4. Install the **Recommended Extensions** that pops up at the bottom right, or find them in the extensions tab by searching ***@recommended***. Most important are the **Extension Pack for Java** as well as the **Spring Boot Tools** extensions as these are needed to run the backend.
-5. (Possibly optional) You should already an ssh key set up and working with the container. However, sometimes it will not find your ssh key. If needed, generate a new ssh key with `ssh-keygen` and set up your github with it. Then set your username and email with 
+5. (Not needed now that we use **Clone Repository in Container Volume**) You should already an ssh key set up and working with the container. However, sometimes it will not find your ssh key. If needed, generate a new ssh key with `ssh-keygen` and set up your github with it. Then set your username and email with 
 ```git config --global user.name "FIRST_NAME LAST_NAME"```
 and
 ```git config --global user.email "MY_NAME@example.com"```.
