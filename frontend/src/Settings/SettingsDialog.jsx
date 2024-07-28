@@ -7,9 +7,10 @@ import {
 	Button,
 	Box,
 	Typography,
+	IconButton,
 } from "@mui/material";
 import List from "@mui/material/List";
-
+import CloseIcon from "@mui/icons-material/Close";
 import OrganizationTab from "./SettingTabs/OrganizationTab";
 import MeetingsTab from "./SettingTabs/MeetingsTab";
 import IntegrationsCollapse from "./SettingsCollapses/IntegrationsCollapse";
@@ -76,6 +77,7 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 		setSettingsPage(SettingComponent);
 	};
 
+	// TODO: detect changes and warn if there are unsaved changes
 	const onCloseWrapper = () => {
 		onClose();
 	};
@@ -102,7 +104,19 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 			}}
 			// fullScreen // Too dummy thicc
 		>
-			<DialogTitle>Organization settings</DialogTitle>
+			<DialogTitle>
+				<Box
+					sx={{
+						display: "flex",
+						justifyContent: "space-between",
+					}}
+				>
+					Organization settings
+					<IconButton onClick={onCloseWrapper}>
+						<CloseIcon />
+					</IconButton>
+				</Box>
+			</DialogTitle>
 
 			<DialogContent>
 				<Box height="65vh" sx={{ display: "flex", gap: 1 }}>
@@ -149,20 +163,6 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 					<Box sx={{ flex: 3, m: 2, overflow: "auto" }}>{settingsPage}</Box>
 				</Box>
 			</DialogContent>
-
-			<DialogActions>
-				<Button onClick={onCloseWrapper} color="primary">
-					Cancel
-				</Button>
-				<Button
-					// Only show if there is something to save. Warn if not saved. Move into the DialogContent?
-					onClick={onSaveWrapper}
-					color="primary"
-					variant="contained"
-				>
-					Save
-				</Button>
-			</DialogActions>
 		</Dialog>
 	);
 };
