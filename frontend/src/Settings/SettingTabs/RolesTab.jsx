@@ -99,7 +99,7 @@ const RolesTabSettings = ({ settings }) => {
 				</Box>
 				<Box
 					sx={{
-						width: "50%",
+						width: "55%",
 						pt: 1,
 						overflow: "auto",
 					}}
