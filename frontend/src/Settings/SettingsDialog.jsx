@@ -123,9 +123,7 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 						<IntegrationsCollapse>
 							<MeetingsTab
 								settings={orgSettings.integrations.meetings}
-								availableMeetings={
-									availableIntegrations.meetings
-								}
+								availableMeetings={availableIntegrations.meetings}
 								onClick={handleTabClick}
 								selected={selected}
 							/>
@@ -133,9 +131,7 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 					</List>
 
 					{/* Settings page */}
-					<Box sx={{ flex: 3, m: 2, overflow: "auto" }}>
-						{settingsPage}
-					</Box>
+					<Box sx={{ flex: 3, m: 2, overflow: "auto" }}>{settingsPage}</Box>
 				</Box>
 			</DialogContent>
 

@@ -67,9 +67,7 @@ const MeetingsTabSettings = ({ settings, availableMeetings }) => {
 								<ListItemIcon>
 									<Checkbox
 										edge="start"
-										checked={
-											checked.indexOf(service) !== -1
-										}
+										checked={checked.indexOf(service) !== -1}
 										tabIndex={-1}
 										disableRipple
 										inputProps={{
@@ -77,10 +75,7 @@ const MeetingsTabSettings = ({ settings, availableMeetings }) => {
 										}}
 									/>
 								</ListItemIcon>
-								<ListItemText
-									id={labelId}
-									primary={`${service}`}
-								/>
+								<ListItemText id={labelId} primary={`${service}`} />
 							</ListItemButton>
 						</ListItem>
 					);
@@ -109,7 +104,7 @@ const MeetingsTab = ({
 					<MeetingsTabSettings
 						settings={settings}
 						availableMeetings={availableMeetings}
-					/>
+					/>,
 				)
 			}
 		/>
