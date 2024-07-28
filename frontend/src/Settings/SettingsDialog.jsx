@@ -160,7 +160,8 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 					</List>
 
 					{/* Settings page */}
-					<Box sx={{ flex: 3, m: 2, overflow: "auto" }}>{settingsPage}</Box>
+					{/* If you need it to be scrollable, wrap your settings in a Box with overflow set to "auto" */}
+					<Box sx={{ flex: 3, m: 2 }}>{settingsPage}</Box>
 				</Box>
 			</DialogContent>
 		</Dialog>

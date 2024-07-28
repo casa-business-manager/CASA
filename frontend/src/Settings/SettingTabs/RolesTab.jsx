@@ -87,7 +87,7 @@ const RolesTabSettings = ({ settings }) => {
 	return (
 		<>
 			<Typography variant="h5">Roles</Typography>
-			<Box height="65vh" sx={{ display: "flex", gap: 1 }}>
+			<Box sx={{ height: "55vh", display: "flex" }}>
 				<Box
 					sx={{
 						width: "45%",
@@ -119,7 +119,7 @@ const RolesTabSettings = ({ settings }) => {
 						InputProps={{ sx: { fontSize: "1.5rem" } }}
 						InputLabelProps={{ sx: { fontSize: "1.5rem" } }}
 					/>
-					<List>
+					<List sx={{ overflow: "auto" }}>
 						<BaseCollapse Icon={ShieldIcon} Label={"Permissions"}>
 							{permissionPairs.map((pair) => (
 								<PermissionRow permission={pair[0]} value={pair[1]} />
