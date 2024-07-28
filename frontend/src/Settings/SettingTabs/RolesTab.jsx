@@ -18,9 +18,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 const PermissionRow = ({ permission, value }) => {
 	return (
-		<Box
-			sx={{ display: "flex", justifyContent: "space-between", mb: 4, pl: 4 }}
-		>
+		<Box sx={{ display: "flex", justifyContent: "space-between", m: 4, pl: 4 }}>
 			<Typography sx={{}}>{permission}</Typography>
 			{value === true || value === false ? (
 				<Switch checked={value} onChange={() => {}} />
@@ -38,7 +36,7 @@ const UserRow = ({ user }) => {
 				display: "flex",
 				justifyContent: "space-between",
 				alignItems: "center",
-				mb: 4,
+				m: 2,
 				pl: 4,
 			}}
 		>
