@@ -2,22 +2,87 @@ import { useEffect, useState } from "react";
 import BaseTab from "./BaseTab";
 import Typography from "@mui/material/Typography";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
-import { Box, SpeedDialIcon, TextField } from "@mui/material";
+import {
+	Box,
+	Chip,
+	IconButton,
+	List,
+	SpeedDialIcon,
+	Switch,
+	TextField,
+} from "@mui/material";
 import BaseCollapse from "../SettingsCollapses/BaseCollapse";
 import PeopleIcon from "@mui/icons-material/People";
 import ShieldIcon from "@mui/icons-material/Shield";
+import CloseIcon from "@mui/icons-material/Close";
+
+const PermissionRow = ({ permission, value }) => {
+	return (
+		<Box
+			sx={{ display: "flex", justifyContent: "space-between", mb: 4, pl: 4 }}
+		>
+			<Typography sx={{}}>{permission}</Typography>
+			{value === true || value === false ? (
+				<Switch checked={value} onChange={() => {}} />
+			) : (
+				<TextField></TextField>
+			)}
+		</Box>
+	);
+};
+
+const UserRow = ({ user }) => {
+	return (
+		<Box
+			sx={{
+				display: "flex",
+				justifyContent: "space-between",
+				alignItems: "center",
+				mb: 4,
+				pl: 4,
+			}}
+		>
+			<Chip label={user.firstName + " " + user.lastName} variant="outlined" />
+			<IconButton
+				onClick={() => {
+					console.log("set the function in UserRow");
+				}}
+			>
+				<CloseIcon />
+			</IconButton>
+		</Box>
+	);
+};
 
 const RolesTabSettings = ({ settings }) => {
 	const [selectedRole, setSelectedRole] = useState({});
 	const [name, setName] = useState("initial role name");
+	const [permissions, setPermissions] = useState({
+		"Can poop": true,
+		"can fart": true,
+		"can backflip": false,
+		"Can leave all this behind and live a more meaningful life in the mountains as a hermit for the rest of their days": false,
+		"Can pee": true,
+	});
+	const [users, setUsers] = useState([
+		{ id: "aaaa", firstName: "Waltuh", lastName: "White" },
+		{ id: "bbbb", firstName: "Jessie", lastName: "Pinkman" },
+	]);
 
 	// useEffect(() => {
 	// 	setName(selectedRole.name);
+	// 	setPermissions(selectedRole.permissions);
+	// 	setUsers(selectedRole.users);
 	// }, [selectedRole]);
 
 	if (!settings || !settings.orgName) {
 		return <>Loading</>;
 	}
+
+	const permissionPairs = Object.keys(permissions).map((key) => [
+		key,
+		permissions[key],
+	]);
 
 	return (
 		<>
@@ -34,7 +99,7 @@ const RolesTabSettings = ({ settings }) => {
 				</Box>
 				<Box
 					sx={{
-						width: "45%",
+						width: "50%",
 						pt: 1,
 						overflow: "auto",
 					}}
@@ -54,12 +119,18 @@ const RolesTabSettings = ({ settings }) => {
 						InputProps={{ sx: { fontSize: "1.5rem" } }}
 						InputLabelProps={{ sx: { fontSize: "1.5rem" } }}
 					/>
-					<BaseCollapse Icon={ShieldIcon} Label={"Permissions"}>
-						<Typography>list permissions here w/ toggle switch</Typography>
-					</BaseCollapse>
-					<BaseCollapse Icon={PeopleIcon} Label={"Users"}>
-						<Typography>list user chips here w/ delete button</Typography>
-					</BaseCollapse>
+					<List>
+						<BaseCollapse Icon={ShieldIcon} Label={"Permissions"}>
+							{permissionPairs.map((pair) => (
+								<PermissionRow permission={pair[0]} value={pair[1]} />
+							))}
+						</BaseCollapse>
+						<BaseCollapse Icon={PeopleIcon} Label={"Users"}>
+							{users.map((user) => (
+								<UserRow user={user} />
+							))}
+						</BaseCollapse>
+					</List>
 				</Box>
 			</Box>
 		</>
