@@ -8,8 +8,8 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Checkbox from "@mui/material/Checkbox";
-import IconButton from "@mui/material/IconButton";
-import LaunchIcon from "@mui/icons-material/Launch";
+
+const name = "Meetings";
 
 const MeetingsTabSettings = ({ settings, availableMeetings }) => {
 	const [checked, setChecked] = useState(settings);
@@ -95,8 +95,8 @@ const MeetingsTab = ({
 	return (
 		<BaseTab
 			Icon={VideocamIcon}
-			Label={"Meetings"}
-			selected={selected === "Meetings"}
+			Label={name}
+			selected={selected}
 			indentLevel={indentLevel}
 			onClick={() =>
 				onClick(
