@@ -1,13 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import BaseTab from "./BaseTab";
 import Typography from "@mui/material/Typography";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import {
 	Box,
 	Chip,
+	ClickAwayListener,
+	Grow,
 	IconButton,
 	List,
-	SpeedDialIcon,
+	MenuItem,
+	MenuList,
+	Paper,
+	Popper,
 	Switch,
 	TextField,
 } from "@mui/material";
@@ -95,6 +100,40 @@ const RolesGraph = ({ roles, setSelectedRole }) => {
 				onNodeDoubleClick={(node) => {
 					console.log("double click" + node);
 				}}
+				contextMenu={({ data, onClose }) => (
+					<Popper
+						open={true}
+						anchorEl={true}
+						role={undefined}
+						placement="bottom-start"
+						transition
+						disablePortal
+					>
+						{({ TransitionProps, placement }) => (
+							<Grow
+								{...TransitionProps}
+								style={{
+									transformOrigin:
+										placement === "bottom-start" ? "left top" : "left bottom",
+								}}
+							>
+								<Paper>
+									<ClickAwayListener onClickAway={onClose}>
+										<MenuList
+											autoFocusItem={true}
+											id="composition-menu"
+											aria-labelledby="composition-button"
+										>
+											<MenuItem onClick={onClose}>Open details</MenuItem>
+											<MenuItem onClick={onClose}>Add new role</MenuItem>
+											<MenuItem onClick={onClose}>Delete role</MenuItem>
+										</MenuList>
+									</ClickAwayListener>
+								</Paper>
+							</Grow>
+						)}
+					</Popper>
+				)}
 				theme={graphTheme}
 			/>
 		</Box>
