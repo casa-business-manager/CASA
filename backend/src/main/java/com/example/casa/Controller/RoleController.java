@@ -43,7 +43,7 @@ public class RoleController {
 	}
 
 	@GetMapping("/roles/{id}/users")
-	public ResponseEntity<?> getUsersWithRole(@PathVariable String id) {
+	public ResponseEntity<?> getRoleUsers(@PathVariable String id) {
 		Role role = roleRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Role could not found with role id: " + id));
 

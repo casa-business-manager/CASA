@@ -25,7 +25,7 @@ const graphTheme = {
 	},
 };
 
-const RolesGraph = ({ roles }) => {
+const RolesGraph = ({ roles, setSelectedRole }) => {
 	const [selected, setSelected] = useState([]);
 
 	const nodes = [];
@@ -35,7 +35,8 @@ const RolesGraph = ({ roles }) => {
 		nodes.push({
 			id: role.roleId,
 			label: role.name,
-			fill: "#1f77b4",
+			data: role,
+			fill: "#1f77b4", // fill should depend on current user's roles
 		});
 
 		role.managedRoles.forEach((managedRole) => {
@@ -89,6 +90,7 @@ const RolesGraph = ({ roles }) => {
 				onNodeClick={(node) => {
 					console.log("clicked" + node);
 					setSelected(node.id);
+					setSelectedRole(node.data);
 				}}
 				onNodeDoubleClick={(node) => {
 					console.log("double click" + node);
@@ -136,33 +138,9 @@ const UserRow = ({ user }) => {
 };
 
 const RolesTabSettings = ({ settings }) => {
-	const [selectedRole, setSelectedRole] = useState({});
-	const [name, setName] = useState("initial role name");
-	const [roles, setRoles] = useState([
-		{
-			roleId: "1",
-			name: "Admin",
-			managedRoles: [
-				{ roleId: "2", name: "Manager" },
-				{ roleId: "3", name: "Supervisor" },
-			],
-		},
-		{
-			roleId: "2",
-			name: "Manager",
-			managedRoles: [{ roleId: "4", name: "Team Lead" }],
-		},
-		{
-			roleId: "3",
-			name: "Supervisor",
-			managedRoles: [],
-		},
-		{
-			roleId: "4",
-			name: "Team Lead",
-			managedRoles: [],
-		},
-	]);
+	const [selectedRole, setSelectedRole] = useState(null);
+	const [name, setName] = useState("");
+	const [roles, setRoles] = useState(settings);
 	const [permissions, setPermissions] = useState({
 		"Can poop": true,
 		"can fart": true,
@@ -170,19 +148,19 @@ const RolesTabSettings = ({ settings }) => {
 		"Can leave all this behind and live a more meaningful life in the mountains as a hermit for the rest of their days": false,
 		"Can pee": true,
 	});
-	const [users, setUsers] = useState([
-		{ roleId: "aaaa", firstName: "Waltuh", lastName: "White" },
-		{ roleId: "bbbb", firstName: "Jessie", lastName: "Pinkman" },
-	]);
+	const [users, setUsers] = useState([]);
 
-	// useEffect(() => {
-	// 	setName(selectedRole.name);
-	//	setRoles(settings.roles);
-	// 	setPermissions(selectedRole.permissions);
-	// 	setUsers(selectedRole.users);
-	// }, [selectedRole]);
+	useEffect(() => {
+		if (!selectedRole) {
+			return;
+		}
 
-	if (!settings || !settings.orgName) {
+		setName(selectedRole.name);
+		setPermissions(selectedRole.permissions);
+		setUsers(selectedRole.users);
+	}, [selectedRole]);
+
+	if (!settings || settings.length === 0) {
 		return <>Loading</>;
 	}
 
@@ -202,7 +180,7 @@ const RolesTabSettings = ({ settings }) => {
 						overflow: "auto",
 					}}
 				>
-					<RolesGraph roles={roles} />
+					<RolesGraph roles={roles} setSelectedRole={setSelectedRole} />
 				</Box>
 				<Box
 					sx={{
@@ -211,33 +189,39 @@ const RolesTabSettings = ({ settings }) => {
 						overflow: "auto",
 					}}
 				>
-					<Typography variant="h6" sx={{ mb: 1 }}>
-						Role Details:
-					</Typography>
-					<TextField
-						label="Name"
-						type="text"
-						autoFocus
-						fullWidth
-						variant="standard"
-						value={name}
-						onChange={(e) => setName(e.target.value)}
-						sx={{ mb: 2 }}
-						InputProps={{ sx: { fontSize: "1.5rem" } }}
-						InputLabelProps={{ sx: { fontSize: "1.5rem" } }}
-					/>
-					<List sx={{ overflow: "auto" }}>
-						<BaseCollapse Icon={ShieldIcon} Label={"Permissions"}>
-							{permissionPairs.map((pair) => (
-								<PermissionRow permission={pair[0]} value={pair[1]} />
-							))}
-						</BaseCollapse>
-						<BaseCollapse Icon={PeopleIcon} Label={"Users"}>
-							{users.map((user) => (
-								<UserRow user={user} />
-							))}
-						</BaseCollapse>
-					</List>
+					{selectedRole === null ? (
+						<Typography>Please select a role</Typography>
+					) : (
+						<>
+							<Typography variant="h6" sx={{ mb: 1 }}>
+								Role Details:
+							</Typography>
+							<TextField
+								label="Name"
+								type="text"
+								autoFocus
+								fullWidth
+								variant="standard"
+								value={name}
+								onChange={(e) => setName(e.target.value)}
+								sx={{ mb: 2 }}
+								InputProps={{ sx: { fontSize: "1.5rem" } }}
+								InputLabelProps={{ sx: { fontSize: "1.5rem" } }}
+							/>
+							<List sx={{ overflow: "auto" }}>
+								<BaseCollapse Icon={ShieldIcon} Label={"Permissions"}>
+									{permissionPairs.map((pair) => (
+										<PermissionRow permission={pair[0]} value={pair[1]} />
+									))}
+								</BaseCollapse>
+								<BaseCollapse Icon={PeopleIcon} Label={"Users"}>
+									{users.map((user) => (
+										<UserRow user={user} />
+									))}
+								</BaseCollapse>
+							</List>
+						</>
+					)}
 				</Box>
 			</Box>
 		</>
