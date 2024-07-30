@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import BaseTab from "./BaseTab";
 import Typography from "@mui/material/Typography";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
@@ -15,9 +15,19 @@ import BaseCollapse from "../SettingsCollapses/BaseCollapse";
 import PeopleIcon from "@mui/icons-material/People";
 import ShieldIcon from "@mui/icons-material/Shield";
 import CloseIcon from "@mui/icons-material/Close";
-import { GraphCanvas } from "reagraph";
+import { GraphCanvas, lightTheme } from "reagraph";
+
+const graphTheme = {
+	...lightTheme,
+	node: {
+		...lightTheme.node,
+		activeFill: "#ff7f0e",
+	},
+};
 
 const RolesGraph = ({ roles }) => {
+	const [selected, setSelected] = useState([]);
+
 	const nodes = [];
 	const edges = [];
 
@@ -25,15 +35,22 @@ const RolesGraph = ({ roles }) => {
 		nodes.push({
 			id: role.roleId,
 			label: role.name,
+			fill: "#1f77b4",
 		});
 
 		role.managedRoles.forEach((managedRole) => {
 			edges.push({
 				source: role.roleId,
 				target: managedRole.roleId,
+				id: role.roleId + "-" + managedRole.roleId,
 			});
 		});
 	});
+
+	useEffect(() => {
+		// TODO: set to user's roles
+		setSelected([nodes[0].id]);
+	}, []);
 
 	return (
 		<Box
@@ -62,10 +79,21 @@ const RolesGraph = ({ roles }) => {
 					{
 						style: {
 							stroke: "#999",
-							strokeWidth: 2,
+							strokeWidth: 5,
 						},
 					}
 				}
+				layoutType="treeTd2d"
+				selections={selected}
+				actives={["1"]}
+				onNodeClick={(node) => {
+					console.log("clicked" + node);
+					setSelected(node.id);
+				}}
+				onNodeDoubleClick={(node) => {
+					console.log("double click" + node);
+				}}
+				theme={graphTheme}
 			/>
 		</Box>
 	);
