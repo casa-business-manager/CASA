@@ -211,3 +211,19 @@ export const getOrganizationRoles = async (organizationId) => {
 		method: "GET",
 	});
 };
+
+export const createRole = async (organizationId, roleRequest) => {
+	return request({
+		url: API_BASE_URL + "/organization/" + organizationId + "/roles",
+		method: "POST",
+		body: JSON.stringify(roleRequest),
+	});
+};
+
+export const editRole = async (roleId, roleRequest) => {
+	return request({
+		url: API_BASE_URL + "/roles/" + roleId,
+		method: "PUT",
+		body: JSON.stringify(roleRequest),
+	});
+};

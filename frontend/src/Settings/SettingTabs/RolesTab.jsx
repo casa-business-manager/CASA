@@ -31,7 +31,16 @@ const graphTheme = {
 	},
 };
 
-const GraphPopup = ({ node, onClose, setSelectedRole, setRoles }) => {
+const GraphPopup = ({
+	node,
+	onClose,
+	setSelectedRole,
+	setRoles,
+	setEditorIsCreatingNewRole,
+	setName,
+	setPermissions,
+	setUsers,
+}) => {
 	const menuClickWrapper = (handlerFunction) => {
 		return () => {
 			handlerFunction();
@@ -40,27 +49,38 @@ const GraphPopup = ({ node, onClose, setSelectedRole, setRoles }) => {
 	};
 
 	const handleOpenDetails = () => {
+		setEditorIsCreatingNewRole(false);
 		setSelectedRole(node.data);
 	};
 
 	const handleAddRole = () => {
-		setRoles((prevRoles) => {
-			const parentRoleId = node.data.roleId;
-			const parentRole = prevRoles.find((role) => role.roleId === parentRoleId);
-			const newRole = {
-				roleId: "1",
-				name: "New Role",
-				permissions: {},
-				users: [],
-				managedRoles: [],
-				managedBy: node.data,
-			};
-			parentRole.managedRoles.push(newRole);
-			const untouchedRoles = prevRoles.filter(
-				(role) => role.roleId !== parentRoleId,
-			);
-			return [...untouchedRoles, parentRole, newRole];
+		setEditorIsCreatingNewRole(true);
+		setName("");
+		setPermissions((oldPermissions) => {
+			const newPermissions = {};
+			for (const key in oldPermissions) {
+				newPermissions[key] = false;
+			}
+			return newPermissions;
 		});
+		setUsers([]);
+		// setRoles((prevRoles) => {
+		// 	const parentRoleId = node.data.roleId;
+		// 	const parentRole = prevRoles.find((role) => role.roleId === parentRoleId);
+		// 	const newRole = {
+		// 		roleId: "1",
+		// 		name: "New Role",
+		// 		permissions: {},
+		// 		users: [],
+		// 		managedRoles: [],
+		// 		managedBy: node.data,
+		// 	};
+		// 	parentRole.managedRoles.push(newRole);
+		// 	const untouchedRoles = prevRoles.filter(
+		// 		(role) => role.roleId !== parentRoleId,
+		// 	);
+		// 	return [...untouchedRoles, parentRole, newRole];
+		// });
 	};
 
 	return (
@@ -103,7 +123,16 @@ const GraphPopup = ({ node, onClose, setSelectedRole, setRoles }) => {
 	);
 };
 
-const RolesGraph = ({ roles, setRoles, setSelectedRole, user }) => {
+const RolesGraph = ({
+	roles,
+	setRoles,
+	setSelectedRole,
+	user,
+	setEditorIsCreatingNewRole,
+	setName,
+	setPermissions,
+	setUsers,
+}) => {
 	const [selected, setSelected] = useState([]);
 
 	const nodes = [];
@@ -175,6 +204,7 @@ const RolesGraph = ({ roles, setRoles, setSelectedRole, user }) => {
 					console.log("clicked" + node);
 					setSelected(node.id);
 					setSelectedRole(node.data);
+					setEditorIsCreatingNewRole(false);
 				}}
 				contextMenu={({ data, onClose }) => (
 					<GraphPopup
@@ -182,6 +212,10 @@ const RolesGraph = ({ roles, setRoles, setSelectedRole, user }) => {
 						onClose={onClose}
 						setSelectedRole={setSelectedRole}
 						setRoles={setRoles}
+						setEditorIsCreatingNewRole={setEditorIsCreatingNewRole}
+						setName={setName}
+						setPermissions={setPermissions}
+						setUsers={setUsers}
 					/>
 				)}
 				theme={graphTheme}
@@ -229,16 +263,26 @@ const UserRow = ({ user }) => {
 const RoleEditor = ({
 	name,
 	setName,
+	permissions,
+	setPermissions,
 	users,
-	permissionPairs,
+	setUsers,
 	selectedRole,
+	editorIsCreatingNewRole,
 }) => {
-	return selectedRole === null ? (
-		<Typography>Please select a role</Typography>
-	) : (
+	const permissionPairs = Object.keys(permissions).map((key) => [
+		key,
+		permissions[key],
+	]);
+
+	if (selectedRole === null) {
+		return <Typography>Please select a role</Typography>;
+	}
+
+	return (
 		<>
 			<Typography variant="h6" sx={{ mb: 1 }}>
-				Role Details:
+				{editorIsCreatingNewRole ? "Create new role:" : "Role Details:"}
 			</Typography>
 			<TextField
 				label="Name"
@@ -257,12 +301,19 @@ const RoleEditor = ({
 					Icon={ShieldIcon}
 					Label={"Permissions"}
 					key={"Permissions"}
+					defaultOpen={editorIsCreatingNewRole}
 				>
 					{permissionPairs.map((pair) => (
 						<PermissionRow permission={pair[0]} value={pair[1]} />
 					))}
 				</BaseCollapse>
-				<BaseCollapse Icon={PeopleIcon} Label={"Users"} key={"Users"}>
+				<BaseCollapse
+					Icon={PeopleIcon}
+					Label={"Users"}
+					key={"Users"}
+					defaultOpen={editorIsCreatingNewRole}
+				>
+					{/* TODO: Add a user text field and dropdown */}
 					{users.map((user) => (
 						<UserRow user={user} />
 					))}
@@ -289,6 +340,7 @@ const RolesTabSettings = ({ settings, user }) => {
 		"Can pee": true,
 	});
 	const [users, setUsers] = useState([]);
+	const [editorIsCreatingNewRole, setEditorIsCreatingNewRole] = useState(false);
 
 	useEffect(() => {
 		if (!selectedRole) {
@@ -304,11 +356,6 @@ const RolesTabSettings = ({ settings, user }) => {
 		return <>Loading</>;
 	}
 
-	const permissionPairs = Object.keys(permissions).map((key) => [
-		key,
-		permissions[key],
-	]);
-
 	return (
 		<>
 			<Typography variant="h5">Roles</Typography>
@@ -322,9 +369,13 @@ const RolesTabSettings = ({ settings, user }) => {
 				>
 					<RolesGraph
 						roles={roles}
+						setRoles={setRoles}
 						setSelectedRole={setSelectedRole}
 						user={user}
-						setRoles={setRoles}
+						setEditorIsCreatingNewRole={setEditorIsCreatingNewRole}
+						setName={setName}
+						setPermissions={setPermissions}
+						setUsers={setUsers}
 					/>
 				</Box>
 				<Box
@@ -338,8 +389,11 @@ const RolesTabSettings = ({ settings, user }) => {
 						name={name}
 						setName={setName}
 						users={users}
-						permissionPairs={permissionPairs}
+						setUsers={setUsers}
+						permissions={permissions}
+						setPermissions={setPermissions}
 						selectedRole={selectedRole}
+						editorIsCreatingNewRole={editorIsCreatingNewRole}
 					/>
 				</Box>
 			</Box>

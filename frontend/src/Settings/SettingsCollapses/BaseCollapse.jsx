@@ -1,4 +1,4 @@
-import { Children, cloneElement, useState } from "react";
+import { Children, cloneElement, useEffect, useState } from "react";
 import Collapse from "@mui/material/Collapse";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -7,8 +7,18 @@ import ListItemText from "@mui/material/ListItemText";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 
-const BaseCollapse = ({ Icon, Label, indentLevel = 0, children }) => {
-	const [open, setOpen] = useState(false);
+const BaseCollapse = ({
+	Icon,
+	Label,
+	indentLevel = 0,
+	children,
+	defaultOpen = false,
+}) => {
+	const [open, setOpen] = useState(defaultOpen);
+
+	useEffect(() => {
+		setOpen(defaultOpen);
+	}, [defaultOpen]);
 
 	const handleClick = () => {
 		setOpen(!open);
