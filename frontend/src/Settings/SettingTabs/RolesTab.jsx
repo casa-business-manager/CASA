@@ -4,6 +4,7 @@ import Typography from "@mui/material/Typography";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import {
 	Box,
+	Button,
 	Chip,
 	ClickAwayListener,
 	Grow,
@@ -30,7 +31,7 @@ const graphTheme = {
 	},
 };
 
-const GraphPopup = ({ data, onClose, setSelectedRole }) => {
+const GraphPopup = ({ node, onClose, setSelectedRole, setRoles }) => {
 	const menuClickWrapper = (handlerFunction) => {
 		return () => {
 			handlerFunction();
@@ -38,16 +39,34 @@ const GraphPopup = ({ data, onClose, setSelectedRole }) => {
 		};
 	};
 
-	const openDetails = () => {
-		console.log(data);
-		console.log(data.data);
-		setSelectedRole(data.data);
+	const handleOpenDetails = () => {
+		setSelectedRole(node.data);
+	};
+
+	const handleAddRole = () => {
+		setRoles((prevRoles) => {
+			const parentRoleId = node.data.roleId;
+			const parentRole = prevRoles.find((role) => role.roleId === parentRoleId);
+			const newRole = {
+				roleId: "1",
+				name: "New Role",
+				permissions: {},
+				users: [],
+				managedRoles: [],
+				managedBy: node.data,
+			};
+			parentRole.managedRoles.push(newRole);
+			const untouchedRoles = prevRoles.filter(
+				(role) => role.roleId !== parentRoleId,
+			);
+			return [...untouchedRoles, parentRole, newRole];
+		});
 	};
 
 	return (
 		<Popper
 			open={true}
-			anchorEl={true}
+			anchorEl={null}
 			role={undefined}
 			placement="bottom-start"
 			transition
@@ -68,10 +87,12 @@ const GraphPopup = ({ data, onClose, setSelectedRole }) => {
 								id="composition-menu"
 								aria-labelledby="composition-button"
 							>
-								<MenuItem onClick={menuClickWrapper(openDetails)}>
+								<MenuItem onClick={menuClickWrapper(handleOpenDetails)}>
 									Open details
 								</MenuItem>
-								<MenuItem onClick={onClose}>Add new role</MenuItem>
+								<MenuItem onClick={menuClickWrapper(handleAddRole)}>
+									Add new role
+								</MenuItem>
 								<MenuItem onClick={onClose}>Delete role</MenuItem>
 							</MenuList>
 						</ClickAwayListener>
@@ -82,7 +103,7 @@ const GraphPopup = ({ data, onClose, setSelectedRole }) => {
 	);
 };
 
-const RolesGraph = ({ roles, setSelectedRole }) => {
+const RolesGraph = ({ roles, setRoles, setSelectedRole, user }) => {
 	const [selected, setSelected] = useState([]);
 
 	const nodes = [];
@@ -106,6 +127,12 @@ const RolesGraph = ({ roles, setSelectedRole }) => {
 	});
 
 	useEffect(() => {
+		nodes.forEach((node) => {
+			const userIds = node.data.users.map((user) => user.id);
+			if (userIds.includes(user.id)) {
+				node.fill = "#ff7f0e";
+			}
+		});
 		// TODO: set to user's roles
 		setSelected([nodes[0].id]);
 	}, []);
@@ -151,9 +178,10 @@ const RolesGraph = ({ roles, setSelectedRole }) => {
 				}}
 				contextMenu={({ data, onClose }) => (
 					<GraphPopup
-						data={data}
+						node={data}
 						onClose={onClose}
 						setSelectedRole={setSelectedRole}
+						setRoles={setRoles}
 					/>
 				)}
 				theme={graphTheme}
@@ -198,7 +226,58 @@ const UserRow = ({ user }) => {
 	);
 };
 
-const RolesTabSettings = ({ settings }) => {
+const RoleEditor = ({
+	name,
+	setName,
+	users,
+	permissionPairs,
+	selectedRole,
+}) => {
+	return selectedRole === null ? (
+		<Typography>Please select a role</Typography>
+	) : (
+		<>
+			<Typography variant="h6" sx={{ mb: 1 }}>
+				Role Details:
+			</Typography>
+			<TextField
+				label="Name"
+				type="text"
+				autoFocus
+				fullWidth
+				variant="standard"
+				value={name}
+				onChange={(e) => setName(e.target.value)}
+				sx={{ mb: 2 }}
+				InputProps={{ sx: { fontSize: "1.5rem" } }}
+				InputLabelProps={{ sx: { fontSize: "1.5rem" } }}
+			/>
+			<List sx={{ overflow: "auto" }}>
+				<BaseCollapse
+					Icon={ShieldIcon}
+					Label={"Permissions"}
+					key={"Permissions"}
+				>
+					{permissionPairs.map((pair) => (
+						<PermissionRow permission={pair[0]} value={pair[1]} />
+					))}
+				</BaseCollapse>
+				<BaseCollapse Icon={PeopleIcon} Label={"Users"} key={"Users"}>
+					{users.map((user) => (
+						<UserRow user={user} />
+					))}
+				</BaseCollapse>
+			</List>
+			<Box sx={{ display: "flex", justifyContent: "right", mt: 2 }}>
+				<Button variant="contained" color="primary">
+					Save
+				</Button>
+			</Box>
+		</>
+	);
+};
+
+const RolesTabSettings = ({ settings, user }) => {
 	const [selectedRole, setSelectedRole] = useState(null);
 	const [name, setName] = useState("");
 	const [roles, setRoles] = useState(settings);
@@ -221,7 +300,7 @@ const RolesTabSettings = ({ settings }) => {
 		setUsers(selectedRole.users);
 	}, [selectedRole]);
 
-	if (!settings || settings.length === 0) {
+	if (!settings || settings.length === 0 || !user) {
 		return <>Loading</>;
 	}
 
@@ -241,7 +320,12 @@ const RolesTabSettings = ({ settings }) => {
 						overflow: "auto",
 					}}
 				>
-					<RolesGraph roles={roles} setSelectedRole={setSelectedRole} />
+					<RolesGraph
+						roles={roles}
+						setSelectedRole={setSelectedRole}
+						user={user}
+						setRoles={setRoles}
+					/>
 				</Box>
 				<Box
 					sx={{
@@ -250,46 +334,20 @@ const RolesTabSettings = ({ settings }) => {
 						overflow: "auto",
 					}}
 				>
-					{selectedRole === null ? (
-						<Typography>Please select a role</Typography>
-					) : (
-						<>
-							<Typography variant="h6" sx={{ mb: 1 }}>
-								Role Details:
-							</Typography>
-							<TextField
-								label="Name"
-								type="text"
-								autoFocus
-								fullWidth
-								variant="standard"
-								value={name}
-								onChange={(e) => setName(e.target.value)}
-								sx={{ mb: 2 }}
-								InputProps={{ sx: { fontSize: "1.5rem" } }}
-								InputLabelProps={{ sx: { fontSize: "1.5rem" } }}
-							/>
-							<List sx={{ overflow: "auto" }}>
-								<BaseCollapse Icon={ShieldIcon} Label={"Permissions"}>
-									{permissionPairs.map((pair) => (
-										<PermissionRow permission={pair[0]} value={pair[1]} />
-									))}
-								</BaseCollapse>
-								<BaseCollapse Icon={PeopleIcon} Label={"Users"}>
-									{users.map((user) => (
-										<UserRow user={user} />
-									))}
-								</BaseCollapse>
-							</List>
-						</>
-					)}
+					<RoleEditor
+						name={name}
+						setName={setName}
+						users={users}
+						permissionPairs={permissionPairs}
+						selectedRole={selectedRole}
+					/>
 				</Box>
 			</Box>
 		</>
 	);
 };
 
-const RolesTab = ({ settings, onClick, selected, indentLevel = 0 }) => {
+const RolesTab = ({ settings, user, onClick, selected, indentLevel = 0 }) => {
 	return (
 		<BaseTab
 			Icon={AccountTreeIcon}
@@ -297,7 +355,7 @@ const RolesTab = ({ settings, onClick, selected, indentLevel = 0 }) => {
 			selected={selected}
 			indentLevel={indentLevel}
 			onClick={onClick}
-			SettingsPage={<RolesTabSettings settings={settings} />}
+			SettingsPage={<RolesTabSettings settings={settings} user={user} />}
 		/>
 	);
 };

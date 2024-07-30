@@ -17,7 +17,7 @@ import IntegrationsCollapse from "./SettingsCollapses/IntegrationsCollapse";
 import UserCollapse from "./SettingsCollapses/UserCollapse";
 import MembersTab from "./SettingTabs/MembersTab";
 import RolesTab from "./SettingTabs/RolesTab";
-import { getOrganizationRoles } from "../APIUtils/APIUtils";
+import { getCurrentUser, getOrganizationRoles } from "../APIUtils/APIUtils";
 
 // orgId may be null
 const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
@@ -27,6 +27,7 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 
 	const [selected, setSelected] = useState(-1);
 	const [settingsPage, setSettingsPage] = useState(defaultComponent);
+	const [user, setUser] = useState(null);
 	const [orgSettings, setOrgSettings] = useState({});
 	const [availableIntegrations, setAvailableIntegrations] = useState({});
 	const [roleSettings, setRoleSettings] = useState({});
@@ -41,6 +42,11 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 
 	// get settings if clicked
 	useEffect(() => {
+		const fetchCurrentUser = async () => {
+			const user = await getCurrentUser();
+			setUser(user);
+		};
+
 		const fetchOrganizationSettings = async () => {
 			// TODO: Make real backend function
 			// const settings = await SomeAPICallHere(orgId);
@@ -78,6 +84,7 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 			fetchOrganizationSettings();
 			fetchAvailableIntegrations();
 			fetchRoleSettings();
+			fetchCurrentUser();
 		}
 	}, [dialogOpen, orgId]);
 
@@ -154,6 +161,7 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 							/>
 							<RolesTab
 								settings={roleSettings}
+								user={user}
 								onClick={handleTabClick}
 								selected={selected}
 							/>
