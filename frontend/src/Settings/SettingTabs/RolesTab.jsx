@@ -30,6 +30,58 @@ const graphTheme = {
 	},
 };
 
+const GraphPopup = ({ data, onClose, setSelectedRole }) => {
+	const menuClickWrapper = (handlerFunction) => {
+		return () => {
+			handlerFunction();
+			onClose();
+		};
+	};
+
+	const openDetails = () => {
+		console.log(data);
+		console.log(data.data);
+		setSelectedRole(data.data);
+	};
+
+	return (
+		<Popper
+			open={true}
+			anchorEl={true}
+			role={undefined}
+			placement="bottom-start"
+			transition
+			disablePortal
+		>
+			{({ TransitionProps, placement }) => (
+				<Grow
+					{...TransitionProps}
+					style={{
+						transformOrigin:
+							placement === "bottom-start" ? "left top" : "left bottom",
+					}}
+				>
+					<Paper>
+						<ClickAwayListener onClickAway={onClose}>
+							<MenuList
+								autoFocusItem={true}
+								id="composition-menu"
+								aria-labelledby="composition-button"
+							>
+								<MenuItem onClick={menuClickWrapper(openDetails)}>
+									Open details
+								</MenuItem>
+								<MenuItem onClick={onClose}>Add new role</MenuItem>
+								<MenuItem onClick={onClose}>Delete role</MenuItem>
+							</MenuList>
+						</ClickAwayListener>
+					</Paper>
+				</Grow>
+			)}
+		</Popper>
+	);
+};
+
 const RolesGraph = ({ roles, setSelectedRole }) => {
 	const [selected, setSelected] = useState([]);
 
@@ -97,42 +149,12 @@ const RolesGraph = ({ roles, setSelectedRole }) => {
 					setSelected(node.id);
 					setSelectedRole(node.data);
 				}}
-				onNodeDoubleClick={(node) => {
-					console.log("double click" + node);
-				}}
 				contextMenu={({ data, onClose }) => (
-					<Popper
-						open={true}
-						anchorEl={true}
-						role={undefined}
-						placement="bottom-start"
-						transition
-						disablePortal
-					>
-						{({ TransitionProps, placement }) => (
-							<Grow
-								{...TransitionProps}
-								style={{
-									transformOrigin:
-										placement === "bottom-start" ? "left top" : "left bottom",
-								}}
-							>
-								<Paper>
-									<ClickAwayListener onClickAway={onClose}>
-										<MenuList
-											autoFocusItem={true}
-											id="composition-menu"
-											aria-labelledby="composition-button"
-										>
-											<MenuItem onClick={onClose}>Open details</MenuItem>
-											<MenuItem onClick={onClose}>Add new role</MenuItem>
-											<MenuItem onClick={onClose}>Delete role</MenuItem>
-										</MenuList>
-									</ClickAwayListener>
-								</Paper>
-							</Grow>
-						)}
-					</Popper>
+					<GraphPopup
+						data={data}
+						onClose={onClose}
+						setSelectedRole={setSelectedRole}
+					/>
 				)}
 				theme={graphTheme}
 			/>
