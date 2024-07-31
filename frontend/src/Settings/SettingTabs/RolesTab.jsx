@@ -46,9 +46,11 @@ const GraphPopup = ({
 	setName,
 	setPermissions,
 	setUsers,
+	setSelectedNode,
 }) => {
 	const menuClickWrapper = (handlerFunction) => {
-		return () => {
+		return (event) => {
+			event.stopPropagation();
 			handlerFunction();
 			onClose();
 		};
@@ -57,19 +59,13 @@ const GraphPopup = ({
 	const handleOpenDetails = () => {
 		setEditorIsCreatingNewRole(false);
 		setSelectedRole(node.data);
+		setSelectedNode(node.id);
 	};
 
 	const handleAddRole = () => {
+		setSelectedRole(node.data);
+		setSelectedNode(node.id);
 		setEditorIsCreatingNewRole(true);
-		setName("");
-		setPermissions((oldPermissions) => {
-			const newPermissions = [...oldPermissions];
-			for (let i = 0; i < newPermissions.length; i++) {
-				newPermissions[i][1] = false;
-			}
-			return newPermissions;
-		});
-		setUsers([]);
 	};
 
 	return (
@@ -186,7 +182,6 @@ const RolesGraph = ({
 				layoutType="treeTd2d"
 				selections={selected}
 				onNodeClick={(node) => {
-					console.log("clicked" + node);
 					setSelected(node.id);
 					setSelectedRole(node.data);
 					setEditorIsCreatingNewRole(false);
@@ -205,6 +200,7 @@ const RolesGraph = ({
 						setName={setName}
 						setPermissions={setPermissions}
 						setUsers={setUsers}
+						setSelectedNode={setSelected}
 					/>
 				)}
 				theme={graphTheme}
@@ -282,13 +278,15 @@ const RoleEditor = ({
 }) => {
 	const [organizationUsers, setOrganizationUsers] = useState(null);
 
-	useEffect(() => {
-		if (!selectedRole) {
-			return;
+	const updateOrganizationUsers = useCallback(() => {
+		if (selectedRole) {
+			setOrganizationUsers(selectedRole.organization.users);
 		}
-
-		setOrganizationUsers(selectedRole.organization.users);
 	}, [selectedRole]);
+
+	useEffect(() => {
+		updateOrganizationUsers();
+	}, [updateOrganizationUsers]);
 
 	if (selectedRole === null || organizationUsers === null) {
 		return <Typography>Please select a role</Typography>;
@@ -307,7 +305,6 @@ const RoleEditor = ({
 			userIds: users.map((user) => user.id),
 			managedById: parentRoleId,
 		};
-		console.log(selectedRole);
 		try {
 			const newRole = await createRole(
 				parentRole.organization.orgId,
@@ -459,6 +456,19 @@ const RolesTabSettings = ({ settings, user }) => {
 
 	useEffect(() => {
 		if (!selectedRole) {
+			return;
+		}
+
+		if (editorIsCreatingNewRole) {
+			setName("");
+			setPermissions((oldPermissions) => {
+				const newPermissions = [...oldPermissions];
+				for (let i = 0; i < newPermissions.length; i++) {
+					newPermissions[i][1] = false;
+				}
+				return newPermissions;
+			});
+			setUsers([]);
 			return;
 		}
 
