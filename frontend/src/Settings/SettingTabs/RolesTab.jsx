@@ -41,6 +41,7 @@ const graphTheme = {
 const GraphPopup = ({
 	node,
 	onClose,
+	roles,
 	setSelectedRole,
 	setRoles,
 	setEditorIsCreatingNewRole,
@@ -72,7 +73,8 @@ const GraphPopup = ({
 	const handleDeleteRole = async () => {
 		const getRoleSubtreeIds = (role) => {
 			const roleIds = [role.roleId];
-			role.managedRoles.forEach((managedRole) => {
+			const roleWithData = roles.find((r) => r.roleId === role.roleId);
+			roleWithData.managedRoles.forEach((managedRole) => {
 				roleIds.push(...getRoleSubtreeIds(managedRole));
 			});
 			return roleIds;
@@ -235,6 +237,7 @@ const RolesGraph = ({
 					<GraphPopup
 						node={data}
 						onClose={onClose}
+						roles={roles}
 						setSelectedRole={setSelectedRole}
 						setRoles={setRoles}
 						setEditorIsCreatingNewRole={setEditorIsCreatingNewRole}
