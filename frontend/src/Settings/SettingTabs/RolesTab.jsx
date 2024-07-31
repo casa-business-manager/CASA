@@ -22,6 +22,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import ShieldIcon from "@mui/icons-material/Shield";
 import CloseIcon from "@mui/icons-material/Close";
 import { GraphCanvas, lightTheme } from "reagraph";
+import { editRole } from "../../APIUtils/APIUtils";
 
 const graphTheme = {
 	...lightTheme,
@@ -64,23 +65,6 @@ const GraphPopup = ({
 			return newPermissions;
 		});
 		setUsers([]);
-		// setRoles((prevRoles) => {
-		// 	const parentRoleId = node.data.roleId;
-		// 	const parentRole = prevRoles.find((role) => role.roleId === parentRoleId);
-		// 	const newRole = {
-		// 		roleId: "1",
-		// 		name: "New Role",
-		// 		permissions: {},
-		// 		users: [],
-		// 		managedRoles: [],
-		// 		managedBy: node.data,
-		// 	};
-		// 	parentRole.managedRoles.push(newRole);
-		// 	const untouchedRoles = prevRoles.filter(
-		// 		(role) => role.roleId !== parentRoleId,
-		// 	);
-		// 	return [...untouchedRoles, parentRole, newRole];
-		// });
 	};
 
 	return (
@@ -268,16 +252,65 @@ const RoleEditor = ({
 	users,
 	setUsers,
 	selectedRole,
+	setSelectedRole,
 	editorIsCreatingNewRole,
+	setRoles,
 }) => {
+	if (selectedRole === null) {
+		return <Typography>Please select a role</Typography>;
+	}
+
 	const permissionPairs = Object.keys(permissions).map((key) => [
 		key,
 		permissions[key],
 	]);
 
-	if (selectedRole === null) {
-		return <Typography>Please select a role</Typography>;
-	}
+	// const handleAddRoleToGraph = () => {
+	// 	setRoles((prevRoles) => {
+	// 		const parentRoleId = node.data.roleId;
+	// 		const parentRole = prevRoles.find((role) => role.roleId === parentRoleId);
+	// 		const newRole = {
+	// 			roleId: "1",
+	// 			name: "New Role",
+	// 			permissions: {},
+	// 			users: [],
+	// 			managedRoles: [],
+	// 			managedBy: node.data,
+	// 		};
+	// 		parentRole.managedRoles.push(newRole);
+	// 		const untouchedRoles = prevRoles.filter(
+	// 			(role) => role.roleId !== parentRoleId,
+	// 		);
+	// 		return [...untouchedRoles, parentRole, newRole];
+	// 	});
+	// };
+
+	const handleEditRole = async () => {
+		const permissionsString = permissionPairs
+			.map((pair) => {
+				return pair[0] + ":" + pair[1];
+			})
+			.join(",");
+		const userIds = users.map((user) => user.id);
+		const editedRoleDto = {
+			name: name,
+			permissions: permissionsString,
+			users: userIds,
+		};
+		try {
+			const newRole = await editRole(selectedRole.roleId, editedRoleDto);
+			console.log("succ");
+			setRoles((prevRoles) => {
+				const untouchedRoles = prevRoles.filter(
+					(role) => role.roleId !== newRole.roleId,
+				);
+				return [...untouchedRoles, newRole];
+			});
+			setSelectedRole(newRole);
+		} catch {
+			console.error("Save failed");
+		}
+	};
 
 	return (
 		<>
@@ -303,8 +336,8 @@ const RoleEditor = ({
 					key={"Permissions"}
 					defaultOpen={editorIsCreatingNewRole}
 				>
-					{permissionPairs.map((pair) => (
-						<PermissionRow permission={pair[0]} value={pair[1]} />
+					{permissionPairs.map((pair, index) => (
+						<PermissionRow permission={pair[0]} value={pair[1]} key={index} />
 					))}
 				</BaseCollapse>
 				<BaseCollapse
@@ -315,14 +348,20 @@ const RoleEditor = ({
 				>
 					{/* TODO: Add a user text field and dropdown */}
 					{users.map((user) => (
-						<UserRow user={user} />
+						<UserRow user={user} key={user.id} />
 					))}
 				</BaseCollapse>
 			</List>
 			<Box sx={{ display: "flex", justifyContent: "right", mt: 2 }}>
-				<Button variant="contained" color="primary">
-					Save
-				</Button>
+				{editorIsCreatingNewRole ? (
+					<Button variant="contained" color="primary">
+						Create
+					</Button>
+				) : (
+					<Button variant="contained" color="primary" onClick={handleEditRole}>
+						Save
+					</Button>
+				)}
 			</Box>
 		</>
 	);
@@ -393,7 +432,9 @@ const RolesTabSettings = ({ settings, user }) => {
 						permissions={permissions}
 						setPermissions={setPermissions}
 						selectedRole={selectedRole}
+						setSelectedRole={setSelectedRole}
 						editorIsCreatingNewRole={editorIsCreatingNewRole}
+						setRoles={setRoles}
 					/>
 				</Box>
 			</Box>

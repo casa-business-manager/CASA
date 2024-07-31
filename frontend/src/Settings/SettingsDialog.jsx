@@ -86,7 +86,7 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 			fetchRoleSettings();
 			fetchCurrentUser();
 		}
-	}, [dialogOpen, orgId]);
+	}, [dialogOpen, orgId, settingsPage]);
 
 	const handleTabClick = (tabName, SettingComponent) => {
 		setSelected(tabName);
