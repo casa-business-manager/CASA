@@ -90,7 +90,7 @@ const GraphPopup = ({
 				return newRoles;
 			});
 		} catch {
-			console.log("Delete failed");
+			console.error("Delete failed");
 		}
 	};
 
@@ -139,6 +139,7 @@ const GraphPopup = ({
 const RolesGraph = ({
 	roles,
 	setRoles,
+	selectedRole,
 	setSelectedRole,
 	user,
 	setEditorIsCreatingNewRole,
@@ -147,6 +148,12 @@ const RolesGraph = ({
 	setUsers,
 }) => {
 	const [selected, setSelected] = useState([]);
+
+	useEffect(() => {
+		if (selectedRole === null) {
+			setSelected([]);
+		}
+	}, [selectedRole]);
 
 	const roleIdToNodeDict = {};
 	const controlledRoles = [];
@@ -302,6 +309,7 @@ const RoleEditor = ({
 	selectedRole,
 	setSelectedRole,
 	editorIsCreatingNewRole,
+	setEditorIsCreatingNewRole,
 	setRoles,
 }) => {
 	const [organizationUsers, setOrganizationUsers] = useState(null);
@@ -345,6 +353,8 @@ const RoleEditor = ({
 				);
 				return [...untouchedRoles, parentRole, newRole];
 			});
+			setEditorIsCreatingNewRole(false);
+			setSelectedRole(null);
 		} catch {
 			console.error("Save failed");
 			return;
@@ -487,6 +497,14 @@ const RolesTabSettings = ({ settings, user }) => {
 			return;
 		}
 
+		setName(selectedRole.name);
+		const permissionPairs = selectedRole.permissions
+			.split(",")
+			.map((kvPair) => kvPair.split(":"))
+			.map((pair) => [pair[0], pair[1].includes("true")]);
+		setPermissions(permissionPairs);
+		setUsers(selectedRole.users.sort((a, b) => a.lastName > b.lastName));
+
 		if (editorIsCreatingNewRole) {
 			setName("");
 			setPermissions((oldPermissions) => {
@@ -499,15 +517,7 @@ const RolesTabSettings = ({ settings, user }) => {
 			setUsers([]);
 			return;
 		}
-
-		setName(selectedRole.name);
-		const permissionPairs = selectedRole.permissions
-			.split(",")
-			.map((kvPair) => kvPair.split(":"))
-			.map((pair) => [pair[0], pair[1].includes("true")]);
-		setPermissions(permissionPairs);
-		setUsers(selectedRole.users.sort((a, b) => a.lastName > b.lastName));
-	}, [selectedRole]);
+	}, [selectedRole, editorIsCreatingNewRole]);
 
 	if (!settings || settings.length === 0 || !user) {
 		return <>Loading</>;
@@ -527,6 +537,7 @@ const RolesTabSettings = ({ settings, user }) => {
 					<RolesGraph
 						roles={roles}
 						setRoles={setRoles}
+						selectedRole={selectedRole}
 						setSelectedRole={setSelectedRole}
 						user={user}
 						setEditorIsCreatingNewRole={setEditorIsCreatingNewRole}
@@ -552,6 +563,7 @@ const RolesTabSettings = ({ settings, user }) => {
 						selectedRole={selectedRole}
 						setSelectedRole={setSelectedRole}
 						editorIsCreatingNewRole={editorIsCreatingNewRole}
+						setEditorIsCreatingNewRole={setEditorIsCreatingNewRole}
 						setRoles={setRoles}
 					/>
 				</Box>

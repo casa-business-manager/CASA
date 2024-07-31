@@ -65,7 +65,6 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 
 		const fetchRoleSettings = async () => {
 			const roleSettings = await getOrganizationRoles(orgId);
-
 			setRoleSettings(roleSettings);
 		};
 
