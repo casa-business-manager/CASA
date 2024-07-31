@@ -33,6 +33,10 @@ const graphTheme = {
 	},
 };
 
+const lockedRoleColor = "#E8E8E8";
+const controlledRoleColor = "#A2E6FF";
+const ownedRoleColor = "#3B89F3";
+
 const GraphPopup = ({
 	node,
 	onClose,
@@ -120,16 +124,22 @@ const RolesGraph = ({
 }) => {
 	const [selected, setSelected] = useState([]);
 
-	const nodes = [];
+	const roleIdToNodeDict = {};
+	const controlledRoles = [];
+	const userRoles = [];
 	const edges = [];
 
 	roles.forEach((role) => {
-		nodes.push({
+		roleIdToNodeDict[role.roleId] = {
 			id: role.roleId,
 			label: role.name,
 			data: role,
-			fill: "#1f77b4", // fill should depend on current user's roles
-		});
+			fill: lockedRoleColor, // will be overridden later
+		};
+		if (role.users.map((roleUser) => roleUser.id).includes(user.id)) {
+			controlledRoles.push(role);
+			userRoles.push(role);
+		}
 
 		role.managedRoles.forEach((managedRole) => {
 			edges.push({
@@ -140,16 +150,26 @@ const RolesGraph = ({
 		});
 	});
 
-	useEffect(() => {
-		nodes.forEach((node) => {
-			const userIds = node.data.users.map((user) => user.id);
-			if (userIds.includes(user.id)) {
-				node.fill = "#ff7f0e";
+	// DFS to color controlled nodes
+	while (controlledRoles.length > 0) {
+		const role = controlledRoles.pop();
+		role.managedRoles.forEach((managedRole) => {
+			if (!controlledRoles.includes(managedRole)) {
+				controlledRoles.push(managedRole);
+				roleIdToNodeDict[managedRole.roleId].fill = controlledRoleColor;
 			}
 		});
-		// TODO: set to user's roles
-		setSelected([nodes[0].id]);
-	}, []);
+	}
+
+	// one more pass to color owned nodes
+	for (const role of userRoles) {
+		roleIdToNodeDict[role.roleId].fill = ownedRoleColor;
+	}
+
+	// compile into sorted list (sorted gives consistency in tree ordering)
+	const nodes = Object.values(roleIdToNodeDict).sort(
+		(a, b) => a.label > b.label,
+	);
 
 	return (
 		<Box
@@ -163,33 +183,17 @@ const RolesGraph = ({
 			<GraphCanvas
 				nodes={nodes}
 				edges={edges}
-				node={
-					// Customize the node appearance
-					{
-						style: {
-							width: 100,
-							height: 50,
-							fill: "#1f77b4",
-						},
-					}
-				}
-				edge={
-					// Customize the edge appearance
-					{
-						style: {
-							stroke: "#999",
-							strokeWidth: 5,
-						},
-					}
-				}
 				layoutType="treeTd2d"
 				selections={selected}
-				actives={["1"]}
 				onNodeClick={(node) => {
 					console.log("clicked" + node);
 					setSelected(node.id);
 					setSelectedRole(node.data);
 					setEditorIsCreatingNewRole(false);
+				}}
+				onCanvasClick={() => {
+					setSelected([]);
+					setSelectedRole(null);
 				}}
 				contextMenu={({ data, onClose }) => (
 					<GraphPopup
