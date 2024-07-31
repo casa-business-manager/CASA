@@ -8,13 +8,16 @@ import {
 	Button,
 	Chip,
 	ClickAwayListener,
+	FormControl,
 	Grow,
 	IconButton,
+	InputLabel,
 	List,
 	MenuItem,
 	MenuList,
 	Paper,
 	Popper,
+	Select,
 	Switch,
 	TextField,
 } from "@mui/material";
@@ -24,6 +27,7 @@ import ShieldIcon from "@mui/icons-material/Shield";
 import CloseIcon from "@mui/icons-material/Close";
 import { GraphCanvas, lightTheme } from "reagraph";
 import { createRole, deleteRole, editRole } from "../../APIUtils/APIUtils";
+import MoveUpIcon from "@mui/icons-material/MoveUp";
 
 const lockedRoleColor = "#E8E8E8";
 const controlledRoleColor = "#A2E6FF";
@@ -131,7 +135,10 @@ const GraphPopup = ({
 								<MenuItem onClick={menuClickWrapper(handleAddRole)}>
 									Add new role
 								</MenuItem>
-								<MenuItem onClick={menuClickWrapper(handleDeleteRole)}>
+								<MenuItem
+									onClick={menuClickWrapper(handleDeleteRole)}
+									style={{ color: "red" }}
+								>
 									Delete role
 								</MenuItem>
 							</MenuList>
@@ -319,9 +326,12 @@ const RoleEditor = ({
 	setSelectedRole,
 	editorIsCreatingNewRole,
 	setEditorIsCreatingNewRole,
+	roles,
 	setRoles,
 }) => {
 	const [organizationUsers, setOrganizationUsers] = useState(null);
+	const [managedById, setManagedById] = useState(null);
+	const [nonDescendants, setNonDescendants] = useState([]);
 
 	const updateOrganizationUsers = useCallback(() => {
 		if (selectedRole) {
@@ -332,6 +342,60 @@ const RoleEditor = ({
 	useEffect(() => {
 		updateOrganizationUsers();
 	}, [updateOrganizationUsers]);
+
+	const findManagingRole = (managedRole) => {
+		return roles.find((role) =>
+			role.managedRoles.map((role) => role.roleId).includes(managedRole.roleId),
+		);
+	};
+
+	useEffect(() => {
+		if (!selectedRole) {
+			return;
+		}
+
+		const managedByRole = findManagingRole(selectedRole);
+
+		if (!managedByRole) {
+			setManagedById(null);
+			return;
+		}
+
+		setManagedById(managedByRole.roleId);
+	}, [selectedRole, roles]);
+
+	const getRolesWithoutSubtree = (role, excludedSubtreeRoot) => {
+		const roleWithRecentData = roles.find((r) => r.roleId === role.roleId);
+		const rolesWithoutSubtree = [roleWithRecentData];
+		roleWithRecentData.managedRoles.forEach((managedRole) => {
+			if (managedRole.roleId !== excludedSubtreeRoot.roleId) {
+				rolesWithoutSubtree.push(
+					...getRolesWithoutSubtree(managedRole, excludedSubtreeRoot),
+				);
+			}
+		});
+		return rolesWithoutSubtree;
+	};
+
+	const findRootRole = (roles) => {
+		const managedRoleIds = roles.flatMap((role) =>
+			role.managedRoles.map((managedRole) => managedRole.roleId),
+		);
+		const rootRole = roles.find(
+			(role) => !managedRoleIds.includes(role.roleId),
+		);
+		return rootRole;
+	};
+
+	useEffect(() => {
+		if (!roles || !selectedRole) {
+			return;
+		}
+
+		setNonDescendants(
+			getRolesWithoutSubtree(findRootRole(roles), selectedRole),
+		);
+	}, [selectedRole, roles]);
 
 	if (selectedRole === null || organizationUsers === null) {
 		return <Typography>Please select a role</Typography>;
@@ -381,16 +445,37 @@ const RoleEditor = ({
 			name: name,
 			permissions: permissionsString,
 			userIds: userIds,
+			managedById: managedById,
 		};
 		try {
-			const newRole = await editRole(selectedRole.roleId, editedRoleDto);
+			const editedRole = await editRole(selectedRole.roleId, editedRoleDto);
 			setRoles((prevRoles) => {
-				const untouchedRoles = prevRoles.filter(
-					(role) => role.roleId !== newRole.roleId,
+				const oldManagedByRole = findManagingRole(selectedRole);
+				oldManagedByRole.managedRoles = oldManagedByRole.managedRoles.filter(
+					(role) => role.roleId !== editedRole.roleId,
 				);
-				return [...untouchedRoles, newRole];
+
+				const newManagedByRole = prevRoles.find(
+					(role) => role.roleId === managedById,
+				);
+				newManagedByRole.managedRoles.push(editedRole);
+
+				const untouchedRoles = prevRoles.filter(
+					(role) =>
+						role.roleId !== editedRole.roleId &&
+						role.roleId !== oldManagedByRole.roleId &&
+						role.roleId !== newManagedByRole.roleId &&
+						role.roleId !== managedById.roleId,
+				);
+
+				return [
+					...untouchedRoles,
+					editedRole,
+					oldManagedByRole,
+					newManagedByRole,
+				];
 			});
-			setSelectedRole(newRole);
+			setSelectedRole(editedRole);
 		} catch {
 			console.error("Save failed");
 		}
@@ -424,6 +509,33 @@ const RoleEditor = ({
 				InputProps={{ sx: { fontSize: "1.5rem" } }}
 				InputLabelProps={{ sx: { fontSize: "1.5rem" } }}
 			/>
+			{!editorIsCreatingNewRole && managedById && (
+				<Box
+					sx={{
+						display: "flex",
+						gap: 2,
+						alignItems: "center",
+					}}
+				>
+					<MoveUpIcon />
+					<FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+						<InputLabel>Managed by</InputLabel>
+						<Select
+							value={managedById}
+							onChange={(e) => {
+								setManagedById(e.target.value);
+							}}
+							label="Managed by"
+						>
+							{nonDescendants.map((role) => (
+								<MenuItem value={role.roleId} key={role.roleId}>
+									{role.name}
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+				</Box>
+			)}
 			<List sx={{ overflow: "auto" }}>
 				<BaseCollapse
 					Icon={ShieldIcon}
@@ -573,6 +685,7 @@ const RolesTabSettings = ({ settings, user }) => {
 						setSelectedRole={setSelectedRole}
 						editorIsCreatingNewRole={editorIsCreatingNewRole}
 						setEditorIsCreatingNewRole={setEditorIsCreatingNewRole}
+						roles={roles}
 						setRoles={setRoles}
 					/>
 				</Box>
