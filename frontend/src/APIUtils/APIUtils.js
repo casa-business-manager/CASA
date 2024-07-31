@@ -227,3 +227,10 @@ export const editRole = async (roleId, roleRequest) => {
 		body: JSON.stringify(roleRequest),
 	});
 };
+
+export const deleteRole = async (roleId) => {
+	return request({
+		url: API_BASE_URL + "/roles/" + roleId,
+		method: "DELETE",
+	});
+};

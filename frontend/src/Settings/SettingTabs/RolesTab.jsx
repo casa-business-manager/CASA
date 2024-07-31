@@ -23,19 +23,20 @@ import PeopleIcon from "@mui/icons-material/People";
 import ShieldIcon from "@mui/icons-material/Shield";
 import CloseIcon from "@mui/icons-material/Close";
 import { GraphCanvas, lightTheme } from "reagraph";
-import { createRole, editRole } from "../../APIUtils/APIUtils";
+import { createRole, deleteRole, editRole } from "../../APIUtils/APIUtils";
+
+const lockedRoleColor = "#E8E8E8";
+const controlledRoleColor = "#A2E6FF";
+const ownedRoleColor = "#3B89F3";
+const selectedColor = "#ff7f0e";
 
 const graphTheme = {
 	...lightTheme,
 	node: {
 		...lightTheme.node,
-		activeFill: "#ff7f0e",
+		activeFill: selectedColor,
 	},
 };
-
-const lockedRoleColor = "#E8E8E8";
-const controlledRoleColor = "#A2E6FF";
-const ownedRoleColor = "#3B89F3";
 
 const GraphPopup = ({
 	node,
@@ -68,6 +69,31 @@ const GraphPopup = ({
 		setEditorIsCreatingNewRole(true);
 	};
 
+	const handleDeleteRole = async () => {
+		const getRoleSubtreeIds = (role) => {
+			const roleIds = [role.roleId];
+			role.managedRoles.forEach((managedRole) => {
+				roleIds.push(...getRoleSubtreeIds(managedRole));
+			});
+			return roleIds;
+		};
+
+		try {
+			await deleteRole(node.data.roleId);
+			setSelectedRole(null);
+			setSelectedNode(null);
+			const roleIdsToDelete = getRoleSubtreeIds(node.data);
+			setRoles((prevRoles) => {
+				const newRoles = prevRoles.filter(
+					(role) => !roleIdsToDelete.includes(role.roleId),
+				);
+				return newRoles;
+			});
+		} catch {
+			console.log("Delete failed");
+		}
+	};
+
 	return (
 		<Popper
 			open={true}
@@ -98,7 +124,9 @@ const GraphPopup = ({
 								<MenuItem onClick={menuClickWrapper(handleAddRole)}>
 									Add new role
 								</MenuItem>
-								<MenuItem onClick={onClose}>Delete role</MenuItem>
+								<MenuItem onClick={menuClickWrapper(handleDeleteRole)}>
+									Delete role
+								</MenuItem>
 							</MenuList>
 						</ClickAwayListener>
 					</Paper>
