@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import BaseTab from "./BaseTab";
 import Typography from "@mui/material/Typography";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import {
+	Autocomplete,
 	Box,
 	Button,
 	Chip,
@@ -235,7 +236,7 @@ const PermissionRow = ({
 	);
 };
 
-const UserRow = ({ user }) => {
+const UserRow = ({ user, setUsers }) => {
 	return (
 		<Box
 			sx={{
@@ -249,7 +250,12 @@ const UserRow = ({ user }) => {
 			<Chip label={user.firstName + " " + user.lastName} variant="outlined" />
 			<IconButton
 				onClick={() => {
-					console.log("set the function in UserRow");
+					setUsers((prevUsers) => {
+						const newUsers = prevUsers.filter(
+							(roleUser) => roleUser.id !== user.id,
+						);
+						return newUsers.sort((a, b) => a.lastName > b.lastName);
+					});
 				}}
 			>
 				<CloseIcon />
@@ -270,7 +276,17 @@ const RoleEditor = ({
 	editorIsCreatingNewRole,
 	setRoles,
 }) => {
-	if (selectedRole === null) {
+	const [organizationUsers, setOrganizationUsers] = useState(null);
+
+	useEffect(() => {
+		if (!selectedRole) {
+			return;
+		}
+
+		setOrganizationUsers(selectedRole.organization.users);
+	}, [selectedRole]);
+
+	if (selectedRole === null || organizationUsers === null) {
 		return <Typography>Please select a role</Typography>;
 	}
 
@@ -304,7 +320,7 @@ const RoleEditor = ({
 		const editedRoleDto = {
 			name: name,
 			permissions: permissionsString,
-			users: userIds,
+			userIds: userIds,
 		};
 		try {
 			const newRole = await editRole(selectedRole.roleId, editedRoleDto);
@@ -318,6 +334,17 @@ const RoleEditor = ({
 		} catch {
 			console.error("Save failed");
 		}
+	};
+
+	const getUserFullName = (userObject) =>
+		userObject.firstName + " " + userObject.lastName;
+
+	const handleAddPerson = (e, newUserList) => {
+		// newUserList is [newUserObject]
+		setUsers((prevUsers) => {
+			const newUsers = [...prevUsers, newUserList[0]];
+			return newUsers.sort((a, b) => a.lastName > b.lastName);
+		});
 	};
 
 	return (
@@ -360,9 +387,30 @@ const RoleEditor = ({
 					key={"Users"}
 					defaultOpen={editorIsCreatingNewRole}
 				>
-					{/* TODO: Add a user text field and dropdown */}
+					<Autocomplete
+						multiple
+						id="tags-outlined"
+						options={organizationUsers.filter(
+							(orgUser) =>
+								!users.map((roleUser) => roleUser.id).includes(orgUser.id),
+						)}
+						getOptionLabel={(option) => getUserFullName(option)}
+						defaultValue={[]}
+						value={[]}
+						onChange={handleAddPerson}
+						filterSelectedOptions
+						renderInput={(params) => (
+							<TextField
+								{...params}
+								label="Users"
+								placeholder="Add user"
+								variant="standard"
+							/>
+						)}
+						sx={{ pl: 4, width: "83%" }}
+					/>
 					{users.map((user) => (
-						<UserRow user={user} key={user.id} />
+						<UserRow user={user} setUsers={setUsers} key={user.id} />
 					))}
 				</BaseCollapse>
 			</List>
@@ -400,7 +448,7 @@ const RolesTabSettings = ({ settings, user }) => {
 			.map((kvPair) => kvPair.split(":"))
 			.map((pair) => [pair[0], pair[1].includes("true")]);
 		setPermissions(permissionPairs);
-		setUsers(selectedRole.users);
+		setUsers(selectedRole.users.sort((a, b) => a.lastName > b.lastName));
 	}, [selectedRole]);
 
 	if (!settings || settings.length === 0 || !user) {

@@ -133,7 +133,7 @@ public class RoleController {
 				User newUser = userRepository.findById(userId)
 						.orElseThrow(() -> new RuntimeException(
 								"User could not found with user id: " + userId));
-				newUser.getRoles().add(originalRole);
+				// newUser.getRoles().add(originalRole);
 				originalRole.getUsers().add(newUser);
 			}
 		}

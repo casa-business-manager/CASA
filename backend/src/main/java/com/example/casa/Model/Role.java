@@ -54,9 +54,9 @@ public class Role {
 	@JsonManagedReference("user-roles")
 	private Set<User> users = new HashSet<>();
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinColumn(name = "organization_id")
-	@JsonBackReference("organization-roles")
+	@JsonManagedReference("organization-roles")
 	private Organization organization;
 
 	public Role() {
