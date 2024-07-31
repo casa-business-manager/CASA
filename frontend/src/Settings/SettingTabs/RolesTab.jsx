@@ -87,6 +87,11 @@ const GraphPopup = ({
 				const newRoles = prevRoles.filter(
 					(role) => !roleIdsToDelete.includes(role.roleId),
 				);
+				newRoles.forEach((role) => {
+					role.managedRoles = role.managedRoles.filter(
+						(managedRole) => !roleIdsToDelete.includes(managedRole.roleId),
+					);
+				});
 				return newRoles;
 			});
 		} catch {
