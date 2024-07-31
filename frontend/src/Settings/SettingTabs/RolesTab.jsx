@@ -23,7 +23,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import ShieldIcon from "@mui/icons-material/Shield";
 import CloseIcon from "@mui/icons-material/Close";
 import { GraphCanvas, lightTheme } from "reagraph";
-import { editRole } from "../../APIUtils/APIUtils";
+import { createRole, editRole } from "../../APIUtils/APIUtils";
 
 const graphTheme = {
 	...lightTheme,
@@ -59,9 +59,9 @@ const GraphPopup = ({
 		setEditorIsCreatingNewRole(true);
 		setName("");
 		setPermissions((oldPermissions) => {
-			const newPermissions = {};
-			for (const key in oldPermissions) {
-				newPermissions[key] = false;
+			const newPermissions = [...oldPermissions];
+			for (let i = 0; i < newPermissions.length; i++) {
+				newPermissions[i][1] = false;
 			}
 			return newPermissions;
 		});
@@ -290,25 +290,37 @@ const RoleEditor = ({
 		return <Typography>Please select a role</Typography>;
 	}
 
-	// const handleAddRoleToGraph = () => {
-	// 	setRoles((prevRoles) => {
-	// 		const parentRoleId = node.data.roleId;
-	// 		const parentRole = prevRoles.find((role) => role.roleId === parentRoleId);
-	// 		const newRole = {
-	// 			roleId: "1",
-	// 			name: "New Role",
-	// 			permissions: {},
-	// 			users: [],
-	// 			managedRoles: [],
-	// 			managedBy: node.data,
-	// 		};
-	// 		parentRole.managedRoles.push(newRole);
-	// 		const untouchedRoles = prevRoles.filter(
-	// 			(role) => role.roleId !== parentRoleId,
-	// 		);
-	// 		return [...untouchedRoles, parentRole, newRole];
-	// 	});
-	// };
+	const handleAddRoleToGraph = async () => {
+		const parentRoleId = selectedRole.roleId;
+		const parentRole = selectedRole;
+		const newRoleDto = {
+			name: name,
+			permissions: permissions
+				.map((pair) => {
+					return pair[0] + ":" + pair[1];
+				})
+				.join(","),
+			userIds: users.map((user) => user.id),
+			managedById: parentRoleId,
+		};
+		console.log(selectedRole);
+		try {
+			const newRole = await createRole(
+				parentRole.organization.orgId,
+				newRoleDto,
+			);
+			parentRole.managedRoles.push(newRole);
+			setRoles((prevRoles) => {
+				const untouchedRoles = prevRoles.filter(
+					(role) => role.roleId !== parentRoleId,
+				);
+				return [...untouchedRoles, parentRole, newRole];
+			});
+		} catch {
+			console.error("Save failed");
+			return;
+		}
+	};
 
 	const handleEditRole = async () => {
 		const permissionsString = permissions
@@ -416,7 +428,11 @@ const RoleEditor = ({
 			</List>
 			<Box sx={{ display: "flex", justifyContent: "right", mt: 2 }}>
 				{editorIsCreatingNewRole ? (
-					<Button variant="contained" color="primary">
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={handleAddRoleToGraph}
+					>
 						Create
 					</Button>
 				) : (
