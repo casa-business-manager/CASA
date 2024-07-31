@@ -208,13 +208,27 @@ const RolesGraph = ({
 	);
 };
 
-const PermissionRow = ({ permission, value }) => {
+const PermissionRow = ({
+	permission,
+	value,
+	setPermissions,
+	permissionIndex,
+	key,
+}) => {
+	const togglePermission = () => {
+		setPermissions((prevPermissions) => {
+			const newPermissions = [...prevPermissions];
+			newPermissions[permissionIndex][1] = !newPermissions[permissionIndex][1];
+			return newPermissions;
+		});
+	};
 	return (
 		<Box sx={{ display: "flex", justifyContent: "space-between", m: 4, pl: 4 }}>
 			<Typography sx={{}}>{permission}</Typography>
 			{value === true || value === false ? (
-				<Switch checked={value} onChange={() => {}} />
+				<Switch checked={value} onChange={togglePermission} />
 			) : (
+				// TODO: permissions that are not true/false
 				<TextField></TextField>
 			)}
 		</Box>
@@ -260,11 +274,6 @@ const RoleEditor = ({
 		return <Typography>Please select a role</Typography>;
 	}
 
-	const permissionPairs = Object.keys(permissions).map((key) => [
-		key,
-		permissions[key],
-	]);
-
 	// const handleAddRoleToGraph = () => {
 	// 	setRoles((prevRoles) => {
 	// 		const parentRoleId = node.data.roleId;
@@ -286,7 +295,7 @@ const RoleEditor = ({
 	// };
 
 	const handleEditRole = async () => {
-		const permissionsString = permissionPairs
+		const permissionsString = permissions
 			.map((pair) => {
 				return pair[0] + ":" + pair[1];
 			})
@@ -299,7 +308,6 @@ const RoleEditor = ({
 		};
 		try {
 			const newRole = await editRole(selectedRole.roleId, editedRoleDto);
-			console.log("succ");
 			setRoles((prevRoles) => {
 				const untouchedRoles = prevRoles.filter(
 					(role) => role.roleId !== newRole.roleId,
@@ -336,8 +344,14 @@ const RoleEditor = ({
 					key={"Permissions"}
 					defaultOpen={editorIsCreatingNewRole}
 				>
-					{permissionPairs.map((pair, index) => (
-						<PermissionRow permission={pair[0]} value={pair[1]} key={index} />
+					{permissions.map((pair, index) => (
+						<PermissionRow
+							permission={pair[0]}
+							value={pair[1]}
+							setPermissions={setPermissions}
+							permissionIndex={index}
+							key={index}
+						/>
 					))}
 				</BaseCollapse>
 				<BaseCollapse
@@ -371,13 +385,7 @@ const RolesTabSettings = ({ settings, user }) => {
 	const [selectedRole, setSelectedRole] = useState(null);
 	const [name, setName] = useState("");
 	const [roles, setRoles] = useState(settings);
-	const [permissions, setPermissions] = useState({
-		"Can poop": true,
-		"can fart": true,
-		"can backflip": false,
-		"Can leave all this behind and live a more meaningful life in the mountains as a hermit for the rest of their days": false,
-		"Can pee": true,
-	});
+	const [permissions, setPermissions] = useState([]);
 	const [users, setUsers] = useState([]);
 	const [editorIsCreatingNewRole, setEditorIsCreatingNewRole] = useState(false);
 
@@ -387,7 +395,11 @@ const RolesTabSettings = ({ settings, user }) => {
 		}
 
 		setName(selectedRole.name);
-		setPermissions(selectedRole.permissions);
+		const permissionPairs = selectedRole.permissions
+			.split(",")
+			.map((kvPair) => kvPair.split(":"))
+			.map((pair) => [pair[0], pair[1].includes("true")]);
+		setPermissions(permissionPairs);
 		setUsers(selectedRole.users);
 	}, [selectedRole]);
 

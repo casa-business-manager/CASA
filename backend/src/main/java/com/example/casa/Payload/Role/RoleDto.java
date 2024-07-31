@@ -2,18 +2,14 @@ package com.example.casa.Payload.Role;
 
 import java.util.Set;
 
-import jakarta.annotation.Nullable;
-
 public class RoleDto {
 
 	private String name;
 
 	private String permissions;
 
-	@Nullable
 	private String managedById;
 
-	@Nullable
 	private Set<String> managedRoleIds;
 
 	private Set<String> userIds;
