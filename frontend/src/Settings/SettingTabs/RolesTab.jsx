@@ -188,11 +188,12 @@ const RolesGraph = ({
 
 	// DFS to color controlled nodes
 	while (controlledRoles.length > 0) {
-		const role = controlledRoles.pop();
+		const poppedRole = controlledRoles.pop();
+		const role = roles.find((role) => role.roleId === poppedRole.roleId);
+		roleIdToNodeDict[role.roleId].fill = controlledRoleColor;
 		role.managedRoles.forEach((managedRole) => {
 			if (!controlledRoles.includes(managedRole)) {
 				controlledRoles.push(managedRole);
-				roleIdToNodeDict[managedRole.roleId].fill = controlledRoleColor;
 			}
 		});
 	}
