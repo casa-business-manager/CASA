@@ -13,6 +13,7 @@ const BaseCollapse = ({
 	indentLevel = 0,
 	children,
 	defaultOpen = false,
+	useIndentLevel = true,
 }) => {
 	const [open, setOpen] = useState(defaultOpen);
 
@@ -43,7 +44,7 @@ const BaseCollapse = ({
 
 			<Collapse in={open} timeout="auto" unmountOnExit>
 				<List component="div" disablePadding>
-					{indentedChildren}
+					{useIndentLevel ? indentedChildren : children}
 				</List>
 			</Collapse>
 		</>

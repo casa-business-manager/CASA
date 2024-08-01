@@ -265,7 +265,6 @@ const PermissionRow = ({
 	value,
 	setPermissions,
 	permissionIndex,
-	key,
 }) => {
 	const togglePermission = () => {
 		setPermissions((prevPermissions) => {
@@ -275,13 +274,22 @@ const PermissionRow = ({
 		});
 	};
 	return (
-		<Box sx={{ display: "flex", justifyContent: "space-between", m: 4, pl: 4 }}>
-			<Typography sx={{}}>{permission}</Typography>
+		<Box
+			key={`permission-box-${permissionIndex}`}
+			sx={{ display: "flex", justifyContent: "space-between", m: 4, pl: 4 }}
+		>
+			<Typography key={`permissiontext-${permissionIndex}`} sx={{}}>
+				{permission}
+			</Typography>
 			{value === true || value === false ? (
-				<Switch checked={value} onChange={togglePermission} />
+				<Switch
+					key={`permission-switch-${permissionIndex}`}
+					checked={value}
+					onChange={togglePermission}
+				/>
 			) : (
 				// TODO: permissions that are not true/false
-				<TextField></TextField>
+				<TextField key={permissionIndex}></TextField>
 			)}
 		</Box>
 	);
@@ -290,6 +298,7 @@ const PermissionRow = ({
 const UserRow = ({ user, setUsers }) => {
 	return (
 		<Box
+			key={`userrow-box-${user.id}`}
 			sx={{
 				display: "flex",
 				justifyContent: "space-between",
@@ -298,7 +307,11 @@ const UserRow = ({ user, setUsers }) => {
 				pl: 4,
 			}}
 		>
-			<Chip label={user.firstName + " " + user.lastName} variant="outlined" />
+			<Chip
+				label={user.firstName + " " + user.lastName}
+				variant="outlined"
+				key={`userrow-chip-${user.id}`}
+			/>
 			<IconButton
 				onClick={() => {
 					setUsers((prevUsers) => {
@@ -308,6 +321,7 @@ const UserRow = ({ user, setUsers }) => {
 						return newUsers.sort((a, b) => a.lastName > b.lastName);
 					});
 				}}
+				key={`userrow-button-${user.id}`}
 			>
 				<CloseIcon />
 			</IconButton>
@@ -451,29 +465,39 @@ const RoleEditor = ({
 			const editedRole = await editRole(selectedRole.roleId, editedRoleDto);
 			setRoles((prevRoles) => {
 				const oldManagedByRole = findManagingRole(selectedRole);
-				oldManagedByRole.managedRoles = oldManagedByRole.managedRoles.filter(
-					(role) => role.roleId !== editedRole.roleId,
-				);
 
-				const newManagedByRole = prevRoles.find(
-					(role) => role.roleId === managedById,
-				);
-				newManagedByRole.managedRoles.push(editedRole);
+				// case: editing root node (no managedBy)
+				// case: same managedBy role
+				if (!oldManagedByRole || oldManagedByRole.roleId === managedById) {
+					const untouchedRoles = prevRoles.filter(
+						(role) => role.roleId !== editedRole.roleId,
+					);
+					return [...untouchedRoles, editedRole];
+				}
 
-				const untouchedRoles = prevRoles.filter(
-					(role) =>
-						role.roleId !== editedRole.roleId &&
-						role.roleId !== oldManagedByRole.roleId &&
-						role.roleId !== newManagedByRole.roleId &&
-						role.roleId !== managedById.roleId,
-				);
+				// case: new managedBy role
+				if (oldManagedByRole.roleId !== managedById) {
+					oldManagedByRole.managedRoles = oldManagedByRole.managedRoles.filter(
+						(role) => role.roleId !== editedRole.roleId,
+					);
 
-				return [
-					...untouchedRoles,
-					editedRole,
-					oldManagedByRole,
-					newManagedByRole,
-				];
+					const newManagedByRole = prevRoles.find(
+						(role) => role.roleId === managedById,
+					);
+					newManagedByRole.managedRoles.push(editedRole);
+
+					const untouchedRoles = prevRoles.filter(
+						(role) =>
+							role.roleId !== editedRole.roleId &&
+							role.roleId !== oldManagedByRole.roleId &&
+							role.roleId !== newManagedByRole.roleId &&
+							role.roleId !== managedById.roleId,
+					);
+
+					const touchedRoles = [editedRole, oldManagedByRole, newManagedByRole];
+
+					return [...untouchedRoles, ...touchedRoles];
+				}
 			});
 			setSelectedRole(editedRole);
 		} catch {
@@ -542,6 +566,7 @@ const RoleEditor = ({
 					Label={"Permissions"}
 					key={"Permissions"}
 					defaultOpen={editorIsCreatingNewRole}
+					useIndentLevel={false}
 				>
 					{permissions.map((pair, index) => (
 						<PermissionRow
@@ -549,7 +574,7 @@ const RoleEditor = ({
 							value={pair[1]}
 							setPermissions={setPermissions}
 							permissionIndex={index}
-							key={index}
+							key={`permission-${permissions[index]}`}
 						/>
 					))}
 				</BaseCollapse>
@@ -558,6 +583,7 @@ const RoleEditor = ({
 					Label={"Users"}
 					key={"Users"}
 					defaultOpen={editorIsCreatingNewRole}
+					useIndentLevel={false}
 				>
 					<Autocomplete
 						multiple
@@ -582,7 +608,7 @@ const RoleEditor = ({
 						sx={{ pl: 4, width: "83%" }}
 					/>
 					{users.map((user) => (
-						<UserRow user={user} setUsers={setUsers} key={user.id} />
+						<UserRow user={user} setUsers={setUsers} key={`chip-${user.id}`} />
 					))}
 				</BaseCollapse>
 			</List>
