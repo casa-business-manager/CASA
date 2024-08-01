@@ -49,7 +49,7 @@ public class Role {
 	@JsonBackReference("role-relations")
 	private Role managedBy;
 
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
 	@JsonManagedReference("user-roles")
 	private Set<User> users = new HashSet<>();

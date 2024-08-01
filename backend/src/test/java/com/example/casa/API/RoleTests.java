@@ -23,12 +23,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.casa.Model.Role;
 import com.example.casa.Model.User;
 import com.example.casa.Payload.Organization.OrganizationDto;
 import com.example.casa.Payload.Role.RoleDto;
 import com.example.casa.Payload.User.AuthResponse;
 import com.example.casa.Payload.User.LoginRequest;
 import com.example.casa.Payload.User.SignUpRequest;
+import com.example.casa.Repository.RoleRepository;
 import com.example.casa.Repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -48,6 +50,8 @@ public class RoleTests {
 
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private RoleRepository roleRepository;
 
 	private String waltEmail = "walter@white.com";
 	private String jessieEmail = "jessie@pinkman.com";
@@ -470,18 +474,57 @@ public class RoleTests {
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
+
+		// Delete role "root"
+		// System.out.println("ROOTID: " + rootId);
+		// roleRepository.deleteById(rootId);
+		// roleRepository.deleteById(rootId);
 	}
 
 	// Not sure why but this causes issues in subsequent runs if not cleared
 	@AfterAll
-	void cleanup() {
+	void cleanup() throws Exception {
 		// Clean up the database by deleting the created user
-		User user = userRepository.findByEmail(waltEmail).orElse(null);
+		User user = userRepository.findByEmail(jessieEmail).orElse(null);
 		if (user != null) {
 			userRepository.delete(user);
 		}
-		user = userRepository.findByEmail(jessieEmail).orElse(null);
+		user = userRepository.findByEmail(waltEmail).orElse(null);
 		if (user != null) {
+			// waltToken = loginRequest(waltEmail, "password");
+			// waltId = user.getId();
+			// System.out.println("USER: " + user);
+			// System.out.println("USER: " + user.getEmail());
+			// ResultActions org = mockMvc.perform(MockMvcRequestBuilders.get("/user/" +
+			// waltId + "/organizations")
+			// .header("Authorization", "Bearer " + waltToken)
+			// .contentType(MediaType.APPLICATION_JSON))
+			// .andExpect(status().isOk());
+			// orgId = extractJsonString(org.andReturn().getResponse().getContentAsString(),
+			// "orgId");
+			// System.out.println("ORGID: " + orgId);
+			// ResultActions roles = mockMvc
+			// .perform(MockMvcRequestBuilders.get("/user/" + waltId + "/organization/" +
+			// orgId + "/roles")
+			// .header("Authorization", "Bearer " + waltToken)
+			// .contentType(MediaType.APPLICATION_JSON))
+			// .andExpect(status().isOk());
+			// System.out.println("ROLES: " +
+			// roles.andReturn().getResponse().getContentAsString());
+			// String rootRoleId =
+			// extractJsonString(roles.andReturn().getResponse().getContentAsString(),
+			// "roleId");
+			// System.out.println("ROOTROLEID: " + rootRoleId);
+			// Role rootRole = roleRepository.findById(rootRoleId).orElse(null);
+			// System.out.println("ROOTROLE: " + rootRole);
+			// System.out.println("ROOTROLE: " + rootRole.getUsers());
+			// rootRole.getUsers();
+			// rootRole.getUsers().clear();
+			// // roleRepository.save(rootRole);
+			// // user.getRoles();
+			// // user.getRoles().size();
+			// // user.getRoles().clear();
+			// roleRepository.deleteById(rootRoleId);
 			userRepository.delete(user);
 		}
 	}

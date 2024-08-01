@@ -66,8 +66,7 @@ public class User {
 	@JsonBackReference("user-accessibleEvents")
 	private Set<Event> accessibleEvents = new HashSet<>();
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	@ManyToMany(mappedBy = "users", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JsonBackReference("user-roles")
 	private Set<Role> roles = new HashSet<>();
 
