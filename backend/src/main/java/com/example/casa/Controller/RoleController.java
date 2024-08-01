@@ -1,7 +1,6 @@
 package com.example.casa.Controller;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -51,21 +50,26 @@ public class RoleController {
 		return ResponseEntity.ok(users);
 	}
 
-	@GetMapping("/user/{userId}/organization/{orgId}/roles")
-	public ResponseEntity<?> getRolesForUserInOrg(@PathVariable String userId, @PathVariable String orgId) {
-		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+	// Causing issues and not fucking working cuz of duplicate entries
+	// why dont you duplicate the amount of balls in yo jaws spring boot? fuck off
+	// @GetMapping("/user/{userId}/organization/{orgId}/roles")
+	// public ResponseEntity<?> getRolesForUserInOrg(@PathVariable String userId,
+	// @PathVariable String orgId) {
+	// User user = userRepository.findById(userId)
+	// .orElseThrow(() -> new RuntimeException("User not found with id: " +
+	// userId));
 
-		Set<Role> roles = user.getRoles();
-		if (roles.isEmpty()) {
-			return ResponseEntity.noContent().build();
-		}
+	// Set<Role> roles = user.getRoles();
+	// if (roles.isEmpty()) {
+	// return ResponseEntity.noContent().build();
+	// }
 
-		roles = roles.stream().filter(role -> role.getOrganization().getOrgId().equals(orgId))
-				.collect(Collectors.toSet());
+	// roles = roles.stream().filter(role ->
+	// role.getOrganization().getOrgId().equals(orgId))
+	// .collect(Collectors.toSet());
 
-		return ResponseEntity.ok(roles);
-	}
+	// return ResponseEntity.ok(roles);
+	// }
 
 	@PostMapping("/organization/{orgId}/roles")
 	public ResponseEntity<?> createRole(@PathVariable String orgId, @RequestBody RoleDto newRoleData) {
