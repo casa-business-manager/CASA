@@ -1,6 +1,7 @@
 package com.example.casa.Controller;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.casa.Model.Organization;
+import com.example.casa.Model.Permission;
 import com.example.casa.Model.Role;
 import com.example.casa.Model.User;
 import com.example.casa.Payload.Role.RoleDto;
@@ -156,4 +158,17 @@ public class RoleController {
 		roleRepository.deleteById(id);
 		return ResponseEntity.ok().build();
 	}
+
+	@GetMapping("/user/{userId}/permissions")
+	public ResponseEntity<?> getUserPermissions(@PathVariable String userId) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+		Set<Permission> permissions = user.getRoles().stream()
+				.flatMap(role -> role.getPermissions().stream())
+				.collect(Collectors.toSet());
+
+		return ResponseEntity.ok(permissions);
+	}
+
 }

@@ -234,3 +234,10 @@ export const deleteRole = async (roleId) => {
 		method: "DELETE",
 	});
 };
+
+export const getUserPermissions = async (userId) => {
+	return request({
+		url: API_BASE_URL + "/user/" + userId + "/permissions",
+		method: "GET",
+	});
+};
