@@ -100,7 +100,6 @@ public class UserTests {
 				.andExpect(MockMvcResultMatchers.status().isUnauthorized());
 	}
 
-	// Not sure why but this causes issues in subsequent runs if not cleared
 	@AfterAll
 	void cleanup() {
 		// Clean up the database by deleting the created user

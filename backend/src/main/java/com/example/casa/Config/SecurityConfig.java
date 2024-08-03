@@ -53,13 +53,6 @@ public class SecurityConfig {
 		return httpSecurity.getSharedObject(AuthenticationManagerBuilder.class).build();
 	}
 
-	/*
-	 * By default, Spring OAuth2 uses
-	 * HttpSessionOAuth2AuthorizationRequestRepository to save
-	 * the authorization request. But, since our service is stateless, we can't save
-	 * it in
-	 * the session. We'll save the request in a Base64 encoded cookie instead.
-	 */
 	@Bean
 	public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
 		return new HttpCookieOAuth2AuthorizationRequestRepository();
@@ -67,65 +60,31 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-
 		return httpSecurity.csrf(AbstractHttpConfigurer::disable)
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-				.anonymous(AbstractHttpConfigurer::disable)
-				.formLogin(forms -> forms.disable())
-				.httpBasic(basic -> basic.disable())
-				.sessionManagement(session -> session
-						.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.exceptionHandling(exeption -> exeption
-						.authenticationEntryPoint(
-								new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-				.oauth2Login(oauth -> oauth.authorizationEndpoint(endpoint -> endpoint.baseUri(
-						"/oauth2/authorize").authorizationRequestRepository(
-								cookieAuthorizationRequestRepository()))
-						.redirectionEndpoint(red -> red.baseUri("/oauth2/callback/*"))
-						.userInfoEndpoint(user -> user.userService(
-								customOAuth2UserService))
-						.successHandler(oAuth2AuthenticationSuccessHandler)
-						.failureHandler(oAuth2AuthenticationFailureHandler))
+						.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
 				.authorizeHttpRequests(authorize -> authorize
-						.requestMatchers(
-								"/auth/**",
-								"/v3/api-docs/**",
-								"/swagger-ui/**",
-								"/swagger-ui.html",
-								"/login",
-								"/error",
-								"/favicon.ico",
-								"/*/*.png",
-								"/*/*.gif",
-								"/*/*.svg",
-								"/*/*.jpg",
-								"/*/*.html",
-								"/*/*.css",
-								"/*/*.js",
-								"/auth/**",
-								"/oauth2/**",
-								"/organization/**",
-								"/")
+						.requestMatchers("/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/login",
+								"/error", "/favicon.ico", "/*/*.png", "/*/*.gif", "/*/*.svg", "/*/*.jpg", "/*/*.html",
+								"/*/*.css", "/*/*.js", "/auth/**", "/oauth2/**", "/organization/**", "/")
 						.permitAll()
 						.anyRequest().authenticated())
-				.addFilterBefore(tokenAuthenticationFilter(),
-						UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 				.build();
-
 	}
 
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedHeaders(List.of("Authorization"));
-		configuration.addAllowedOrigin("http://localhost:3000/");
-
-		configuration.setAllowCredentials(true);
+		configuration.setAllowedOrigins(List.of("http://localhost:3000"));
 		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Requestor-Type", "Content-Type",
 				"Access-Control-Allow-Headers", "Access-Control-Allow-Origin"));
 		configuration.setExposedHeaders(
 				Arrays.asList("X-Get-Header", "Access-Control-Allow-Methods", "Access-Control-Allow-Origin"));
 		configuration.setAllowedMethods(Collections.singletonList("*"));
+		configuration.setAllowCredentials(true);
 
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
