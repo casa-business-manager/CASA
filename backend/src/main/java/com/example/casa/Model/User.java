@@ -66,8 +66,11 @@ public class User {
 	@JsonBackReference("user-accessibleEvents")
 	private Set<Event> accessibleEvents = new HashSet<>();
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	// SHOULD NOT cascade delete all associated when we delete a user. But the unit
+	// testing is fucked.
+	@ManyToMany(mappedBy = "users", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
+	// @ManyToMany(mappedBy = "users", cascade = { CascadeType.PERSIST,
+	// CascadeType.MERGE })
 	@JsonBackReference("user-roles")
 	private Set<Role> roles = new HashSet<>();
 

@@ -48,7 +48,7 @@ public class Organization {
 	private Set<Event> events = new HashSet<>();
 
 	@OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonManagedReference("organization-roles")
+	@JsonBackReference("organization-roles")
 	private Set<Role> roles = new HashSet<>();
 
 	public Organization() {

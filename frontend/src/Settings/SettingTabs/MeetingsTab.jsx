@@ -98,14 +98,12 @@ const MeetingsTab = ({
 			Label={name}
 			selected={selected}
 			indentLevel={indentLevel}
-			onClick={() =>
-				onClick(
-					"Meetings",
-					<MeetingsTabSettings
-						settings={settings}
-						availableMeetings={availableMeetings}
-					/>,
-				)
+			onClick={onClick}
+			SettingsPage={
+				<MeetingsTabSettings
+					settings={settings}
+					availableMeetings={availableMeetings}
+				/>
 			}
 		/>
 	);

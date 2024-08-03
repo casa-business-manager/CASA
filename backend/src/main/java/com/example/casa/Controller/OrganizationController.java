@@ -71,7 +71,7 @@ public class OrganizationController {
 			}
 		});
 		// TODO: Fill out permission as a json
-		root.setPermissions("all");
+		root.setPermissions("all:true");
 		organization.setRoles(new HashSet<Role>() {
 			{
 				add(root);
