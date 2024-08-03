@@ -1,5 +1,6 @@
 package com.example.casa.API;
 
+import java.util.EnumSet;
 import java.util.HashSet;
 
 import static org.hamcrest.Matchers.anyOf;
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.casa.Model.Permission;
 import com.example.casa.Model.Role;
 import com.example.casa.Model.User;
 import com.example.casa.Payload.Organization.OrganizationDto;
@@ -244,7 +246,7 @@ public class RoleTests {
 
 		// Create role "Head chef" under root with no users
 		roleDto.setName("Head chef");
-		roleDto.setPermissions("everything");
+		roleDto.setPermissions(EnumSet.allOf(Permission.class));
 		roleDto.setManagedById(rootId);
 		roleJson = objectMapper.writeValueAsString(roleDto);
 		ResultActions newRole = mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/roles")
@@ -318,7 +320,7 @@ public class RoleTests {
 
 		// Create role "Head chef" under root with no users
 		roleDto.setName("Head chef");
-		roleDto.setPermissions("everything");
+		roleDto.setPermissions(EnumSet.allOf(Permission.class));
 		roleDto.setManagedById(rootId);
 		roleJson = objectMapper.writeValueAsString(roleDto);
 		ResultActions headChef = mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/roles")
@@ -413,7 +415,7 @@ public class RoleTests {
 
 		// Create role "Head chef" under root with walt as user
 		roleDto.setName("Head chef");
-		roleDto.setPermissions("everything");
+		roleDto.setPermissions(EnumSet.allOf(Permission.class));
 		roleDto.setUserIds(new HashSet<String>() {
 			{
 				add(waltId);

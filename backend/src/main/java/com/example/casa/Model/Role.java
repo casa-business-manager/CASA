@@ -11,7 +11,10 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -36,9 +39,10 @@ public class Role {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	// json
+	@ElementCollection(targetClass = Permission.class)
+	@Enumerated(EnumType.STRING)
 	@Column(name = "permissions", nullable = false)
-	private String permissions;
+	private Set<Permission> permissions = new HashSet<>();
 
 	@OneToMany(mappedBy = "managedBy", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference("role-relations")
@@ -78,11 +82,11 @@ public class Role {
 		this.name = name;
 	}
 
-	public String getPermissions() {
+	public Set<Permission> getPermissions() {
 		return permissions;
 	}
 
-	public void setPermissions(String permissions) {
+	public void setPermissions(Set<Permission> permissions) {
 		this.permissions = permissions;
 	}
 

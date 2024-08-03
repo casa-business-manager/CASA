@@ -1,9 +1,9 @@
 package com.example.casa.Security;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,7 +28,11 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 	}
 
 	public static UserPrincipal create(User user) {
-		List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+		List<GrantedAuthority> authorities = user.getRoles().stream()
+				.flatMap(role -> role.getPermissions().stream())
+				.map(permission -> new SimpleGrantedAuthority(permission.name()))
+				.collect(Collectors.toList());
+
 		return new UserPrincipal(user.getId(), user.getEmail(), user.getPassword(), authorities);
 	}
 
@@ -48,7 +52,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
 	@Override
 	public String getUsername() {
-		return id;
+		return email;
 	}
 
 	@Override

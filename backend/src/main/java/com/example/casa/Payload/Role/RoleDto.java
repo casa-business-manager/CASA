@@ -2,11 +2,13 @@ package com.example.casa.Payload.Role;
 
 import java.util.Set;
 
+import com.example.casa.Model.Permission;
+
 public class RoleDto {
 
 	private String name;
 
-	private String permissions;
+	private Set<Permission> permissions;
 
 	private String managedById;
 
@@ -25,11 +27,11 @@ public class RoleDto {
 		this.name = name;
 	}
 
-	public String getPermissions() {
+	public Set<Permission> getPermissions() {
 		return permissions;
 	}
 
-	public void setPermissions(String permissions) {
+	public void setPermissions(Set<Permission> permissions) {
 		this.permissions = permissions;
 	}
 

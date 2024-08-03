@@ -1,5 +1,6 @@
 package com.example.casa.Controller;
 
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.casa.Model.Organization;
+import com.example.casa.Model.Permission;
 import com.example.casa.Model.Role;
 import com.example.casa.Model.User;
 import com.example.casa.Payload.ApiResponse;
@@ -70,8 +72,7 @@ public class OrganizationController {
 				add(user);
 			}
 		});
-		// TODO: Fill out permission as a json
-		root.setPermissions("all:true");
+		root.setPermissions(EnumSet.allOf(Permission.class)); // Set all permissions
 		organization.setRoles(new HashSet<Role>() {
 			{
 				add(root);

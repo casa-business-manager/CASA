@@ -50,27 +50,6 @@ public class RoleController {
 		return ResponseEntity.ok(users);
 	}
 
-	// Causing issues and not fucking working cuz of duplicate entries
-	// why dont you duplicate the amount of balls in yo jaws spring boot? fuck off
-	// @GetMapping("/user/{userId}/organization/{orgId}/roles")
-	// public ResponseEntity<?> getRolesForUserInOrg(@PathVariable String userId,
-	// @PathVariable String orgId) {
-	// User user = userRepository.findById(userId)
-	// .orElseThrow(() -> new RuntimeException("User not found with id: " +
-	// userId));
-
-	// Set<Role> roles = user.getRoles();
-	// if (roles.isEmpty()) {
-	// return ResponseEntity.noContent().build();
-	// }
-
-	// roles = roles.stream().filter(role ->
-	// role.getOrganization().getOrgId().equals(orgId))
-	// .collect(Collectors.toSet());
-
-	// return ResponseEntity.ok(roles);
-	// }
-
 	@PostMapping("/organization/{orgId}/roles")
 	public ResponseEntity<?> createRole(@PathVariable String orgId, @RequestBody RoleDto newRoleData) {
 		Organization org = organizationRepository.findById(orgId)
@@ -120,24 +99,12 @@ public class RoleController {
 			originalRole.setManagedBy(newManagingRole);
 		}
 
-		// if (newRoleData.getManagedRoleIds() != null) {
-		// originalRole.getManagedRoles().clear();
-		// for (String managedRoleId : newRoleData.getManagedRoleIds()) {
-		// Role newManagedRole = roleRepository.findById(managedRoleId)
-		// .orElseThrow(() -> new RuntimeException(
-		// "Role could not found with role id: " + managedRoleId));
-		// newManagedRole.ge
-		// originalRole.getManagedRoles().add(newManagedRole);
-		// }
-		// }
-
 		if (newRoleData.getUserIds() != null) {
 			originalRole.getUsers().clear();
 			for (String userId : newRoleData.getUserIds()) {
 				User newUser = userRepository.findById(userId)
 						.orElseThrow(() -> new RuntimeException(
 								"User could not found with user id: " + userId));
-				// newUser.getRoles().add(originalRole);
 				originalRole.getUsers().add(newUser);
 			}
 		}
@@ -171,7 +138,6 @@ public class RoleController {
 		Role roleToRemove = roleRepository.findById(roleId)
 				.orElseThrow(() -> new RuntimeException("Role could not found with role id: " + roleId));
 
-		// hopefully this hashes to the same thing... if not just iterate and remove
 		roleToRemove.getUsers().remove(user);
 		user.getRoles().remove(roleToRemove);
 

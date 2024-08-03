@@ -28,10 +28,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 	private static final Logger logger = LoggerFactory.getLogger(TokenAuthenticationFilter.class);
 
-	private String getJwtFromRequest(jakarta.servlet.http.HttpServletRequest request) {
+	private String getJwtFromRequest(HttpServletRequest request) {
 		String bearerToken = request.getHeader("Authorization");
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-			return bearerToken.substring(7, bearerToken.length());
+			return bearerToken.substring(7);
 		}
 		return null;
 	}
@@ -42,10 +42,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 		try {
 			String jwt = getJwtFromRequest(request);
 
-			if (jwt != null && tokenProvider.validateToken(jwt)) {
+			if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
 				UUID userId = tokenProvider.getUserIdFromToken(jwt);
 
-				UserDetails userDetails = customUserDetailsService.loadUserById(String.valueOf(userId));
+				UserDetails userDetails = customUserDetailsService.loadUserById(userId.toString());
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

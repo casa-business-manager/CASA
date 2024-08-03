@@ -11,12 +11,8 @@ import org.springframework.stereotype.Service;
 import com.example.casa.Config.AppProperties;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
 
 @Service
 public class TokenProvider {
@@ -36,7 +32,8 @@ public class TokenProvider {
 		Date expiryDate = new Date(now.getTime() + appProperties.getAuth().getTokenExpirationMsec());
 
 		return Jwts.builder()
-				.setSubject(String.valueOf(userPrincipal.getId()))
+				.setSubject(userPrincipal.getId())
+				.claim("permissions", userPrincipal.getAuthorities())
 				.setIssuedAt(new Date())
 				.setExpiration(expiryDate)
 				.signWith(SignatureAlgorithm.HS512, appProperties.getAuth().getTokenSecret())
@@ -56,18 +53,9 @@ public class TokenProvider {
 		try {
 			Jwts.parser().setSigningKey(appProperties.getAuth().getTokenSecret()).parseClaimsJws(authToken);
 			return true;
-		} catch (SignatureException ex) {
-			logger.error("Invalid JWT signature");
-		} catch (MalformedJwtException ex) {
-			logger.error("Invalid JWT token");
-		} catch (ExpiredJwtException ex) {
-			logger.error("Expired JWT token");
-		} catch (UnsupportedJwtException ex) {
-			logger.error("Unsupported JWT token");
-		} catch (IllegalArgumentException ex) {
-			logger.error("JWT claims string is empty.");
+		} catch (Exception ex) {
+			logger.error("Invalid JWT token", ex);
 		}
 		return false;
 	}
-
 }
