@@ -33,7 +33,7 @@ public class TokenProvider {
 
 		return Jwts.builder()
 				.setSubject(userPrincipal.getId())
-				.claim("permissions", userPrincipal.getAuthorities())
+				// .claim("permissions", userPrincipal.getAuthorities())
 				.setIssuedAt(new Date())
 				.setExpiration(expiryDate)
 				.signWith(SignatureAlgorithm.HS512, appProperties.getAuth().getTokenSecret())

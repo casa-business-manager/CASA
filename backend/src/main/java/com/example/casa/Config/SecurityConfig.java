@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -33,7 +32,8 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
+// @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true,
+// prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -53,13 +53,6 @@ public class SecurityConfig {
 		return httpSecurity.getSharedObject(AuthenticationManagerBuilder.class).build();
 	}
 
-	/*
-	 * By default, Spring OAuth2 uses
-	 * HttpSessionOAuth2AuthorizationRequestRepository to save
-	 * the authorization request. But, since our service is stateless, we can't save
-	 * it in
-	 * the session. We'll save the request in a Base64 encoded cookie instead.
-	 */
 	@Bean
 	public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
 		return new HttpCookieOAuth2AuthorizationRequestRepository();
@@ -77,7 +70,7 @@ public class SecurityConfig {
 								"/error", "/favicon.ico", "/*/*.png", "/*/*.gif", "/*/*.svg", "/*/*.jpg", "/*/*.html",
 								"/*/*.css", "/*/*.js", "/auth/**", "/oauth2/**", "/organization/**", "/")
 						.permitAll()
-						.anyRequest().authenticated())
+						.anyRequest().permitAll())
 				.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 				.build();
 	}
@@ -85,7 +78,7 @@ public class SecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+		configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Adjust the allowed origins as needed
 		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Requestor-Type", "Content-Type",
 				"Access-Control-Allow-Headers", "Access-Control-Allow-Origin"));
 		configuration.setExposedHeaders(

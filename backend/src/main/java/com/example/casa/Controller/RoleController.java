@@ -1,5 +1,6 @@
 package com.example.casa.Controller;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -63,7 +64,7 @@ public class RoleController {
 
 		Role newRole = new Role();
 		newRole.setName(newRoleData.getName());
-		newRole.setPermissions(newRoleData.getPermissions());
+		newRole.setPermissions(newRoleData.getPermissions() != null ? newRoleData.getPermissions() : new HashSet<>());
 		newRole.setManagedBy(parentRole);
 		newRole.setOrganization(org);
 
