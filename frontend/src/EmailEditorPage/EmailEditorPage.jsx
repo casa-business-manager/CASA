@@ -11,11 +11,14 @@ import {
 	IconButton,
 	Divider,
 	Button,
+	Autocomplete,
+	Chip,
 } from "@mui/material";
 import RichTextEditor from "./RichTextEditor";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import ManageSearchOutlinedIcon from "@mui/icons-material/ManageSearchOutlined";
 import FileDownloadDoneOutlinedIcon from "@mui/icons-material/FileDownloadDoneOutlined";
+import OrganizationPeopleAutocomplete from "../common/OrganizationPeopleAutocomplete";
 
 const TemplateTab = ({ name, file, onClick, selected, index }) => {
 	return (
@@ -126,17 +129,31 @@ const TemplateMenu = ({}) => {
 	);
 };
 
-const EmailEditor = ({ sx }) => {
+const EmailEditor = ({ orgId, sx }) => {
+	const [subject, setSubject] = useState("");
+	const [people, setPeople] = useState([]);
+
+	const sendEmail = async () => {
+		// send email
+		console.log(`subject is ${subject}`);
+		console.log(`people are ${people}`);
+		console.log(`TODO: get the body info from the RichTextEditor`);
+
+		try {
+			const response = await sendEmail(people, subject, "body");
+		} catch {
+			console.error("Failed to send email");
+		}
+	};
+
 	return (
 		<Box sx={sx}>
-			<TextField label="Subject" fullWidth />
 			<TextField
-				label="Recipients"
+				label="Subject"
 				fullWidth
-				sx={{
-					mt: 1,
-				}}
+				onChange={(e) => setSubject(e.target.value)}
 			/>
+			<OrganizationPeopleAutocomplete organizationId={orgId} sx={{ mt: 1 }} />
 			<Box
 				sx={{
 					border: "1px solid #ccc",
@@ -163,6 +180,7 @@ const EmailEditorPage = ({}) => {
 			<TemplateMenu />
 			<Divider variant="middle" sx={{ pt: 2 }} />{" "}
 			<EmailEditor
+				orgId={orgId}
 				sx={{
 					mt: 1,
 					pt: 1,
