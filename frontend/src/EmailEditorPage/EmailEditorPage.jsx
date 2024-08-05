@@ -6,7 +6,6 @@ import {
 	TextField,
 	List,
 	ListItemButton,
-	ListItemIcon,
 	ListItemText,
 	ListItem,
 	IconButton,
@@ -16,12 +15,12 @@ import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOu
 import ManageSearchOutlinedIcon from "@mui/icons-material/ManageSearchOutlined";
 import FileDownloadDoneOutlinedIcon from "@mui/icons-material/FileDownloadDoneOutlined";
 
-const TemplateTab = ({ name, file, setTemplatePreview }) => {
+const TemplateTab = ({ name, file, onClick, selected, index }) => {
 	return (
 		<ListItemButton
-			selected={false}
+			selected={selected === index}
 			onClick={() => {
-				setTemplatePreview(file);
+				onClick(file, index);
 			}}
 		>
 			<ListItemText
@@ -33,7 +32,12 @@ const TemplateTab = ({ name, file, setTemplatePreview }) => {
 					ml: 2,
 				}}
 			/>
-			<IconButton>
+			<IconButton
+				onClick={() => {
+					console.log("Click will propagate to ListItemButton's onClick");
+					console.log("Delete this log");
+				}}
+			>
 				<ManageSearchOutlinedIcon />
 			</IconButton>
 			<IconButton>
@@ -65,6 +69,12 @@ const TemplateMenu = ({}) => {
 	const [templatePreview, setTemplatePreview] = useState(
 		"Please select a template to preview",
 	);
+	const [selected, setSelected] = useState(-1);
+
+	const handleTemplateClick = (file, index) => {
+		setTemplatePreview(file);
+		setSelected(index);
+	};
 
 	return (
 		<Box>
@@ -84,6 +94,7 @@ const TemplateMenu = ({}) => {
 				<List
 					sx={{
 						width: "40%",
+						maxWidth: "500px",
 						overflow: "auto",
 					}}
 					component="nav"
@@ -99,12 +110,14 @@ const TemplateMenu = ({}) => {
 						<TemplateTab
 							name={template.name}
 							file={template.file}
-							setTemplatePreview={setTemplatePreview}
+							selected={selected}
+							onClick={handleTemplateClick}
+							index={index}
 							key={index}
 						/>
 					))}
 				</List>
-				<Box>
+				<Box sx={{ overflowX: "auto" }}>
 					{/* TODO: Read only slate box to display xml or whatever format */}
 					<Typography>{templatePreview}</Typography>
 				</Box>
