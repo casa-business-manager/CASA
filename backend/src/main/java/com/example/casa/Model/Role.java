@@ -1,5 +1,6 @@
 package com.example.casa.Model;
 
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,8 +42,8 @@ public class Role {
 
 	@ElementCollection(targetClass = Permission.class)
 	@Enumerated(EnumType.STRING)
-	@Column(name = "permissions", nullable = false)
-	private Set<Permission> permissions = new HashSet<>();
+	@Column(name = "permissions", nullable = true)
+	private Set<Permission> permissions = EnumSet.noneOf(Permission.class);
 
 	@OneToMany(mappedBy = "managedBy", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference("role-relations")
