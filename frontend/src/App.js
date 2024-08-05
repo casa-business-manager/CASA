@@ -29,7 +29,10 @@ function App() {
 				/>
 				<Route path="/userManagement/:orgId" element={<UserManagement />} />
 				<Route path="/userCalendar/:userId" element={<UserCalendar />} />
-				<Route path="/emailEditor/" element={<EmailEditorPage />} />
+				<Route
+					path="/organization/:orgId/email"
+					element={<EmailEditorPage />}
+				/>
 			</Routes>
 		</Router>
 	);

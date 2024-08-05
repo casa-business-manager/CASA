@@ -25,7 +25,7 @@ const OrganizationLanding = () => {
 	};
 
 	const handleEmailIconClick = () => {
-		navigate(`/emailEditor/`);
+		navigate(`/organization/${orgId}/email`);
 	};
 
 	return (
