@@ -265,6 +265,7 @@ const PermissionRow = ({
 	value,
 	setPermissions,
 	permissionIndex,
+	editTrackerWrapper,
 }) => {
 	const togglePermission = () => {
 		setPermissions((prevPermissions) => {
@@ -285,7 +286,7 @@ const PermissionRow = ({
 				<Switch
 					key={`permission-switch-${permissionIndex}`}
 					checked={value}
-					onChange={togglePermission}
+					onChange={editTrackerWrapper(togglePermission)}
 				/>
 			) : (
 				// TODO: permissions that are not true/false
@@ -295,7 +296,7 @@ const PermissionRow = ({
 	);
 };
 
-const UserRow = ({ user, setUsers }) => {
+const UserRow = ({ user, setUsers, editTrackerWrapper }) => {
 	return (
 		<Box
 			key={`userrow-box-${user.id}`}
@@ -313,14 +314,14 @@ const UserRow = ({ user, setUsers }) => {
 				key={`userrow-chip-${user.id}`}
 			/>
 			<IconButton
-				onClick={() => {
+				onClick={editTrackerWrapper(() => {
 					setUsers((prevUsers) => {
 						const newUsers = prevUsers.filter(
 							(roleUser) => roleUser.id !== user.id,
 						);
 						return newUsers.sort((a, b) => a.lastName > b.lastName);
 					});
-				}}
+				})}
 				key={`userrow-button-${user.id}`}
 			>
 				<CloseIcon />
@@ -346,6 +347,7 @@ const RoleEditor = ({
 	const [organizationUsers, setOrganizationUsers] = useState(null);
 	const [managedById, setManagedById] = useState(null);
 	const [nonDescendants, setNonDescendants] = useState([]);
+	const [editMade, setEditMade] = useState(false);
 
 	const updateOrganizationUsers = useCallback(() => {
 		if (selectedRole) {
@@ -369,6 +371,7 @@ const RoleEditor = ({
 		}
 
 		const managedByRole = findManagingRole(selectedRole);
+		setEditMade(false);
 
 		if (!managedByRole) {
 			setManagedById(null);
@@ -500,6 +503,7 @@ const RoleEditor = ({
 				}
 			});
 			setSelectedRole(editedRole);
+			setEditMade(false);
 		} catch {
 			console.error("Save failed");
 		}
@@ -516,6 +520,13 @@ const RoleEditor = ({
 		});
 	};
 
+	const editTrackerWrapper = (onChangeFunction) => {
+		return (e, extra) => {
+			onChangeFunction(e, extra);
+			setEditMade(true);
+		};
+	};
+
 	return (
 		<>
 			<Typography variant="h6" sx={{ mb: 1 }}>
@@ -528,7 +539,7 @@ const RoleEditor = ({
 				fullWidth
 				variant="standard"
 				value={name}
-				onChange={(e) => setName(e.target.value)}
+				onChange={editTrackerWrapper((e) => setName(e.target.value))}
 				sx={{ mb: 2 }}
 				InputProps={{ sx: { fontSize: "1.5rem" } }}
 				InputLabelProps={{ sx: { fontSize: "1.5rem" } }}
@@ -546,9 +557,9 @@ const RoleEditor = ({
 						<InputLabel>Managed by</InputLabel>
 						<Select
 							value={managedById}
-							onChange={(e) => {
+							onChange={editTrackerWrapper((e) => {
 								setManagedById(e.target.value);
-							}}
+							})}
 							label="Managed by"
 						>
 							{nonDescendants.map((role) => (
@@ -575,6 +586,7 @@ const RoleEditor = ({
 							setPermissions={setPermissions}
 							permissionIndex={index}
 							key={`permission-${permissions[index]}`}
+							editTrackerWrapper={editTrackerWrapper}
 						/>
 					))}
 				</BaseCollapse>
@@ -595,7 +607,7 @@ const RoleEditor = ({
 						getOptionLabel={(option) => getUserFullName(option)}
 						defaultValue={[]}
 						value={[]}
-						onChange={handleAddPerson}
+						onChange={editTrackerWrapper(handleAddPerson)}
 						filterSelectedOptions
 						renderInput={(params) => (
 							<TextField
@@ -608,7 +620,12 @@ const RoleEditor = ({
 						sx={{ pl: 4, width: "83%" }}
 					/>
 					{users.map((user) => (
-						<UserRow user={user} setUsers={setUsers} key={`chip-${user.id}`} />
+						<UserRow
+							user={user}
+							setUsers={setUsers}
+							key={`chip-${user.id}`}
+							editTrackerWrapper={editTrackerWrapper}
+						/>
 					))}
 				</BaseCollapse>
 			</List>
@@ -622,9 +639,15 @@ const RoleEditor = ({
 						Create
 					</Button>
 				) : (
-					<Button variant="contained" color="primary" onClick={handleEditRole}>
-						Save
-					</Button>
+					editMade && (
+						<Button
+							variant="contained"
+							color="primary"
+							onClick={handleEditRole}
+						>
+							Save
+						</Button>
+					)
 				)}
 			</Box>
 		</>
