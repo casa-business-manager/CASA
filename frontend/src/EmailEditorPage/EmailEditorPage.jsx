@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import { useState } from "react";
 import {
 	Typography,
 	Box,
@@ -7,14 +8,15 @@ import {
 	ListItemButton,
 	ListItemIcon,
 	ListItemText,
+	ListItem,
+	IconButton,
 } from "@mui/material";
 import RichTextEditor from "./RichTextEditor";
-import OrganizationTab from "../Settings/SettingTabs/OrganizationTab";
-import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
-import { useState } from "react";
+import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
+import ManageSearchOutlinedIcon from "@mui/icons-material/ManageSearchOutlined";
+import FileDownloadDoneOutlinedIcon from "@mui/icons-material/FileDownloadDoneOutlined";
 
 const TemplateTab = ({ name, file, setTemplatePreview }) => {
-	console.log(`name is ${name}`);
 	return (
 		<ListItemButton
 			selected={false}
@@ -22,29 +24,50 @@ const TemplateTab = ({ name, file, setTemplatePreview }) => {
 				setTemplatePreview(file);
 			}}
 		>
-			<ListItemIcon>
-				<ArticleOutlinedIcon />
-			</ListItemIcon>
-			<ListItemText primary={name} />
+			<ListItemText
+				primary={name}
+				sx={{
+					overflow: "hidden",
+					textOverflow: "ellipsis",
+					whiteSpace: "nowrap",
+					ml: 2,
+				}}
+			/>
+			<IconButton>
+				<ManageSearchOutlinedIcon />
+			</IconButton>
+			<IconButton>
+				<FileDownloadDoneOutlinedIcon />
+			</IconButton>
 		</ListItemButton>
 	);
 };
 
-const TemplateGrid = ({}) => {
+const TemplateMenu = ({}) => {
 	const [templates, setTemplates] = useState([
+		{ name: "Blank email", file: "" }, // always available
 		{ name: "test", file: "test contents here" },
 		{ name: "test2", file: "test2 contents here" },
 		{ name: "test3", file: "test3 contents here" },
+		{
+			name: "Really long name on this one to test the list overflow",
+			file: "other test file contents here",
+		},
+		{ name: "other test file", file: "other test file contents here" },
+		{ name: "other test file", file: "other test file contents here" },
+		{ name: "other test file", file: "other test file contents here" },
+		{ name: "other test file", file: "other test file contents here" },
+		{ name: "other test file", file: "other test file contents here" },
+		{ name: "other test file", file: "other test file contents here" },
+		{ name: "other test file", file: "other test file contents here" },
+		{ name: "other test file", file: "other test file contents here" },
 	]);
 	const [templatePreview, setTemplatePreview] = useState(
 		"Please select a template to preview",
 	);
 
-	console.log(templates);
-
 	return (
 		<Box>
-			<Typography variant="h4">Email Templates</Typography>
 			<Box
 				sx={{
 					borderRadius: "8px",
@@ -60,12 +83,18 @@ const TemplateGrid = ({}) => {
 			>
 				<List
 					sx={{
-						width: "35%",
+						width: "40%",
 						overflow: "auto",
 					}}
 					component="nav"
 					aria-labelledby="nested-list-subheader"
 				>
+					<ListItem sx={{ bgcolor: "lightgray" }}>
+						<ListItemText primary="Templates" />
+						<IconButton>
+							<AddCircleOutlineOutlinedIcon />
+						</IconButton>
+					</ListItem>
 					{templates.map((template, index) => (
 						<TemplateTab
 							name={template.name}
@@ -77,7 +106,6 @@ const TemplateGrid = ({}) => {
 				</List>
 				<Box>
 					{/* TODO: Read only slate box to display xml or whatever format */}
-					<Typography>Template preview</Typography>
 					<Typography>{templatePreview}</Typography>
 				</Box>
 			</Box>
@@ -116,7 +144,11 @@ const EmailEditorPage = ({}) => {
 
 	return (
 		<>
-			<TemplateGrid />
+			<Typography variant="h4">Email Templates</Typography>
+			<TemplateMenu />
+			<Typography variant="h4" sx={{ mt: 1 }}>
+				Email Editor
+			</Typography>
 			<EmailEditor
 				sx={{
 					mt: 1,
