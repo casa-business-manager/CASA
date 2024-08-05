@@ -49,7 +49,7 @@ const initValue = [
 	},
 ];
 
-const RichTextEditor = () => {
+const RichTextEditor = ({ style }) => {
 	const renderElement = useCallback((props) => <Element {...props} />, []);
 
 	const renderLeaf = useCallback((props) => {
@@ -111,6 +111,13 @@ const RichTextEditor = () => {
 					// 	}
 					// }
 				}}
+				style={{
+					overflowY: "auto",
+					border: "1px solid black",
+					paddingLeft: 8,
+					paddingRight: 8,
+					...style,
+				}} // Add this line to set the height and border of the editable box
 			/>
 		</Slate>
 	);

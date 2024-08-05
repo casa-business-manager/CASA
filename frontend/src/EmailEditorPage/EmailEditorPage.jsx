@@ -9,6 +9,8 @@ import {
 	ListItemText,
 	ListItem,
 	IconButton,
+	Divider,
+	Button,
 } from "@mui/material";
 import RichTextEditor from "./RichTextEditor";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
@@ -77,50 +79,48 @@ const TemplateMenu = ({}) => {
 	};
 
 	return (
-		<Box>
-			<Box
+		<Box
+			sx={{
+				borderRadius: "8px",
+				border: "1px solid #ccc",
+				boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+				overflowX: "auto",
+				padding: 1,
+				mt: 1,
+				display: "flex",
+				height: "35vh",
+				gap: 2,
+			}}
+		>
+			<List
 				sx={{
-					borderRadius: "8px",
-					border: "1px solid #ccc",
-					boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-					overflowX: "auto",
-					padding: 1,
-					mt: 1,
-					display: "flex",
-					height: "35vh",
-					gap: 2,
+					width: "40%",
+					maxWidth: "500px",
+					overflow: "auto",
 				}}
+				component="nav"
+				aria-labelledby="nested-list-subheader"
 			>
-				<List
-					sx={{
-						width: "40%",
-						maxWidth: "500px",
-						overflow: "auto",
-					}}
-					component="nav"
-					aria-labelledby="nested-list-subheader"
-				>
-					<ListItem sx={{ bgcolor: "lightgray" }}>
-						<ListItemText primary="Templates" />
-						<IconButton>
-							<AddCircleOutlineOutlinedIcon />
-						</IconButton>
-					</ListItem>
-					{templates.map((template, index) => (
-						<TemplateTab
-							name={template.name}
-							file={template.file}
-							selected={selected}
-							onClick={handleTemplateClick}
-							index={index}
-							key={index}
-						/>
-					))}
-				</List>
-				<Box sx={{ overflowX: "auto" }}>
-					{/* TODO: Read only slate box to display xml or whatever format */}
-					<Typography>{templatePreview}</Typography>
-				</Box>
+				<ListItem sx={{ mt: -1, bgcolor: "lightgray" }}>
+					<ListItemText primary="Templates" />
+					<IconButton>
+						<AddCircleOutlineOutlinedIcon />
+					</IconButton>
+				</ListItem>
+				{templates.map((template, index) => (
+					<TemplateTab
+						name={template.name}
+						file={template.file}
+						selected={selected}
+						onClick={handleTemplateClick}
+						index={index}
+						key={index}
+					/>
+				))}
+			</List>
+			<Box sx={{ overflowX: "auto" }}>
+				{/* TODO: Read only slate box to display xml or whatever format */}
+				<Typography>{templatePreview}</Typography>
 			</Box>
 		</Box>
 	);
@@ -146,7 +146,10 @@ const EmailEditor = ({ sx }) => {
 					mt: 1,
 				}}
 			>
-				<RichTextEditor />
+				<RichTextEditor style={{ height: "80vh" }} />
+			</Box>
+			<Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
+				<Button variant="contained">Send</Button>
 			</Box>
 		</Box>
 	);
@@ -157,14 +160,12 @@ const EmailEditorPage = ({}) => {
 
 	return (
 		<>
-			<Typography variant="h4">Email Templates</Typography>
 			<TemplateMenu />
-			<Typography variant="h4" sx={{ mt: 1 }}>
-				Email Editor
-			</Typography>
+			<Divider variant="middle" sx={{ pt: 2 }} />{" "}
 			<EmailEditor
 				sx={{
 					mt: 1,
+					pt: 1,
 					//  width: "50%"
 				}}
 			/>
