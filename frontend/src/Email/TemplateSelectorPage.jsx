@@ -11,8 +11,6 @@ import {
 	IconButton,
 	Divider,
 	Button,
-	Autocomplete,
-	Chip,
 } from "@mui/material";
 import RichTextEditor from "./RichTextEditor";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
@@ -190,23 +188,14 @@ const EmailEditor = ({ orgId, sx }) => {
 	);
 };
 
-const EmailEditorPage = ({}) => {
+const TemplateSelectorPage = ({}) => {
 	const { orgId } = useParams();
 
 	return (
 		<>
 			<TemplateMenu />
-			<Divider variant="middle" sx={{ pt: 2 }} />{" "}
-			<EmailEditor
-				orgId={orgId}
-				sx={{
-					mt: 1,
-					pt: 1,
-					//  width: "50%"
-				}}
-			/>
 		</>
 	);
 };
 
-export default EmailEditorPage;
+export default TemplateSelectorPage;
