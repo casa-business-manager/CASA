@@ -11,6 +11,11 @@ import {
 	IconButton,
 	Divider,
 	Button,
+	CssBaseline,
+	AppBar,
+	Toolbar,
+	Drawer,
+	ListItemIcon,
 } from "@mui/material";
 import RichTextEditor from "./RichTextEditor";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
@@ -18,6 +23,9 @@ import ManageSearchOutlinedIcon from "@mui/icons-material/ManageSearchOutlined";
 import FileDownloadDoneOutlinedIcon from "@mui/icons-material/FileDownloadDoneOutlined";
 import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
+import MenuIcon from "@mui/icons-material/Menu";
+import MailIcon from "@mui/icons-material/Mail";
+import InboxIcon from "@mui/icons-material/Inbox";
 import OrganizationPeopleAutocomplete from "../common/OrganizationPeopleAutocomplete";
 
 const TemplateTab = ({ name, file, onClick, selected, index }) => {
@@ -80,6 +88,86 @@ const TemplateMenu = ({}) => {
 		setTemplatePreview(file);
 		setSelected(index);
 	};
+
+	const drawerWidth = 240;
+
+	const drawer = (
+		<>
+			<Toolbar>
+				<Typography variant="h6" noWrap>
+					Templates
+				</Typography>
+			</Toolbar>
+			<Divider />
+			<List>
+				{["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+					<>
+						<ListItem key={text} disablePadding>
+							<ListItemButton>
+								<ListItemIcon>
+									{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+								</ListItemIcon>
+								<ListItemText primary={text} />
+							</ListItemButton>
+						</ListItem>
+						<Divider />
+					</>
+				))}
+			</List>
+		</>
+	);
+
+	return (
+		<Box sx={{ display: "flex" }}>
+			{/* Not sure what CssBaseline does */}
+			<CssBaseline />
+			<AppBar
+				position="fixed"
+				sx={{
+					width: { sm: `calc(100% - ${drawerWidth}px)` },
+					ml: { sm: `${drawerWidth}px` },
+				}}
+			>
+				<Toolbar>
+					<Typography variant="h6" noWrap component="div">
+						Responsive drawer
+					</Typography>
+				</Toolbar>
+			</AppBar>
+			<Box
+				component="nav"
+				sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+				aria-label="mailbox folders"
+			>
+				<Drawer
+					variant="permanent"
+					sx={{
+						display: { xs: "none", sm: "block" },
+						"& .MuiDrawer-paper": {
+							boxSizing: "border-box",
+							width: drawerWidth,
+						},
+					}}
+					open
+				>
+					{drawer}
+				</Drawer>
+			</Box>
+			<Box
+				component="main"
+				sx={{
+					flexGrow: 1,
+					p: 3,
+				}}
+			>
+				<Toolbar />
+				<Typography paragraph>
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+					eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus
+				</Typography>
+			</Box>
+		</Box>
+	);
 
 	return (
 		<Box
