@@ -28,6 +28,7 @@ const OrganizationPeopleAutocomplete = ({
 			!selectedPeople.some((person) => person.id === optionPerson.id));
 
 	// Get organization people
+	// TODO: GET only if organizationPeopleList is not passed in
 	useEffect(() => {
 		if (!organizationId) {
 			return;
@@ -35,7 +36,6 @@ const OrganizationPeopleAutocomplete = ({
 
 		const fetchPeople = async () => {
 			const orgInfo = await getOrganizationInfo(organizationId);
-			console.log(orgInfo.people);
 
 			setOrgPeople(orgInfo.people);
 		};

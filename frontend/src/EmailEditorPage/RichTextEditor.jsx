@@ -49,7 +49,11 @@ const initValue = [
 	},
 ];
 
-const RichTextEditor = ({ style }) => {
+const RichTextEditor = ({
+	readOnly = false,
+	toolbarStyle = {},
+	editorStyle = {},
+}) => {
 	const renderElement = useCallback((props) => <Element {...props} />, []);
 
 	const renderLeaf = useCallback((props) => {
@@ -61,7 +65,7 @@ const RichTextEditor = ({ style }) => {
 	);
 	return (
 		<Slate editor={editor} initialValue={initValue}>
-			<Toolbar>
+			<Toolbar style={toolbarStyle}>
 				<MarkButton format="bold" icon="format_bold" />
 				<MarkButton format="italic" icon="format_italic" />
 				<MarkButton format="underline" icon="format_underlined" />
@@ -111,12 +115,13 @@ const RichTextEditor = ({ style }) => {
 					// 	}
 					// }
 				}}
+				readOnly={readOnly}
 				style={{
 					overflowY: "auto",
 					border: "1px solid black",
 					paddingLeft: 8,
 					paddingRight: 8,
-					...style,
+					...editorStyle,
 				}} // Add this line to set the height and border of the editable box
 			/>
 		</Slate>

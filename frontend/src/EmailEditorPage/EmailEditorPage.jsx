@@ -18,6 +18,8 @@ import RichTextEditor from "./RichTextEditor";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import ManageSearchOutlinedIcon from "@mui/icons-material/ManageSearchOutlined";
 import FileDownloadDoneOutlinedIcon from "@mui/icons-material/FileDownloadDoneOutlined";
+import SendIcon from "@mui/icons-material/Send";
+import DeleteIcon from "@mui/icons-material/Delete";
 import OrganizationPeopleAutocomplete from "../common/OrganizationPeopleAutocomplete";
 
 const TemplateTab = ({ name, file, onClick, selected, index }) => {
@@ -133,13 +135,17 @@ const EmailEditor = ({ orgId, sx }) => {
 	const [subject, setSubject] = useState("");
 	const [people, setPeople] = useState([]);
 
-	const sendEmail = async () => {
+	const handleSendEmail = async () => {
 		// send email
 		console.log(`subject is ${subject}`);
 		console.log(`people are ${people}`);
 		console.log(`TODO: get the body info from the RichTextEditor`);
 
 		try {
+			const sendEmail = async (people, subject, body) => {
+				// TODO: get backend function to send email
+				return;
+			};
 			const response = await sendEmail(people, subject, "body");
 		} catch {
 			console.error("Failed to send email");
@@ -153,7 +159,11 @@ const EmailEditor = ({ orgId, sx }) => {
 				fullWidth
 				onChange={(e) => setSubject(e.target.value)}
 			/>
-			<OrganizationPeopleAutocomplete organizationId={orgId} sx={{ mt: 1 }} />
+			<OrganizationPeopleAutocomplete
+				parentSetSelectedPeople={setPeople}
+				organizationId={orgId}
+				sx={{ mt: 1 }}
+			/>
 			<Box
 				sx={{
 					border: "1px solid #ccc",
@@ -161,12 +171,20 @@ const EmailEditor = ({ orgId, sx }) => {
 					padding: "16px",
 					boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
 					mt: 1,
+					// width: "50%",
 				}}
 			>
-				<RichTextEditor style={{ height: "80vh" }} />
+				<RichTextEditor editorStyle={{ height: "80vh" }} />
 			</Box>
-			<Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
-				<Button variant="contained">Send</Button>
+			<Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+				<Button variant="outlined">
+					Discard
+					<DeleteIcon sx={{ ml: 1 }} />
+				</Button>
+				<Button variant="contained">
+					Send
+					<SendIcon sx={{ ml: 1 }} />
+				</Button>
 			</Box>
 		</Box>
 	);
