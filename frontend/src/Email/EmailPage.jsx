@@ -152,7 +152,7 @@ const TemplateDrawer = ({
 	);
 };
 
-const TemplateMenu = ({ toggleTemplateMenu }) => {
+const TemplateMenu = ({ open, toggleTemplateMenu }) => {
 	const [templates, setTemplates] = useState([
 		{ name: "Blank email", file: "" }, // always available
 		{ name: "test", file: "test contents here" },
@@ -214,87 +214,105 @@ const TemplateMenu = ({ toggleTemplateMenu }) => {
 		closeTemplateMenu();
 	};
 
+	const TemplateTopbar = ({}) => {
+		return (
+			<Toolbar>
+				<Box
+					sx={{
+						width: "100%",
+						display: "flex",
+						justifyContent: "space-between",
+						alignItems: "center",
+					}}
+				>
+					<Typography variant="h6">Preview</Typography>
+					<Box>
+						{isEditing ? (
+							<>
+								<Button variant="outlined" onClick={handleToggleEditTemplate}>
+									Cancel
+								</Button>
+								<Button
+									variant="contained"
+									onClick={handleTemplateSave}
+									sx={{ ml: 1 }}
+								>
+									Save
+								</Button>
+							</>
+						) : (
+							<>
+								<Button variant="outlined" onClick={handleToggleEditTemplate}>
+									Edit
+								</Button>
+								<Button
+									variant="contained"
+									onClick={handleUseTemplate}
+									sx={{ ml: 1 }}
+								>
+									Use template
+								</Button>
+							</>
+						)}
+						<IconButton onClick={closeTemplateMenu} sx={{ ml: 1 }}>
+							<CloseIcon />
+						</IconButton>
+					</Box>
+				</Box>
+			</Toolbar>
+		);
+	};
+
 	return (
-		<Box sx={{ display: "flex", width: "100%", height: "87%" }}>
-			<TemplateDrawer
-				templates={templates}
-				selected={selected}
-				handleAddTemplate={handleAddTemplate}
-				handleTemplateClick={handleTemplateClick}
-				handleDeleteTemplate={handleDeleteTemplate}
-			/>
-			<Box
-				sx={{
-					width: "100%",
+		<Box sx={{ width: "100%" }}>
+			<Drawer
+				open={open}
+				onClose={toggleTemplateMenu(false)}
+				PaperProps={{
+					sx: {
+						width: "85%",
+					},
 				}}
 			>
-				<Toolbar>
+				<Box sx={{ display: "flex", width: "100%", height: "87%" }}>
+					<TemplateDrawer
+						templates={templates}
+						selected={selected}
+						handleAddTemplate={handleAddTemplate}
+						handleTemplateClick={handleTemplateClick}
+						handleDeleteTemplate={handleDeleteTemplate}
+					/>
 					<Box
 						sx={{
 							width: "100%",
-							display: "flex",
-							justifyContent: "space-between",
-							alignItems: "center",
 						}}
 					>
-						<Typography variant="h6">Preview</Typography>
-						<Box>
-							{isEditing ? (
-								<>
-									<Button variant="outlined" onClick={handleToggleEditTemplate}>
-										Cancel
-									</Button>
-									<Button
-										variant="contained"
-										onClick={handleTemplateSave}
-										sx={{ ml: 1 }}
-									>
-										Save
-									</Button>
-								</>
-							) : (
-								<>
-									<Button variant="outlined" onClick={handleToggleEditTemplate}>
-										Edit
-									</Button>
-									<Button
-										variant="contained"
-										onClick={handleUseTemplate}
-										sx={{ ml: 1 }}
-									>
-										Use template
-									</Button>
-								</>
-							)}
-							<IconButton onClick={closeTemplateMenu} sx={{ ml: 1 }}>
-								<CloseIcon />
-							</IconButton>
+						<TemplateTopbar />
+						<Divider sx={{ mb: 2 }} />
+						{/* Delete this Typography when you figure out how to pass the template into slate */}
+						{/* <Typography>{templatePreview}</Typography> */}
+						<Box
+							sx={{
+								display: "flex",
+								flexDirection: "column",
+								justifyContent: "center",
+								alignItems: "center",
+								height: "100%",
+							}}
+						>
+							<RichTextEditor
+								readOnly={!isEditing}
+								toolbarStyle={{ width: "95%" }}
+								editorStyle={{
+									width: "95%",
+									height: "100%",
+								}}
+								initialText={templatePreview}
+							/>
 						</Box>
 					</Box>
-				</Toolbar>
-				<Divider sx={{ mb: 2 }} />
-				{/* Delete this Typography when you figure out how to pass the template into slate */}
-				{/* <Typography>{templatePreview}</Typography> */}
-				<Box
-					sx={{
-						display: "flex",
-						flexDirection: "column",
-						justifyContent: "center",
-						alignItems: "center",
-						height: "100%",
-					}}
-				>
-					<RichTextEditor
-						readOnly={!isEditing}
-						toolbarStyle={{ width: "95%" }}
-						editorStyle={{
-							width: "95%",
-							height: "100%",
-						}}
-						initialText={templatePreview}
-					/>
 				</Box>
-			</Box>
+			</Drawer>
 		</Box>
 	);
 };
@@ -388,19 +406,8 @@ const EmailPage = ({}) => {
 			</Box>
 			<Divider sx={{ m: 2 }} />
 			<EmailEditor orgId={orgId} />
-			<Box sx={{ width: "100%" }}>
-				<Drawer
-					open={open}
-					onClose={toggleDrawer(false)}
-					PaperProps={{
-						sx: {
-							width: "85%",
-						},
-					}}
-				>
-					<TemplateMenu toggleTemplateMenu={toggleDrawer} />
-				</Drawer>
-			</Box>
+
+			<TemplateMenu open={open} toggleTemplateMenu={toggleDrawer} />
 		</>
 	);
 };
