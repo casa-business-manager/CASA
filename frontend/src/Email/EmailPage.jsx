@@ -58,7 +58,6 @@ const TemplateTab = ({
 				primary={name}
 				sx={{
 					overflow: "hidden",
-					textOverflow: "ellipsis",
 					whiteSpace: "nowrap",
 					ml: 2,
 				}}
@@ -176,9 +175,14 @@ const TemplateMenu = ({ toggleTemplateMenu }) => {
 		"Please select a template to preview",
 	);
 	const [selected, setSelected] = useState(-1);
+	const [isEditing, setIsEditing] = useState(false);
 
 	const handleAddTemplate = () => {
 		console.log("TODO: Handle adding new templates");
+	};
+
+	const handleEditTemplate = () => {
+		setIsEditing(true);
 	};
 
 	const handleTemplateClick = (file, index) => {
@@ -215,7 +219,9 @@ const TemplateMenu = ({ toggleTemplateMenu }) => {
 					>
 						<Typography variant="h6">Preview</Typography>
 						<Box>
-							<Button variant="outlined">Edit</Button>
+							<Button variant="outlined" onClick={handleEditTemplate}>
+								Edit
+							</Button>
 							<Button variant="contained" sx={{ ml: 1 }}>
 								Use template
 							</Button>
@@ -227,6 +233,21 @@ const TemplateMenu = ({ toggleTemplateMenu }) => {
 				</Toolbar>
 				<Divider />
 				<Typography>{templatePreview}</Typography>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						justifyContent: "center",
+						alignItems: "center",
+					}}
+				>
+					<RichTextEditor
+						readOnly={!isEditing}
+						toolbarStyle={{ width: "95%" }}
+						editorStyle={{ width: "95%", height: "80vh" }}
+						initialText={templatePreview}
+					/>
+				</Box>
 			</Box>
 		</Box>
 	);
@@ -305,11 +326,21 @@ const EmailPage = ({}) => {
 
 	return (
 		<>
-			<Toolbar>
+			<Box
+				sx={{
+					width: "100%",
+					display: "flex",
+					justifyContent: "space-between",
+					alignItems: "center",
+					pr: 1,
+				}}
+			>
+				<Typography variant="h5">Compose email</Typography>
 				<Button onClick={toggleDrawer(true)} variant="outlined">
-					Templates
+					Use a template
 				</Button>
-			</Toolbar>
+			</Box>
+			<Divider sx={{ m: 2 }} />
 			<EmailEditor orgId={orgId} />
 			<Box sx={{ width: "100%" }}>
 				<Drawer
