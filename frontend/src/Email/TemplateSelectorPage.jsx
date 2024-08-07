@@ -89,29 +89,43 @@ const TemplateMenu = ({}) => {
 		setSelected(index);
 	};
 
-	const drawerWidth = 240;
+	const drawerWidth = 300;
 
 	const drawer = (
 		<>
 			<Toolbar>
-				<Typography variant="h6" noWrap>
-					Templates
-				</Typography>
+				<Box
+					sx={{
+						width: "100%",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "space-between",
+					}}
+				>
+					<Typography variant="h6" noWrap>
+						Templates
+					</Typography>
+					<IconButton>
+						<AddCircleOutlineOutlinedIcon />
+					</IconButton>
+				</Box>
 			</Toolbar>
 			<Divider />
-			<List>
-				{["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-					<>
-						<ListItem key={text} disablePadding>
-							<ListItemButton>
-								<ListItemIcon>
-									{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-								</ListItemIcon>
-								<ListItemText primary={text} />
-							</ListItemButton>
-						</ListItem>
-						<Divider />
-					</>
+			<List
+				sx={{
+					overflowY: "auto",
+					pt: 0,
+				}}
+			>
+				{templates.map((template, index) => (
+					<TemplateTab
+						name={template.name}
+						file={template.file}
+						selected={selected}
+						onClick={handleTemplateClick}
+						index={index}
+						key={index}
+					/>
 				))}
 			</List>
 		</>
@@ -121,19 +135,6 @@ const TemplateMenu = ({}) => {
 		<Box sx={{ display: "flex" }}>
 			{/* Not sure what CssBaseline does */}
 			<CssBaseline />
-			<AppBar
-				position="fixed"
-				sx={{
-					width: { sm: `calc(100% - ${drawerWidth}px)` },
-					ml: { sm: `${drawerWidth}px` },
-				}}
-			>
-				<Toolbar>
-					<Typography variant="h6" noWrap component="div">
-						Responsive drawer
-					</Typography>
-				</Toolbar>
-			</AppBar>
 			<Box
 				component="nav"
 				sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
