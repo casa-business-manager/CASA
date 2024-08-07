@@ -4,6 +4,7 @@ import "./OrganizationLanding.css";
 import GroupsIcon from "@mui/icons-material/Groups";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import EmailIcon from "@mui/icons-material/Email";
 import UserManagement from "../UserManagement/UserManagement";
 import SettingsButton from "../Settings/SettingsButton";
 
@@ -21,6 +22,10 @@ const OrganizationLanding = () => {
 
 	const handleCalendarIconClick = () => {
 		navigate(`/organizationCalendar/${orgId}`);
+	};
+
+	const handleEmailIconClick = () => {
+		navigate(`/organization/${orgId}/email`);
 	};
 
 	return (
@@ -41,6 +46,10 @@ const OrganizationLanding = () => {
 				<div className="icon-box">
 					<AccountBoxIcon className="icon" />
 					<div className="icon-label">Account</div>
+				</div>
+				<div className="icon-box" onClick={handleEmailIconClick}>
+					<EmailIcon className="icon" />
+					<div className="icon-label">Email Editor</div>
 				</div>
 			</div>
 		</div>
