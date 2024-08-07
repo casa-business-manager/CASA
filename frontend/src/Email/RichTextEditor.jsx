@@ -1,5 +1,5 @@
 // Import React dependencies.
-import React, { useMemo, useCallback, useEffect, useState } from "react";
+import React, { useMemo, useCallback } from "react";
 import { Slate, Editable, withReact, useSlate } from "slate-react";
 import {
 	createEditor,
@@ -13,7 +13,6 @@ import { Toolbar, Button, Icon } from "./components";
 import isHotkey from "is-hotkey";
 
 import { Image, withImages, InsertImageButton } from "./image";
-import { Box } from "@mui/material";
 
 // hotkeys and their corresponding formatting transformations
 const HOTKEYS = {
@@ -54,23 +53,17 @@ const RichTextEditor = ({
 	const renderLeaf = useCallback((props) => {
 		return <Leaf {...props} />;
 	}, []);
-	const editor = withImages(withHistory(withReact(createEditor())));
+	const editor = useMemo(
+		() => withImages(withHistory(withReact(createEditor()))),
+		[],
+	);
 
-	const [initValue, setInitValue] = useState([
+	const initValue = [
 		{
 			type: "paragraph",
-			children: [{ text: initialText }],
+			children: [{ text: "A line of text in a paragraph." }],
 		},
-	]);
-
-	useEffect(() => {
-		setInitValue([
-			{
-				type: "paragraph",
-				children: [{ text: initialText }],
-			},
-		]);
-	}, [initialText]);
+	];
 
 	return (
 		<Slate editor={editor} initialValue={initValue}>
