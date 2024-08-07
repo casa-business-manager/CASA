@@ -12,7 +12,7 @@ import OrganizationLanding from "./OrganizationLanding/OrganizationLanding";
 import UserManagement from "./UserManagement/UserManagement";
 import UserCalendar from "./Calendars/UserCalendar";
 import OrganizationCalendar from "./Calendars/OrganizationCalendar";
-import TemplateSelectorPage from "./Email/TemplateSelectorPage";
+import EmailPage from "./Email/EmailPage";
 
 function App() {
 	return (
@@ -29,10 +29,7 @@ function App() {
 				/>
 				<Route path="/userManagement/:orgId" element={<UserManagement />} />
 				<Route path="/userCalendar/:userId" element={<UserCalendar />} />
-				<Route
-					path="/organization/:orgId/email"
-					element={<TemplateSelectorPage />}
-				/>
+				<Route path="/organization/:orgId/email" element={<EmailPage />} />
 			</Routes>
 		</Router>
 	);

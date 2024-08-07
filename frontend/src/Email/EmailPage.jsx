@@ -194,7 +194,7 @@ const TemplateMenu = ({}) => {
 	};
 
 	return (
-		<Box sx={{ display: "flex", mt: -1, width: "100%" }}>
+		<Box border={1} sx={{ display: "flex", width: "100%" }}>
 			<TemplateDrawer
 				templates={templates}
 				selected={selected}
@@ -206,7 +206,6 @@ const TemplateMenu = ({}) => {
 				component="main"
 				sx={{
 					width: "100%",
-					ml: -1,
 				}}
 			>
 				<Toolbar>
@@ -222,7 +221,7 @@ const TemplateMenu = ({}) => {
 						<Box>
 							<Button variant="outlined">Edit</Button>
 							<Button variant="contained" sx={{ ml: 1 }}>
-								Draft email
+								Use template
 							</Button>
 						</Box>
 					</Box>
@@ -293,10 +292,27 @@ const EmailEditor = ({ orgId, sx }) => {
 	);
 };
 
-const TemplateSelectorPage = ({}) => {
+const EmailPage = ({}) => {
 	const { orgId } = useParams();
+	const [open, setOpen] = useState(false);
 
-	return <TemplateMenu />;
+	const toggleDrawer = (newOpen) => () => {
+		setOpen(newOpen);
+	};
+
+	return (
+		<>
+			<Toolbar>
+				<Button onClick={toggleDrawer(true)} variant="outlined">
+					Templates
+				</Button>
+			</Toolbar>
+			<EmailEditor orgId={orgId} />
+			<Drawer open={open} onClose={toggleDrawer(false)} sx={{ width: 400 }}>
+				<TemplateMenu />
+			</Drawer>
+		</>
+	);
 };
 
-export default TemplateSelectorPage;
+export default EmailPage;
