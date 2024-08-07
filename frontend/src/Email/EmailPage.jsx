@@ -28,6 +28,7 @@ const TemplateTab = ({
 	name,
 	file,
 	onClick,
+	handleEditTemplate,
 	handleDeleteTemplate,
 	selected,
 	index,
@@ -38,9 +39,6 @@ const TemplateTab = ({
 	const open = Boolean(anchorEl);
 
 	const handleTabClick = () => {
-		if (warningDialogOpen) {
-			return;
-		}
 		onClick(file, index);
 	};
 
@@ -57,6 +55,11 @@ const TemplateTab = ({
 	const askBeforeDelete = (e) => {
 		e.stopPropagation();
 		setWarningDialogOpen(true);
+	};
+
+	const handleEditTemplateWrapper = () => {
+		handleTabClick();
+		handleEditTemplate();
 	};
 
 	const handleDeleteTemplateWrapper = () => {
@@ -97,7 +100,7 @@ const TemplateTab = ({
 					"aria-labelledby": "basic-button",
 				}}
 			>
-				<MenuItem onClick={handleOptionsClose}>Edit</MenuItem>
+				<MenuItem onClick={handleEditTemplateWrapper}>Edit</MenuItem>
 				<MenuItem onClick={askBeforeDelete} sx={{ color: "red" }}>
 					Delete
 				</MenuItem>
@@ -117,6 +120,7 @@ const TemplateDrawer = ({
 	selected,
 	handleAddTemplate,
 	handleTemplateClick,
+	handleEditTemplate,
 	handleDeleteTemplate,
 }) => {
 	const drawerWidth = 256;
@@ -167,6 +171,7 @@ const TemplateDrawer = ({
 							file={template.file}
 							selected={selected}
 							onClick={handleTemplateClick}
+							handleEditTemplate={handleEditTemplate}
 							handleDeleteTemplate={handleDeleteTemplate}
 							index={index}
 							key={index}
@@ -180,7 +185,6 @@ const TemplateDrawer = ({
 
 const TemplateMenu = ({ open, closeDrawer }) => {
 	const [templates, setTemplates] = useState([
-		{ name: "Blank email", file: "" }, // always available
 		{ name: "test", file: "test contents here" },
 		{ name: "test2", file: "test2 contents here" },
 		{ name: "test3", file: "test3 contents here" },
@@ -205,12 +209,14 @@ const TemplateMenu = ({ open, closeDrawer }) => {
 
 	const [warningDialogOpen, setWarningDialogOpen] = useState(false);
 	const [warningDialogFunction, setWarningDialogFunction] = useState(() => {});
+	const [warningDialogParams, setWarningDialogParams] = useState([]);
 
 	const warnIfEditing = (func) => {
 		return isEditing === true
-			? () => {
+			? (...params) => {
 					setWarningDialogOpen(true);
 					setWarningDialogFunction(() => func);
+					setWarningDialogParams(params);
 				}
 			: func;
 	};
@@ -224,18 +230,23 @@ const TemplateMenu = ({ open, closeDrawer }) => {
 		setIsEditing(false);
 	};
 
-	const handleToggleEditTemplate = () => {
-		setIsEditing(!isEditing);
+	const handleEnableEditing = () => {
+		setIsEditing(true);
+	};
+
+	const handleDisableEditing = () => {
+		setIsEditing(false);
 	};
 
 	const handleTemplateSave = () => {
 		console.log("TODO: Handle saving templates");
-		handleToggleEditTemplate(!isEditing);
+		handleDisableEditing();
 	};
 
 	const handleTemplateClick = (file, index) => {
 		setTemplatePreview(file);
 		setSelected(index);
+		setIsEditing(false);
 	};
 
 	const handleDeleteTemplate = () => {
@@ -267,7 +278,7 @@ const TemplateMenu = ({ open, closeDrawer }) => {
 								<>
 									<Button
 										variant="outlined"
-										onClick={warnIfEditing(handleToggleEditTemplate)}
+										onClick={warnIfEditing(handleDisableEditing)}
 									>
 										Cancel
 									</Button>
@@ -281,7 +292,7 @@ const TemplateMenu = ({ open, closeDrawer }) => {
 								</>
 							) : (
 								<>
-									<Button variant="outlined" onClick={handleToggleEditTemplate}>
+									<Button variant="outlined" onClick={handleEnableEditing}>
 										Edit
 									</Button>
 									<Button
@@ -303,6 +314,7 @@ const TemplateMenu = ({ open, closeDrawer }) => {
 								open={warningDialogOpen}
 								setOpen={setWarningDialogOpen}
 								func={warningDialogFunction}
+								params={warningDialogParams}
 							/>
 						</Box>
 					</Box>
@@ -328,6 +340,7 @@ const TemplateMenu = ({ open, closeDrawer }) => {
 						selected={selected}
 						handleAddTemplate={warnIfEditing(handleAddTemplate)}
 						handleTemplateClick={warnIfEditing(handleTemplateClick)}
+						handleEditTemplate={handleEnableEditing}
 						handleDeleteTemplate={handleDeleteTemplate}
 					/>
 					<Box

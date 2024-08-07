@@ -31,6 +31,7 @@ const WarningDialog = ({
 	open,
 	setOpen,
 	func = () => {},
+	params = [],
 	variant = "standard",
 }) => {
 	const dialogTitle = "Are you sure?";
@@ -44,7 +45,7 @@ const WarningDialog = ({
 
 	const handleConfirm = (e) => {
 		e.stopPropagation();
-		func();
+		func(...params);
 		setOpen(false);
 	};
 
