@@ -7,24 +7,21 @@ import {
 	List,
 	ListItemButton,
 	ListItemText,
-	ListItem,
 	IconButton,
 	Divider,
 	Button,
-	CssBaseline,
-	AppBar,
 	Toolbar,
 	Drawer,
-	ListItemIcon,
 	Menu,
 	MenuItem,
 } from "@mui/material";
 import RichTextEditor from "./RichTextEditor";
+import OrganizationPeopleAutocomplete from "../common/OrganizationPeopleAutocomplete";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import OrganizationPeopleAutocomplete from "../common/OrganizationPeopleAutocomplete";
+import CloseIcon from "@mui/icons-material/Close";
 
 const TemplateTab = ({
 	name,
@@ -156,7 +153,7 @@ const TemplateDrawer = ({
 	);
 };
 
-const TemplateMenu = ({}) => {
+const TemplateMenu = ({ toggleTemplateMenu }) => {
 	const [templates, setTemplates] = useState([
 		{ name: "Blank email", file: "" }, // always available
 		{ name: "test", file: "test contents here" },
@@ -194,7 +191,7 @@ const TemplateMenu = ({}) => {
 	};
 
 	return (
-		<Box border={1} sx={{ display: "flex", width: "100%" }}>
+		<Box sx={{ display: "flex", width: "100%" }}>
 			<TemplateDrawer
 				templates={templates}
 				selected={selected}
@@ -203,7 +200,6 @@ const TemplateMenu = ({}) => {
 				handleDeleteTemplate={handleDeleteTemplate}
 			/>
 			<Box
-				component="main"
 				sx={{
 					width: "100%",
 				}}
@@ -223,6 +219,9 @@ const TemplateMenu = ({}) => {
 							<Button variant="contained" sx={{ ml: 1 }}>
 								Use template
 							</Button>
+							<IconButton onClick={toggleTemplateMenu()} sx={{ ml: 1 }}>
+								<CloseIcon />
+							</IconButton>
 						</Box>
 					</Box>
 				</Toolbar>
@@ -297,7 +296,11 @@ const EmailPage = ({}) => {
 	const [open, setOpen] = useState(false);
 
 	const toggleDrawer = (newOpen) => () => {
-		setOpen(newOpen);
+		if (typeof newOpen === Boolean) {
+			setOpen(newOpen);
+			return;
+		}
+		setOpen(!open);
 	};
 
 	return (
@@ -308,9 +311,19 @@ const EmailPage = ({}) => {
 				</Button>
 			</Toolbar>
 			<EmailEditor orgId={orgId} />
-			<Drawer open={open} onClose={toggleDrawer(false)} sx={{ width: 400 }}>
-				<TemplateMenu />
-			</Drawer>
+			<Box sx={{ width: "100%" }}>
+				<Drawer
+					open={open}
+					onClose={toggleDrawer(false)}
+					PaperProps={{
+						sx: {
+							width: "85%",
+						},
+					}}
+				>
+					<TemplateMenu toggleTemplateMenu={toggleDrawer} />
+				</Drawer>
+			</Box>
 		</>
 	);
 };
