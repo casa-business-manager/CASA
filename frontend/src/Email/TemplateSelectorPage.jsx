@@ -179,7 +179,7 @@ const TemplateMenu = ({}) => {
 	};
 
 	return (
-		<Box sx={{ display: "flex" }}>
+		<Box sx={{ display: "flex", mt: -1, width: "100%" }}>
 			<Box
 				component="nav"
 				sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -204,8 +204,32 @@ const TemplateMenu = ({}) => {
 					/>
 				</Drawer>
 			</Box>
-			<Box component="main" sx={{}}>
-				<Toolbar />
+			<Box
+				component="main"
+				sx={{
+					width: "100%",
+					ml: -1,
+				}}
+			>
+				<Toolbar>
+					<Box
+						sx={{
+							width: "100%",
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+						}}
+					>
+						<Typography variant="h6">Preview</Typography>
+						<Box>
+							<Button variant="outlined">Edit</Button>
+							<Button variant="contained" sx={{ ml: 1 }}>
+								Draft email
+							</Button>
+						</Box>
+					</Box>
+				</Toolbar>
+				<Divider />
 				<Typography>{templatePreview}</Typography>
 			</Box>
 		</Box>
@@ -274,11 +298,7 @@ const EmailEditor = ({ orgId, sx }) => {
 const TemplateSelectorPage = ({}) => {
 	const { orgId } = useParams();
 
-	return (
-		<>
-			<TemplateMenu />
-		</>
-	);
+	return <TemplateMenu />;
 };
 
 export default TemplateSelectorPage;
