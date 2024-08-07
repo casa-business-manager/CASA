@@ -21,7 +21,7 @@ const variantConfirmButtonFunction = {
 		</Button>
 	),
 	delete: ({ func }) => (
-		<Button variant="error" onClick={func}>
+		<Button variant="outlined" color="error" onClick={func}>
 			Delete
 		</Button>
 	),
@@ -33,22 +33,18 @@ const WarningDialog = ({
 	func = () => {},
 	variant = "standard",
 }) => {
-	const [confirmFunction, setConfirmFunction] = useState(() => func);
-
 	const dialogTitle = "Are you sure?";
 	const dialogMessage = variantMessages[variant];
 	const DialogConfirmButton = variantConfirmButtonFunction[variant];
 
-	useEffect(() => {
-		setConfirmFunction(() => func);
-	}, [func]);
-
-	const handleClose = () => {
+	const handleClose = (e) => {
+		e.stopPropagation();
 		setOpen(false);
 	};
 
-	const handleConfirm = () => {
-		confirmFunction();
+	const handleConfirm = (e) => {
+		e.stopPropagation();
+		func();
 		setOpen(false);
 	};
 

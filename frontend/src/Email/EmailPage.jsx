@@ -33,22 +33,41 @@ const TemplateTab = ({
 	index,
 }) => {
 	const [anchorEl, setAnchorEl] = useState(null);
+	const [warningDialogOpen, setWarningDialogOpen] = useState(false);
+
 	const open = Boolean(anchorEl);
 
+	const handleTabClick = () => {
+		if (warningDialogOpen) {
+			return;
+		}
+		onClick(file, index);
+	};
+
 	const handleOptionsClick = (e) => {
+		e.stopPropagation();
 		setAnchorEl(e.currentTarget);
 	};
 
-	const handleOptionsClose = () => {
+	const handleOptionsClose = (e) => {
+		e.stopPropagation();
+		setAnchorEl(null);
+	};
+
+	const askBeforeDelete = (e) => {
+		e.stopPropagation();
+		setWarningDialogOpen(true);
+	};
+
+	const handleDeleteTemplateWrapper = () => {
+		handleDeleteTemplate();
 		setAnchorEl(null);
 	};
 
 	return (
 		<ListItemButton
 			selected={selected === index}
-			onClick={() => {
-				onClick(file, index);
-			}}
+			onClick={handleTabClick}
 			sx={{
 				"&:hover .MuiIconButton-root": {
 					visibility: "visible",
@@ -79,9 +98,15 @@ const TemplateTab = ({
 				}}
 			>
 				<MenuItem onClick={handleOptionsClose}>Edit</MenuItem>
-				<MenuItem onClick={handleOptionsClose} sx={{ color: "red" }}>
+				<MenuItem onClick={askBeforeDelete} sx={{ color: "red" }}>
 					Delete
 				</MenuItem>
+				<WarningDialog
+					open={warningDialogOpen}
+					setOpen={setWarningDialogOpen}
+					func={handleDeleteTemplateWrapper}
+					variant="delete"
+				/>
 			</Menu>
 		</ListItemButton>
 	);
@@ -153,14 +178,7 @@ const TemplateDrawer = ({
 	);
 };
 
-const TemplateMenu = ({
-	open,
-	closeDrawer,
-	setWarningDialogOpen,
-	setWarningDialogFunction,
-	warningDialogOpen,
-	warningDialogFunction,
-}) => {
+const TemplateMenu = ({ open, closeDrawer }) => {
 	const [templates, setTemplates] = useState([
 		{ name: "Blank email", file: "" }, // always available
 		{ name: "test", file: "test contents here" },
@@ -185,24 +203,25 @@ const TemplateMenu = ({
 	const [selected, setSelected] = useState(-1);
 	const [isEditing, setIsEditing] = useState(false);
 
-	const safeTemplateMenuCloser = () => {
-		console.log("safeTemplateMenuCloser called");
-		if (isEditing === true) {
-			console.log("editing");
-			setWarningDialogOpen(true);
-			console.log("open is", open);
-			console.log("function for dialog is", () => closeDrawer);
-			setWarningDialogFunction(() => closeDrawer);
-			// console.log("function is", toggleTemplateMenu(false));
-			return;
-		}
-		console.log("not editing");
+	const [warningDialogOpen, setWarningDialogOpen] = useState(false);
+	const [warningDialogFunction, setWarningDialogFunction] = useState(() => {});
 
-		closeDrawer();
+	const warnIfEditing = (func) => {
+		return isEditing === true
+			? () => {
+					setWarningDialogOpen(true);
+					setWarningDialogFunction(() => func);
+				}
+			: func;
 	};
 
 	const handleAddTemplate = () => {
 		console.log("TODO: Handle adding new templates");
+	};
+
+	const closeDrawerWrapper = () => {
+		closeDrawer();
+		setIsEditing(false);
 	};
 
 	const handleToggleEditTemplate = () => {
@@ -227,7 +246,7 @@ const TemplateMenu = ({
 
 	const handleUseTemplate = () => {
 		console.log("TODO: Handle using templates");
-		safeTemplateMenuCloser();
+		warnIfEditing(closeDrawerWrapper)();
 	};
 
 	const TemplateTopbar = ({}) => {
@@ -246,7 +265,10 @@ const TemplateMenu = ({
 						<Box>
 							{isEditing ? (
 								<>
-									<Button variant="outlined" onClick={handleToggleEditTemplate}>
+									<Button
+										variant="outlined"
+										onClick={warnIfEditing(handleToggleEditTemplate)}
+									>
 										Cancel
 									</Button>
 									<Button
@@ -271,7 +293,10 @@ const TemplateMenu = ({
 									</Button>
 								</>
 							)}
-							<IconButton onClick={safeTemplateMenuCloser} sx={{ ml: 1 }}>
+							<IconButton
+								onClick={warnIfEditing(closeDrawerWrapper)}
+								sx={{ ml: 1 }}
+							>
 								<CloseIcon />
 							</IconButton>
 							<WarningDialog
@@ -290,7 +315,7 @@ const TemplateMenu = ({
 		<Box sx={{ width: "100%" }}>
 			<Drawer
 				open={open}
-				onClose={safeTemplateMenuCloser}
+				onClose={warnIfEditing(closeDrawerWrapper)}
 				PaperProps={{
 					sx: {
 						width: "85%",
@@ -301,8 +326,8 @@ const TemplateMenu = ({
 					<TemplateDrawer
 						templates={templates}
 						selected={selected}
-						handleAddTemplate={handleAddTemplate}
-						handleTemplateClick={handleTemplateClick}
+						handleAddTemplate={warnIfEditing(handleAddTemplate)}
+						handleTemplateClick={warnIfEditing(handleTemplateClick)}
 						handleDeleteTemplate={handleDeleteTemplate}
 					/>
 					<Box
@@ -403,20 +428,13 @@ const EmailPage = ({}) => {
 	const { orgId } = useParams();
 	const [openTemplateMenu, setOpenTemplateMenu] = useState(false);
 
-	const [warningDialogOpen, setWarningDialogOpen] = useState(false);
-	const [warningDialogFunction, setWarningDialogFunction] = useState(() => {});
-
 	const openDrawer = () => {
-		console.log("openDrawer called");
 		setOpenTemplateMenu(true);
 	};
 
 	const closeDrawer = () => {
-		console.log("closeDrawer called");
 		setOpenTemplateMenu(false);
 	};
-
-	console.log("openTemplateMenu is", openTemplateMenu);
 
 	return (
 		<>
@@ -436,14 +454,7 @@ const EmailPage = ({}) => {
 			</Box>
 			<Divider sx={{ m: 2 }} />
 			<EmailEditor orgId={orgId} />
-			<TemplateMenu
-				open={openTemplateMenu}
-				closeDrawer={closeDrawer}
-				setWarningDialogOpen={setWarningDialogOpen}
-				setWarningDialogFunction={setWarningDialogFunction}
-				warningDialogOpen={warningDialogOpen}
-				warningDialogFunction={warningDialogFunction}
-			/>
+			<TemplateMenu open={openTemplateMenu} closeDrawer={closeDrawer} />
 		</>
 	);
 };
