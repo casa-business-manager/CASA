@@ -138,7 +138,7 @@ function Login() {
 									type="submit"
 									variant="contained"
 									color="primary"
-									sx={{ marginTop: "20px", width: "446px" }}
+									sx={{ marginTop: "20px", width: "100%" }}
 								>
 									Sign In
 								</Button>
@@ -176,7 +176,7 @@ function Login() {
 								value={formData.email}
 								onChange={handleChange}
 								margin="normal"
-								sx={{ display: "flex", width: "446px" }}
+								fullWidth
 							/>
 							<TextField
 								label="Password"
@@ -185,7 +185,7 @@ function Login() {
 								value={formData.password}
 								onChange={handleChange}
 								margin="normal"
-								sx={{ display: "flex" }}
+								fullWidth
 							/>
 							<TextField
 								label="First Name"
@@ -194,7 +194,7 @@ function Login() {
 								value={formData.firstName}
 								onChange={handleChange}
 								margin="normal"
-								sx={{ display: "flex" }}
+								fullWidth
 							/>
 							<TextField
 								label="Last Name"
@@ -203,7 +203,7 @@ function Login() {
 								value={formData.lastName}
 								onChange={handleChange}
 								margin="normal"
-								sx={{ display: "flex" }}
+								fullWidth
 							/>
 							<label>
 								<input
@@ -236,7 +236,7 @@ function Login() {
 									type="submit"
 									variant="contained"
 									color="primary"
-									sx={{ marginTop: "20px", width: "446px" }}
+									sx={{ marginTop: "20px", width: "100%" }}
 								>
 									Sign Up
 								</Button>

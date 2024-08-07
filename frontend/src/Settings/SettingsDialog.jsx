@@ -7,12 +7,17 @@ import {
 	Button,
 	Box,
 	Typography,
+	IconButton,
 } from "@mui/material";
 import List from "@mui/material/List";
-
+import CloseIcon from "@mui/icons-material/Close";
 import OrganizationTab from "./SettingTabs/OrganizationTab";
 import MeetingsTab from "./SettingTabs/MeetingsTab";
 import IntegrationsCollapse from "./SettingsCollapses/IntegrationsCollapse";
+import UserCollapse from "./SettingsCollapses/UserCollapse";
+import MembersTab from "./SettingTabs/MembersTab";
+import RolesTab from "./SettingTabs/RolesTab";
+import { getCurrentUser, getOrganizationRoles } from "../APIUtils/APIUtils";
 
 // orgId may be null
 const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
@@ -20,10 +25,12 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 		<Typography variant="h5">Select a setting</Typography>
 	);
 
-	const [orgSettings, setOrgSettings] = useState({});
-	const [availableIntegrations, setAvailableIntegrations] = useState({});
 	const [selected, setSelected] = useState(-1);
 	const [settingsPage, setSettingsPage] = useState(defaultComponent);
+	const [user, setUser] = useState(null);
+	const [orgSettings, setOrgSettings] = useState({});
+	const [availableIntegrations, setAvailableIntegrations] = useState({});
+	const [roleSettings, setRoleSettings] = useState({});
 
 	// Always open to defaultComponent
 	useEffect(() => {
@@ -35,6 +42,11 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 
 	// get settings if clicked
 	useEffect(() => {
+		const fetchCurrentUser = async () => {
+			const user = await getCurrentUser();
+			setUser(user);
+		};
+
 		const fetchOrganizationSettings = async () => {
 			// TODO: Make real backend function
 			// const settings = await SomeAPICallHere(orgId);
@@ -51,6 +63,11 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 			setOrgSettings(settings);
 		};
 
+		const fetchRoleSettings = async () => {
+			const roleSettings = await getOrganizationRoles(orgId);
+			setRoleSettings(roleSettings);
+		};
+
 		const fetchAvailableIntegrations = async () => {
 			// TODO: Make real backend function
 			// const integrations = await SomeAPIOtherCallHere(orgId);
@@ -65,14 +82,17 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 		if (dialogOpen) {
 			fetchOrganizationSettings();
 			fetchAvailableIntegrations();
+			fetchRoleSettings();
+			fetchCurrentUser();
 		}
-	}, [dialogOpen, orgId]);
+	}, [dialogOpen, orgId, settingsPage]);
 
 	const handleTabClick = (tabName, SettingComponent) => {
 		setSelected(tabName);
 		setSettingsPage(SettingComponent);
 	};
 
+	// TODO: detect changes and warn if there are unsaved changes
 	const onCloseWrapper = () => {
 		onClose();
 	};
@@ -99,7 +119,19 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 			}}
 			// fullScreen // Too dummy thicc
 		>
-			<DialogTitle>Organization settings</DialogTitle>
+			<DialogTitle>
+				<Box
+					sx={{
+						display: "flex",
+						justifyContent: "space-between",
+					}}
+				>
+					Organization settings
+					<IconButton onClick={onCloseWrapper}>
+						<CloseIcon />
+					</IconButton>
+				</Box>
+			</DialogTitle>
 
 			<DialogContent>
 				<Box height="65vh" sx={{ display: "flex", gap: 1 }}>
@@ -120,6 +152,19 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 							onClick={handleTabClick}
 							selected={selected}
 						/>
+						<UserCollapse>
+							<MembersTab
+								settings={orgSettings}
+								onClick={handleTabClick}
+								selected={selected}
+							/>
+							<RolesTab
+								settings={roleSettings}
+								user={user}
+								onClick={handleTabClick}
+								selected={selected}
+							/>
+						</UserCollapse>
 						<IntegrationsCollapse>
 							<MeetingsTab
 								settings={orgSettings.integrations.meetings}
@@ -131,23 +176,10 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 					</List>
 
 					{/* Settings page */}
-					<Box sx={{ flex: 3, m: 2, overflow: "auto" }}>{settingsPage}</Box>
+					{/* If you need it to be scrollable, wrap your settings in a Box with overflow set to "auto" */}
+					<Box sx={{ flex: 3, m: 2 }}>{settingsPage}</Box>
 				</Box>
 			</DialogContent>
-
-			<DialogActions>
-				<Button onClick={onCloseWrapper} color="primary">
-					Cancel
-				</Button>
-				<Button
-					// Only show if there is something to save. Warn if not saved. Move into the DialogContent?
-					onClick={onSaveWrapper}
-					color="primary"
-					variant="contained"
-				>
-					Save
-				</Button>
-			</DialogActions>
 		</Dialog>
 	);
 };

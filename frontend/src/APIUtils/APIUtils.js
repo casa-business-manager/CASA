@@ -1,5 +1,6 @@
 import { API_BASE_URL, ACCESS_TOKEN } from "../Constants/constants";
 
+// TODO: split these into files by controller
 const request = (options) => {
 	const headers = new Headers({
 		"Content-Type": "application/json",
@@ -202,4 +203,34 @@ export const removeUserFromOrganization = async (organizationId, userId) => {
 			console.error("Failed to remove user:", error);
 			return Promise.reject("Failed to remove user: " + error);
 		});
+};
+
+export const getOrganizationRoles = async (organizationId) => {
+	return request({
+		url: API_BASE_URL + "/organization/" + organizationId + "/roles",
+		method: "GET",
+	});
+};
+
+export const createRole = async (organizationId, roleRequest) => {
+	return request({
+		url: API_BASE_URL + "/organization/" + organizationId + "/roles",
+		method: "POST",
+		body: JSON.stringify(roleRequest),
+	});
+};
+
+export const editRole = async (roleId, roleRequest) => {
+	return request({
+		url: API_BASE_URL + "/roles/" + roleId,
+		method: "PUT",
+		body: JSON.stringify(roleRequest),
+	});
+};
+
+export const deleteRole = async (roleId) => {
+	return request({
+		url: API_BASE_URL + "/roles/" + roleId,
+		method: "DELETE",
+	});
 };

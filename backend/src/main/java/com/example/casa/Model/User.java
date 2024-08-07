@@ -54,7 +54,6 @@ public class User {
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "user_organizations", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "organization_id"))
-
 	@JsonBackReference("user-organizations")
 	private Set<Organization> organizations = new HashSet<>();
 
@@ -66,6 +65,14 @@ public class User {
 	@JoinTable(name = "event_accessors", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
 	@JsonBackReference("user-accessibleEvents")
 	private Set<Event> accessibleEvents = new HashSet<>();
+
+	// SHOULD NOT cascade delete all associated when we delete a user. But the unit
+	// testing is fucked.
+	@ManyToMany(mappedBy = "users", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
+	// @ManyToMany(mappedBy = "users", cascade = { CascadeType.PERSIST,
+	// CascadeType.MERGE })
+	@JsonBackReference("user-roles")
+	private Set<Role> roles = new HashSet<>();
 
 	// Getters and Setters
 	public String getId() {
@@ -155,4 +162,13 @@ public class User {
 	public void setCreatedEvents(Set<Event> createdEvents) {
 		this.createdEvents = createdEvents;
 	}
+
+	public Set<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
+	}
+
 }

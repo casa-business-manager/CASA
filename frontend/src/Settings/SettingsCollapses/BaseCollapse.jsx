@@ -1,4 +1,4 @@
-import { Children, cloneElement, useState } from "react";
+import { Children, cloneElement, useEffect, useState } from "react";
 import Collapse from "@mui/material/Collapse";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -7,8 +7,19 @@ import ListItemText from "@mui/material/ListItemText";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 
-const BaseCollapse = ({ Icon, Label, indentLevel = 0, page, children }) => {
-	const [open, setOpen] = useState(true);
+const BaseCollapse = ({
+	Icon,
+	Label,
+	indentLevel = 0,
+	children,
+	defaultOpen = false,
+	useIndentLevel = true,
+}) => {
+	const [open, setOpen] = useState(defaultOpen);
+
+	useEffect(() => {
+		setOpen(defaultOpen);
+	}, [defaultOpen]);
 
 	const handleClick = () => {
 		setOpen(!open);
@@ -33,7 +44,7 @@ const BaseCollapse = ({ Icon, Label, indentLevel = 0, page, children }) => {
 
 			<Collapse in={open} timeout="auto" unmountOnExit>
 				<List component="div" disablePadding>
-					{indentedChildren}
+					{useIndentLevel ? indentedChildren : children}
 				</List>
 			</Collapse>
 		</>

@@ -61,11 +61,10 @@ const OrganizationTab = ({ settings, onClick, selected, indentLevel = 0 }) => {
 		<BaseTab
 			Icon={ApartmentIcon}
 			Label={"Organization"}
-			selected={selected === "Organization"}
+			selected={selected}
 			indentLevel={indentLevel}
-			onClick={() =>
-				onClick("Organization", <OrganizationTabSettings settings={settings} />)
-			}
+			onClick={onClick}
+			SettingsPage={<OrganizationTabSettings settings={settings} />}
 		/>
 	);
 };

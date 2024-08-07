@@ -1,5 +1,6 @@
 package com.example.casa.Controller;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.casa.Model.Organization;
+import com.example.casa.Model.Role;
 import com.example.casa.Model.User;
 import com.example.casa.Payload.ApiResponse;
 import com.example.casa.Payload.Organization.OrganizationDto;
@@ -59,6 +61,22 @@ public class OrganizationController {
 		organization.setOrgLocation(organizationDto.getOrgLocation());
 		organization.getUsers().add(user);
 		user.getOrganizations().add(organization);
+
+		Role root = new Role();
+		root.setName("root");
+		root.setOrganization(organization);
+		root.setUsers(new HashSet<User>() {
+			{
+				add(user);
+			}
+		});
+		// TODO: Fill out permission as a json
+		root.setPermissions("all:true");
+		organization.setRoles(new HashSet<Role>() {
+			{
+				add(root);
+			}
+		});
 
 		organizationRepository.save(organization);
 		userRepository.save(user); // Save user to update the relationship

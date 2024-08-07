@@ -47,6 +47,10 @@ public class Organization {
 	@JsonBackReference("event-organization")
 	private Set<Event> events = new HashSet<>();
 
+	@OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonBackReference("organization-roles")
+	private Set<Role> roles = new HashSet<>();
+
 	public Organization() {
 		this.users = new HashSet<>();
 	}
@@ -106,4 +110,13 @@ public class Organization {
 	public void setEvents(Set<Event> events) {
 		this.events = events;
 	}
+
+	public Set<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
+	}
+
 }
