@@ -92,7 +92,7 @@ const TemplateTab = ({
 	);
 };
 
-const DrawerContent = ({
+const TemplateDrawer = ({
 	templates,
 	selected,
 	handleAddTemplate,
@@ -100,44 +100,59 @@ const DrawerContent = ({
 	handleDeleteTemplate,
 }) => {
 	return (
-		<>
-			<Toolbar>
-				<Box
+		<Box
+			component="nav"
+			sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+			aria-label="mailbox folders"
+		>
+			<Drawer
+				variant="permanent"
+				sx={{
+					"& .MuiDrawer-paper": {
+						boxSizing: "border-box",
+						width: drawerWidth,
+					},
+				}}
+				open
+			>
+				<Toolbar>
+					<Box
+						sx={{
+							width: "100%",
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "space-between",
+						}}
+					>
+						<Typography variant="h6" noWrap>
+							Templates
+						</Typography>
+						<IconButton onClick={handleAddTemplate}>
+							<AddCircleOutlineOutlinedIcon />
+						</IconButton>
+					</Box>
+				</Toolbar>
+				<Divider />
+				<List
 					sx={{
-						width: "100%",
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "space-between",
+						overflowY: "auto",
+						pt: 0,
 					}}
 				>
-					<Typography variant="h6" noWrap>
-						Templates
-					</Typography>
-					<IconButton onClick={handleAddTemplate}>
-						<AddCircleOutlineOutlinedIcon />
-					</IconButton>
-				</Box>
-			</Toolbar>
-			<Divider />
-			<List
-				sx={{
-					overflowY: "auto",
-					pt: 0,
-				}}
-			>
-				{templates.map((template, index) => (
-					<TemplateTab
-						name={template.name}
-						file={template.file}
-						selected={selected}
-						onClick={handleTemplateClick}
-						handleDeleteTemplate={handleDeleteTemplate}
-						index={index}
-						key={index}
-					/>
-				))}
-			</List>
-		</>
+					{templates.map((template, index) => (
+						<TemplateTab
+							name={template.name}
+							file={template.file}
+							selected={selected}
+							onClick={handleTemplateClick}
+							handleDeleteTemplate={handleDeleteTemplate}
+							index={index}
+							key={index}
+						/>
+					))}
+				</List>
+			</Drawer>
+		</Box>
 	);
 };
 
@@ -180,30 +195,13 @@ const TemplateMenu = ({}) => {
 
 	return (
 		<Box sx={{ display: "flex", mt: -1, width: "100%" }}>
-			<Box
-				component="nav"
-				sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-				aria-label="mailbox folders"
-			>
-				<Drawer
-					variant="permanent"
-					sx={{
-						"& .MuiDrawer-paper": {
-							boxSizing: "border-box",
-							width: drawerWidth,
-						},
-					}}
-					open
-				>
-					<DrawerContent
-						templates={templates}
-						selected={selected}
-						handleAddTemplate={handleAddTemplate}
-						handleTemplateClick={handleTemplateClick}
-						handleDeleteTemplate={handleDeleteTemplate}
-					/>
-				</Drawer>
-			</Box>
+			<TemplateDrawer
+				templates={templates}
+				selected={selected}
+				handleAddTemplate={handleAddTemplate}
+				handleTemplateClick={handleTemplateClick}
+				handleDeleteTemplate={handleDeleteTemplate}
+			/>
 			<Box
 				component="main"
 				sx={{
