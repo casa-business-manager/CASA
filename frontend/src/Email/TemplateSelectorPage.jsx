@@ -16,24 +16,47 @@ import {
 	Toolbar,
 	Drawer,
 	ListItemIcon,
+	Menu,
+	MenuItem,
 } from "@mui/material";
 import RichTextEditor from "./RichTextEditor";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
-import ManageSearchOutlinedIcon from "@mui/icons-material/ManageSearchOutlined";
-import FileDownloadDoneOutlinedIcon from "@mui/icons-material/FileDownloadDoneOutlined";
 import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
-import MenuIcon from "@mui/icons-material/Menu";
-import MailIcon from "@mui/icons-material/Mail";
-import InboxIcon from "@mui/icons-material/Inbox";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import OrganizationPeopleAutocomplete from "../common/OrganizationPeopleAutocomplete";
 
-const TemplateTab = ({ name, file, onClick, selected, index }) => {
+const drawerWidth = 256;
+
+const TemplateTab = ({
+	name,
+	file,
+	onClick,
+	handleDeleteTemplate,
+	selected,
+	index,
+}) => {
+	const [anchorEl, setAnchorEl] = useState(null);
+	const open = Boolean(anchorEl);
+
+	const handleOptionsClick = (e) => {
+		setAnchorEl(e.currentTarget);
+	};
+
+	const handleOptionsClose = () => {
+		setAnchorEl(null);
+	};
+
 	return (
 		<ListItemButton
 			selected={selected === index}
 			onClick={() => {
 				onClick(file, index);
+			}}
+			sx={{
+				"&:hover .MuiIconButton-root": {
+					visibility: "visible",
+				},
 			}}
 		>
 			<ListItemText
@@ -46,17 +69,75 @@ const TemplateTab = ({ name, file, onClick, selected, index }) => {
 				}}
 			/>
 			<IconButton
-				onClick={() => {
-					console.log("Click will propagate to ListItemButton's onClick");
-					console.log("Delete this log");
+				onClick={handleOptionsClick}
+				sx={{ visibility: open ? "visible" : "hidden" }}
+			>
+				<MoreVertIcon />
+			</IconButton>
+			<Menu
+				id="basic-menu"
+				anchorEl={anchorEl}
+				open={open}
+				onClose={handleOptionsClose}
+				MenuListProps={{
+					"aria-labelledby": "basic-button",
 				}}
 			>
-				<ManageSearchOutlinedIcon />
-			</IconButton>
-			<IconButton>
-				<FileDownloadDoneOutlinedIcon />
-			</IconButton>
+				<MenuItem onClick={handleOptionsClose}>Edit</MenuItem>
+				<MenuItem onClick={handleOptionsClose} sx={{ color: "red" }}>
+					Delete
+				</MenuItem>
+			</Menu>
 		</ListItemButton>
+	);
+};
+
+const DrawerContent = ({
+	templates,
+	selected,
+	handleAddTemplate,
+	handleTemplateClick,
+	handleDeleteTemplate,
+}) => {
+	return (
+		<>
+			<Toolbar>
+				<Box
+					sx={{
+						width: "100%",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "space-between",
+					}}
+				>
+					<Typography variant="h6" noWrap>
+						Templates
+					</Typography>
+					<IconButton onClick={handleAddTemplate}>
+						<AddCircleOutlineOutlinedIcon />
+					</IconButton>
+				</Box>
+			</Toolbar>
+			<Divider />
+			<List
+				sx={{
+					overflowY: "auto",
+					pt: 0,
+				}}
+			>
+				{templates.map((template, index) => (
+					<TemplateTab
+						name={template.name}
+						file={template.file}
+						selected={selected}
+						onClick={handleTemplateClick}
+						handleDeleteTemplate={handleDeleteTemplate}
+						index={index}
+						key={index}
+					/>
+				))}
+			</List>
+		</>
 	);
 };
 
@@ -84,57 +165,21 @@ const TemplateMenu = ({}) => {
 	);
 	const [selected, setSelected] = useState(-1);
 
+	const handleAddTemplate = () => {
+		console.log("TODO: Handle adding new templates");
+	};
+
 	const handleTemplateClick = (file, index) => {
 		setTemplatePreview(file);
 		setSelected(index);
 	};
 
-	const drawerWidth = 300;
-
-	const drawer = (
-		<>
-			<Toolbar>
-				<Box
-					sx={{
-						width: "100%",
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "space-between",
-					}}
-				>
-					<Typography variant="h6" noWrap>
-						Templates
-					</Typography>
-					<IconButton>
-						<AddCircleOutlineOutlinedIcon />
-					</IconButton>
-				</Box>
-			</Toolbar>
-			<Divider />
-			<List
-				sx={{
-					overflowY: "auto",
-					pt: 0,
-				}}
-			>
-				{templates.map((template, index) => (
-					<TemplateTab
-						name={template.name}
-						file={template.file}
-						selected={selected}
-						onClick={handleTemplateClick}
-						index={index}
-						key={index}
-					/>
-				))}
-			</List>
-		</>
-	);
+	const handleDeleteTemplate = () => {
+		console.log("TODO: Handle deleting templates");
+	};
 
 	return (
 		<Box sx={{ display: "flex" }}>
-			{/* Not sure what CssBaseline does */}
-			<CssBaseline />
 			<Box
 				component="nav"
 				sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -143,7 +188,6 @@ const TemplateMenu = ({}) => {
 				<Drawer
 					variant="permanent"
 					sx={{
-						display: { xs: "none", sm: "block" },
 						"& .MuiDrawer-paper": {
 							boxSizing: "border-box",
 							width: drawerWidth,
@@ -151,67 +195,17 @@ const TemplateMenu = ({}) => {
 					}}
 					open
 				>
-					{drawer}
+					<DrawerContent
+						templates={templates}
+						selected={selected}
+						handleAddTemplate={handleAddTemplate}
+						handleTemplateClick={handleTemplateClick}
+						handleDeleteTemplate={handleDeleteTemplate}
+					/>
 				</Drawer>
 			</Box>
-			<Box
-				component="main"
-				sx={{
-					flexGrow: 1,
-					p: 3,
-				}}
-			>
+			<Box component="main" sx={{}}>
 				<Toolbar />
-				<Typography paragraph>
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-					eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus
-				</Typography>
-			</Box>
-		</Box>
-	);
-
-	return (
-		<Box
-			sx={{
-				borderRadius: "8px",
-				border: "1px solid #ccc",
-				boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-				overflowX: "auto",
-				padding: 1,
-				mt: 1,
-				display: "flex",
-				height: "35vh",
-				gap: 2,
-			}}
-		>
-			<List
-				sx={{
-					width: "40%",
-					maxWidth: "500px",
-					overflow: "auto",
-				}}
-				component="nav"
-				aria-labelledby="nested-list-subheader"
-			>
-				<ListItem sx={{ mt: -1, bgcolor: "lightgray" }}>
-					<ListItemText primary="Templates" />
-					<IconButton>
-						<AddCircleOutlineOutlinedIcon />
-					</IconButton>
-				</ListItem>
-				{templates.map((template, index) => (
-					<TemplateTab
-						name={template.name}
-						file={template.file}
-						selected={selected}
-						onClick={handleTemplateClick}
-						index={index}
-						key={index}
-					/>
-				))}
-			</List>
-			<Box sx={{ overflowX: "auto" }}>
-				{/* TODO: Read only slate box to display xml or whatever format */}
 				<Typography>{templatePreview}</Typography>
 			</Box>
 		</Box>
