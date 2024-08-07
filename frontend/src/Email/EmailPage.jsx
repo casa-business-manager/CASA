@@ -22,6 +22,7 @@ import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CloseIcon from "@mui/icons-material/Close";
+import WarningDialog from "../common/WarningDialog";
 
 const TemplateTab = ({
 	name,
@@ -152,7 +153,14 @@ const TemplateDrawer = ({
 	);
 };
 
-const TemplateMenu = ({ open, toggleTemplateMenu }) => {
+const TemplateMenu = ({
+	open,
+	closeDrawer,
+	setWarningDialogOpen,
+	setWarningDialogFunction,
+	warningDialogOpen,
+	warningDialogFunction,
+}) => {
 	const [templates, setTemplates] = useState([
 		{ name: "Blank email", file: "" }, // always available
 		{ name: "test", file: "test contents here" },
@@ -177,12 +185,20 @@ const TemplateMenu = ({ open, toggleTemplateMenu }) => {
 	const [selected, setSelected] = useState(-1);
 	const [isEditing, setIsEditing] = useState(false);
 
-	const closeTemplateMenu = () => {
+	const safeTemplateMenuCloser = () => {
+		console.log("safeTemplateMenuCloser called");
 		if (isEditing === true) {
+			console.log("editing");
+			setWarningDialogOpen(true);
+			console.log("open is", open);
+			console.log("function for dialog is", () => closeDrawer);
+			setWarningDialogFunction(() => closeDrawer);
+			// console.log("function is", toggleTemplateMenu(false));
 			return;
 		}
+		console.log("not editing");
 
-		toggleTemplateMenu(false)();
+		closeDrawer();
 	};
 
 	const handleAddTemplate = () => {
@@ -211,55 +227,62 @@ const TemplateMenu = ({ open, toggleTemplateMenu }) => {
 
 	const handleUseTemplate = () => {
 		console.log("TODO: Handle using templates");
-		closeTemplateMenu();
+		safeTemplateMenuCloser();
 	};
 
 	const TemplateTopbar = ({}) => {
 		return (
-			<Toolbar>
-				<Box
-					sx={{
-						width: "100%",
-						display: "flex",
-						justifyContent: "space-between",
-						alignItems: "center",
-					}}
-				>
-					<Typography variant="h6">Preview</Typography>
-					<Box>
-						{isEditing ? (
-							<>
-								<Button variant="outlined" onClick={handleToggleEditTemplate}>
-									Cancel
-								</Button>
-								<Button
-									variant="contained"
-									onClick={handleTemplateSave}
-									sx={{ ml: 1 }}
-								>
-									Save
-								</Button>
-							</>
-						) : (
-							<>
-								<Button variant="outlined" onClick={handleToggleEditTemplate}>
-									Edit
-								</Button>
-								<Button
-									variant="contained"
-									onClick={handleUseTemplate}
-									sx={{ ml: 1 }}
-								>
-									Use template
-								</Button>
-							</>
-						)}
-						<IconButton onClick={closeTemplateMenu} sx={{ ml: 1 }}>
-							<CloseIcon />
-						</IconButton>
+			<>
+				<Toolbar>
+					<Box
+						sx={{
+							width: "100%",
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+						}}
+					>
+						<Typography variant="h6">Preview</Typography>
+						<Box>
+							{isEditing ? (
+								<>
+									<Button variant="outlined" onClick={handleToggleEditTemplate}>
+										Cancel
+									</Button>
+									<Button
+										variant="contained"
+										onClick={handleTemplateSave}
+										sx={{ ml: 1 }}
+									>
+										Save
+									</Button>
+								</>
+							) : (
+								<>
+									<Button variant="outlined" onClick={handleToggleEditTemplate}>
+										Edit
+									</Button>
+									<Button
+										variant="contained"
+										onClick={handleUseTemplate}
+										sx={{ ml: 1 }}
+									>
+										Use template
+									</Button>
+								</>
+							)}
+							<IconButton onClick={safeTemplateMenuCloser} sx={{ ml: 1 }}>
+								<CloseIcon />
+							</IconButton>
+							<WarningDialog
+								open={warningDialogOpen}
+								setOpen={setWarningDialogOpen}
+								func={warningDialogFunction}
+							/>
+						</Box>
 					</Box>
-				</Box>
-			</Toolbar>
+				</Toolbar>
+			</>
 		);
 	};
 
@@ -267,7 +290,7 @@ const TemplateMenu = ({ open, toggleTemplateMenu }) => {
 		<Box sx={{ width: "100%" }}>
 			<Drawer
 				open={open}
-				onClose={toggleTemplateMenu(false)}
+				onClose={safeTemplateMenuCloser}
 				PaperProps={{
 					sx: {
 						width: "85%",
@@ -378,15 +401,22 @@ const EmailEditor = ({ orgId, sx }) => {
 
 const EmailPage = ({}) => {
 	const { orgId } = useParams();
-	const [open, setOpen] = useState(false);
+	const [openTemplateMenu, setOpenTemplateMenu] = useState(false);
 
-	const toggleDrawer = (newOpen) => () => {
-		if (typeof newOpen === "boolean") {
-			setOpen(newOpen);
-			return;
-		}
-		setOpen(!open);
+	const [warningDialogOpen, setWarningDialogOpen] = useState(false);
+	const [warningDialogFunction, setWarningDialogFunction] = useState(() => {});
+
+	const openDrawer = () => {
+		console.log("openDrawer called");
+		setOpenTemplateMenu(true);
 	};
+
+	const closeDrawer = () => {
+		console.log("closeDrawer called");
+		setOpenTemplateMenu(false);
+	};
+
+	console.log("openTemplateMenu is", openTemplateMenu);
 
 	return (
 		<>
@@ -400,14 +430,20 @@ const EmailPage = ({}) => {
 				}}
 			>
 				<Typography variant="h5">Compose email</Typography>
-				<Button onClick={toggleDrawer(true)} variant="outlined">
+				<Button onClick={openDrawer} variant="outlined">
 					Use a template
 				</Button>
 			</Box>
 			<Divider sx={{ m: 2 }} />
 			<EmailEditor orgId={orgId} />
-
-			<TemplateMenu open={open} toggleTemplateMenu={toggleDrawer} />
+			<TemplateMenu
+				open={openTemplateMenu}
+				closeDrawer={closeDrawer}
+				setWarningDialogOpen={setWarningDialogOpen}
+				setWarningDialogFunction={setWarningDialogFunction}
+				warningDialogOpen={warningDialogOpen}
+				warningDialogFunction={warningDialogFunction}
+			/>
 		</>
 	);
 };
