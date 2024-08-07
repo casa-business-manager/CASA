@@ -177,12 +177,25 @@ const TemplateMenu = ({ toggleTemplateMenu }) => {
 	const [selected, setSelected] = useState(-1);
 	const [isEditing, setIsEditing] = useState(false);
 
+	const closeTemplateMenu = () => {
+		if (isEditing === true) {
+			return;
+		}
+
+		toggleTemplateMenu(false)();
+	};
+
 	const handleAddTemplate = () => {
 		console.log("TODO: Handle adding new templates");
 	};
 
-	const handleEditTemplate = () => {
-		setIsEditing(true);
+	const handleToggleEditTemplate = () => {
+		setIsEditing(!isEditing);
+	};
+
+	const handleTemplateSave = () => {
+		console.log("TODO: Handle saving templates");
+		handleToggleEditTemplate(!isEditing);
 	};
 
 	const handleTemplateClick = (file, index) => {
@@ -191,11 +204,18 @@ const TemplateMenu = ({ toggleTemplateMenu }) => {
 	};
 
 	const handleDeleteTemplate = () => {
-		console.log("TODO: Handle deleting templates");
+		console.log(
+			"TODO: Handle deleting templates. Probably have to pass this function to the TemplateTab component",
+		);
+	};
+
+	const handleUseTemplate = () => {
+		console.log("TODO: Handle using templates");
+		closeTemplateMenu();
 	};
 
 	return (
-		<Box sx={{ display: "flex", width: "100%" }}>
+		<Box sx={{ display: "flex", width: "100%", height: "87%" }}>
 			<TemplateDrawer
 				templates={templates}
 				selected={selected}
@@ -219,32 +239,58 @@ const TemplateMenu = ({ toggleTemplateMenu }) => {
 					>
 						<Typography variant="h6">Preview</Typography>
 						<Box>
-							<Button variant="outlined" onClick={handleEditTemplate}>
-								Edit
-							</Button>
-							<Button variant="contained" sx={{ ml: 1 }}>
-								Use template
-							</Button>
-							<IconButton onClick={toggleTemplateMenu()} sx={{ ml: 1 }}>
+							{isEditing ? (
+								<>
+									<Button variant="outlined" onClick={handleToggleEditTemplate}>
+										Cancel
+									</Button>
+									<Button
+										variant="contained"
+										onClick={handleTemplateSave}
+										sx={{ ml: 1 }}
+									>
+										Save
+									</Button>
+								</>
+							) : (
+								<>
+									<Button variant="outlined" onClick={handleToggleEditTemplate}>
+										Edit
+									</Button>
+									<Button
+										variant="contained"
+										onClick={handleUseTemplate}
+										sx={{ ml: 1 }}
+									>
+										Use template
+									</Button>
+								</>
+							)}
+							<IconButton onClick={closeTemplateMenu} sx={{ ml: 1 }}>
 								<CloseIcon />
 							</IconButton>
 						</Box>
 					</Box>
 				</Toolbar>
-				<Divider />
-				<Typography>{templatePreview}</Typography>
+				<Divider sx={{ mb: 2 }} />
+				{/* Delete this Typography when you figure out how to pass the template into slate */}
+				{/* <Typography>{templatePreview}</Typography> */}
 				<Box
 					sx={{
 						display: "flex",
 						flexDirection: "column",
 						justifyContent: "center",
 						alignItems: "center",
+						height: "100%",
 					}}
 				>
 					<RichTextEditor
 						readOnly={!isEditing}
 						toolbarStyle={{ width: "95%" }}
-						editorStyle={{ width: "95%", height: "80vh" }}
+						editorStyle={{
+							width: "95%",
+							height: "100%",
+						}}
 						initialText={templatePreview}
 					/>
 				</Box>
@@ -296,7 +342,7 @@ const EmailEditor = ({ orgId, sx }) => {
 					// width: "50%",
 				}}
 			>
-				<RichTextEditor editorStyle={{ height: "80vh" }} />
+				<RichTextEditor editorStyle={{ height: "50vh" }} />
 			</Box>
 			<Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
 				<Button variant="outlined">
@@ -317,7 +363,7 @@ const EmailPage = ({}) => {
 	const [open, setOpen] = useState(false);
 
 	const toggleDrawer = (newOpen) => () => {
-		if (typeof newOpen === Boolean) {
+		if (typeof newOpen === "boolean") {
 			setOpen(newOpen);
 			return;
 		}
