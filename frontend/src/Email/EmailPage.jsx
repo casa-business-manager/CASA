@@ -17,12 +17,13 @@ import {
 } from "@mui/material";
 import RichTextEditor from "./RichTextEditor";
 import OrganizationPeopleAutocomplete from "../common/OrganizationPeopleAutocomplete";
+import WarningDialog from "../common/WarningDialog";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CloseIcon from "@mui/icons-material/Close";
-import WarningDialog from "../common/WarningDialog";
+import ArticleIcon from "@mui/icons-material/Article";
 
 const TemplateTab = ({
 	name,
@@ -279,7 +280,11 @@ const TemplateMenu = ({ open, closeDrawer }) => {
 							alignItems: "center",
 						}}
 					>
-						<Typography variant="h6">Preview</Typography>
+						<Box sx={{ display: "flex", alignItems: "center" }}>
+							<ArticleIcon sx={{ mr: 1 }} />
+							<Typography variant="h6">Preview</Typography>
+						</Box>
+
 						<Box>
 							{isEditing ? (
 								<>
@@ -470,6 +475,7 @@ const EmailPage = ({}) => {
 				<Typography variant="h5">Compose email</Typography>
 				<Button onClick={openDrawer} variant="outlined">
 					Use a template
+					<ArticleIcon sx={{ ml: 2 }} />
 				</Button>
 			</Box>
 			<Divider sx={{ m: 2 }} />
