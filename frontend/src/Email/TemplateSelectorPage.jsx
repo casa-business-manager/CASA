@@ -26,8 +26,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import OrganizationPeopleAutocomplete from "../common/OrganizationPeopleAutocomplete";
 
-const drawerWidth = 256;
-
 const TemplateTab = ({
 	name,
 	file,
@@ -99,6 +97,8 @@ const TemplateDrawer = ({
 	handleTemplateClick,
 	handleDeleteTemplate,
 }) => {
+	const drawerWidth = 256;
+
 	return (
 		<Box
 			component="nav"
