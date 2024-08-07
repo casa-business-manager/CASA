@@ -57,9 +57,10 @@ const TemplateTab = ({
 		setWarningDialogOpen(true);
 	};
 
-	const handleEditTemplateWrapper = () => {
-		handleTabClick();
-		handleEditTemplate();
+	const handleEditTemplateWrapper = (e) => {
+		e.stopPropagation();
+		handleEditTemplate(file, index);
+		setAnchorEl(null);
 	};
 
 	const handleDeleteTemplateWrapper = () => {
@@ -249,6 +250,12 @@ const TemplateMenu = ({ open, closeDrawer }) => {
 		setIsEditing(false);
 	};
 
+	const handleTemplateEdit = (file, index) => {
+		setTemplatePreview(file);
+		setSelected(index);
+		setIsEditing(true);
+	};
+
 	const handleDeleteTemplate = () => {
 		console.log(
 			"TODO: Handle deleting templates. Probably have to pass this function to the TemplateTab component",
@@ -340,7 +347,7 @@ const TemplateMenu = ({ open, closeDrawer }) => {
 						selected={selected}
 						handleAddTemplate={warnIfEditing(handleAddTemplate)}
 						handleTemplateClick={warnIfEditing(handleTemplateClick)}
-						handleEditTemplate={handleEnableEditing}
+						handleEditTemplate={warnIfEditing(handleTemplateEdit)}
 						handleDeleteTemplate={handleDeleteTemplate}
 					/>
 					<Box
