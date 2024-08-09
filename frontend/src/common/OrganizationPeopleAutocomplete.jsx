@@ -1,6 +1,7 @@
 import { Autocomplete, Chip, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { getOrganizationInfo } from "../APIUtils/APIUtils";
+import UserChip from "./UserChip";
 
 /// Must pass in organizationId or organizationPeopleList
 /// If both are passed in, will use organizationPeopleList over Id
@@ -88,16 +89,10 @@ const OrganizationPeopleAutocomplete = ({
 			renderTags={(value, getTagProps) =>
 				value.map((user, index) => {
 					const deletable = userIsDeletableFunction(user);
-					return (
-						<Chip
-							label={getUserFullName(user)}
-							{...getTagProps({ index })}
-							onDelete={
-								deletable ? () => handleDeletePerson(user.id) : undefined
-							}
-							key={user.id}
-						/>
-					);
+					const handleDeleteSpecificPerson = deletable
+						? () => handleDeletePerson(user.id)
+						: undefined;
+					return <UserChip user={user} onDelete={handleDeleteSpecificPerson} />;
 				})
 			}
 			renderInput={(params) => (

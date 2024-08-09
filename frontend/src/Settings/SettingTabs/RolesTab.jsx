@@ -28,6 +28,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { GraphCanvas, lightTheme } from "reagraph";
 import { createRole, deleteRole, editRole } from "../../APIUtils/APIUtils";
 import MoveUpIcon from "@mui/icons-material/MoveUp";
+import UserChip from "../../common/UserChip";
 
 const lockedRoleColor = "#E8E8E8";
 const controlledRoleColor = "#A2E6FF";
@@ -307,11 +308,7 @@ const UserRow = ({ user, setUsers }) => {
 				pl: 4,
 			}}
 		>
-			<Chip
-				label={user.firstName + " " + user.lastName}
-				variant="outlined"
-				key={`userrow-chip-${user.id}`}
-			/>
+			<UserChip user={user} />
 			<IconButton
 				onClick={() => {
 					setUsers((prevUsers) => {

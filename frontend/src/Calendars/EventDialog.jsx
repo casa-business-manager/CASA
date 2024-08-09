@@ -22,6 +22,7 @@ import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import ApartmentIcon from "@mui/icons-material/Apartment";
+import UserChip from "../common/UserChip";
 
 const EventDialog = ({
 	open,
@@ -291,14 +292,13 @@ const EventDialog = ({
 							value.map((user, index) => {
 								const deletable =
 									isEventCreator() && user.id !== currentUser.id;
+								const handleDeleteForSpecificPerson = deletable
+									? () => handleDeletePerson(user.id)
+									: undefined;
 								return (
-									<Chip
-										label={getUserFullName(user)}
-										{...getTagProps({ index })}
-										onDelete={
-											deletable ? () => handleDeletePerson(user.id) : undefined
-										}
-										key={user.id}
+									<UserChip
+										user={user}
+										onDelete={handleDeleteForSpecificPerson}
 									/>
 								);
 							})
