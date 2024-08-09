@@ -26,10 +26,10 @@ const NavBar = ({ title }) => {
 
 	return (
 		<AppBar
+			position="relative"
 			sx={{
 				backgroundColor: "#3b89f3",
-				position: "fixed",
-				width: { sm: "100%", md: "100%" },
+				mb: 2,
 			}}
 		>
 			<Toolbar>

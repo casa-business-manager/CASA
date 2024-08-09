@@ -121,9 +121,6 @@ const Organization = () => {
 
 	return (
 		<div>
-			<NavBar title="Organization" />
-			<div className="h1"></div>
-
 			<IconButton
 				aria-label="user calendar button"
 				onClick={handleCalendarClick}
