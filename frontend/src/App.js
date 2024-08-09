@@ -17,8 +17,9 @@ import NavBar from "./NavBar/NavBar";
 import PathContext from "./NavBar/PathContext";
 
 function App() {
-	/// This must be a list of tuples [name, path] so clicking on the name routes to the path
-	const [navbarLinks, setNavbarLinks] = useState([]);
+	const [navbarLinks, setNavbarLinks] = useState([
+		{ name: "Login", path: "/login" },
+	]);
 
 	return (
 		<Router>

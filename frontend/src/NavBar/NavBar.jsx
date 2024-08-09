@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import {
@@ -13,9 +13,16 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import PathContext from "./PathContext";
 
-const NavBar = ({ title }) => {
+const NavBar = ({}) => {
 	const navigate = useNavigate();
 	const [navbarLinks, setNavbarLinks] = useContext(PathContext);
+
+	const location = useLocation();
+
+	useEffect(() => {
+		console.log("Location changed", location);
+		console.log("Location changed", location.pathname);
+	}, [location]);
 
 	const handleLogout = () => {
 		sessionStorage.removeItem("token");
@@ -36,7 +43,19 @@ const NavBar = ({ title }) => {
 		>
 			<Toolbar>
 				<MenuIcon sx={{ marginRight: "50px", color: "#fff" }}></MenuIcon>
-				<Typography>{title}</Typography>
+				<Typography onClick={handleLogout}>CASA</Typography>
+				{navbarLinks.map((link) => (
+					<>
+						<Typography sx={{ mx: 2 }}> {" > "} </Typography>
+						<Typography
+							onClick={() => {
+								navigate(link.path);
+							}}
+						>
+							{link.name}
+						</Typography>
+					</>
+				))}
 				<Box sx={{ flexGrow: 1 }} />
 				{/* Log out and Account buttons. Must make them white manualluy */}
 				<IconButton onClick={handleLogout}>
