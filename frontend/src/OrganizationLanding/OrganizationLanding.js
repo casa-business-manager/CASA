@@ -21,7 +21,7 @@ const OrganizationLanding = () => {
 	};
 
 	const handleCalendarIconClick = () => {
-		navigate(`/organizationCalendar/${orgId}`);
+		navigate(`/organization/${orgId}/calendar`);
 	};
 
 	const handleEmailIconClick = () => {

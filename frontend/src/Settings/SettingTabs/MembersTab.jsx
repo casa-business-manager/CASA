@@ -25,6 +25,7 @@ import Switch from "@mui/material/Switch";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
+import UserManagement from "../../UserManagement/UserManagement";
 
 function createData(id, name, calories, fat, carbs, protein) {
 	return {
@@ -388,7 +389,13 @@ const MembersTabSettings = ({ settings }) => {
 	);
 };
 
-const MembersTab = ({ settings, onClick, selected, indentLevel = 0 }) => {
+const MembersTab = ({
+	settings,
+	orgId,
+	onClick,
+	selected,
+	indentLevel = 0,
+}) => {
 	return (
 		<BaseTab
 			Icon={AccountBoxIcon}
@@ -396,7 +403,7 @@ const MembersTab = ({ settings, onClick, selected, indentLevel = 0 }) => {
 			selected={selected}
 			indentLevel={indentLevel}
 			onClick={onClick}
-			SettingsPage={<MembersTabSettings settings={settings} />}
+			SettingsPage={<UserManagement orgId={orgId} />}
 		/>
 	);
 };

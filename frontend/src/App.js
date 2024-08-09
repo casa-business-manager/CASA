@@ -33,11 +33,10 @@ function App() {
 						element={<OrganizationLanding />}
 					/>
 					<Route
-						path="/organizationCalendar/:orgId"
+						path="/organization/:orgId/calendar"
 						element={<OrganizationCalendar />}
 					/>
-					<Route path="/userManagement/:orgId" element={<UserManagement />} />
-					<Route path="/userCalendar/:userId" element={<UserCalendar />} />
+					<Route path="/user/:userId/calendar" element={<UserCalendar />} />
 					<Route path="/organization/:orgId/email" element={<EmailPage />} />
 				</Routes>
 			</OrganizationsContext.Provider>

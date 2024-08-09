@@ -155,6 +155,7 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 						<UserCollapse>
 							<MembersTab
 								settings={orgSettings}
+								orgId={orgId}
 								onClick={handleTabClick}
 								selected={selected}
 							/>

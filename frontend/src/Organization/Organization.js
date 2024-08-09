@@ -115,7 +115,7 @@ const Organization = () => {
 	};
 
 	const handleCalendarClick = () => {
-		navigate(`/userCalendar/${user.id}`);
+		navigate(`/user/${user.id}/calendar`);
 	};
 
 	if (loading) return <div>Loading...</div>;
