@@ -11,6 +11,7 @@ import {
 	Typography,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import ChevronRight from "@mui/icons-material/ChevronRight";
 import OrganizationsContext from "../Contexts/OrganizationsContext";
 import { path } from "slate";
 import { getCurrentUser, getOrganizations } from "../APIUtils/APIUtils";
@@ -114,7 +115,7 @@ const NavBar = ({}) => {
 				<Typography onClick={handleLogout}>CASA</Typography>
 				{navbarLinks.map((link) => (
 					<>
-						<Typography sx={{ mx: 2 }}> {" > "} </Typography>
+						<ChevronRight sx={{ m: 1 }} />
 						<Typography
 							onClick={() => {
 								handleClickPath(link);
