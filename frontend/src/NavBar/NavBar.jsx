@@ -106,7 +106,7 @@ const NavBar = ({}) => {
 			position="relative"
 			sx={{
 				backgroundColor: "#3b89f3",
-				mb: 2,
+				mb: 1,
 			}}
 		>
 			<Toolbar>
