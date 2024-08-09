@@ -14,27 +14,34 @@ import UserCalendar from "./Calendars/UserCalendar";
 import OrganizationCalendar from "./Calendars/OrganizationCalendar";
 import EmailPage from "./Email/EmailPage";
 import NavBar from "./NavBar/NavBar";
+import PathContext from "./NavBar/PathContext";
 
 function App() {
+	/// This must be a list of tuples [name, path] so clicking on the name routes to the path
 	const [navbarLinks, setNavbarLinks] = useState([]);
 
 	return (
 		<Router>
-			<NavBar title="Organization Calendar" />
-			<Routes>
-				<Route path="/" element={<Navigate replace to="/login" />} />
-				<Route path="/login" element={<Login />} />
-				<Route path="/organization" element={<Organization />} />
-				<Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
-				<Route path="/organization/:orgId" element={<OrganizationLanding />} />
-				<Route
-					path="/organizationCalendar/:orgId"
-					element={<OrganizationCalendar />}
-				/>
-				<Route path="/userManagement/:orgId" element={<UserManagement />} />
-				<Route path="/userCalendar/:userId" element={<UserCalendar />} />
-				<Route path="/organization/:orgId/email" element={<EmailPage />} />
-			</Routes>
+			<PathContext.Provider value={[navbarLinks, setNavbarLinks]}>
+				<NavBar title="Organization Calendar" />
+				<Routes>
+					<Route path="/" element={<Navigate replace to="/login" />} />
+					<Route path="/login" element={<Login />} />
+					<Route path="/organization" element={<Organization />} />
+					<Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
+					<Route
+						path="/organization/:orgId"
+						element={<OrganizationLanding />}
+					/>
+					<Route
+						path="/organizationCalendar/:orgId"
+						element={<OrganizationCalendar />}
+					/>
+					<Route path="/userManagement/:orgId" element={<UserManagement />} />
+					<Route path="/userCalendar/:userId" element={<UserCalendar />} />
+					<Route path="/organization/:orgId/email" element={<EmailPage />} />
+				</Routes>
+			</PathContext.Provider>
 		</Router>
 	);
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -11,9 +11,11 @@ import {
 	Typography,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import PathContext from "./PathContext";
 
 const NavBar = ({ title }) => {
 	const navigate = useNavigate();
+	const [navbarLinks, setNavbarLinks] = useContext(PathContext);
 
 	const handleLogout = () => {
 		sessionStorage.removeItem("token");
