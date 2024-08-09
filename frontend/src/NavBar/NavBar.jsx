@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -11,18 +11,69 @@ import {
 	Typography,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import PathContext from "./PathContext";
+import OrganizationsContext from "../Contexts/OrganizationsContext";
+import { path } from "slate";
+
+const parseLocation = (location) => {
+	const path = location.pathname;
+	return path.split("/").filter((word) => word !== "");
+};
+
+const recognizedPathWordsToNavbarWords = {
+	login: { name: "Login", path: "login" },
+	organization: { name: "My Organizations", path: "organization" },
+	user: { name: "Me", path: "user" },
+	calendar: { name: "Calendar", path: "calendar" },
+	email: { name: "Email", path: "email" },
+};
+
+const addOrganizationNameIfOrganizationId = (
+	pathWordsArray,
+	id,
+	organizations,
+) => {
+	if (pathWordsArray.length <= 0) {
+		return;
+	}
+
+	if (pathWordsArray[pathWordsArray.length - 1].path === "organization") {
+		const organizationOfId = organizations.find((org) => org.orgId === id);
+		pathWordsArray.push({ name: organizationOfId.orgName, path: `${id}` });
+	}
+};
 
 const NavBar = ({}) => {
 	const navigate = useNavigate();
-	const [navbarLinks, setNavbarLinks] = useContext(PathContext);
+	const [organizations, setOrganizations] = useContext(OrganizationsContext);
+	const [navbarLinks, setNavbarLinks] = useState([]);
 
 	const location = useLocation();
 
 	useEffect(() => {
-		console.log("Location changed", location);
-		console.log("Location changed", location.pathname);
+		const pathWords = parseLocation(location);
+		const navbarWords = [];
+		for (const word of pathWords) {
+			console.log(word);
+			if (Object.hasOwn(recognizedPathWordsToNavbarWords, word)) {
+				navbarWords.push(recognizedPathWordsToNavbarWords[word]);
+			} else {
+				addOrganizationNameIfOrganizationId(navbarWords, word, organizations);
+			}
+		}
+		setNavbarLinks(navbarWords);
 	}, [location]);
+
+	const handleClickPath = (clickedLink) => {
+		const pathLinkWords = [];
+		for (const link of navbarLinks) {
+			pathLinkWords.push(link.path);
+			if (link.path === clickedLink.path) {
+				break;
+			}
+		}
+		const path = "/" + pathLinkWords.join("/");
+		navigate(path);
+	};
 
 	const handleLogout = () => {
 		sessionStorage.removeItem("token");
@@ -49,7 +100,7 @@ const NavBar = ({}) => {
 						<Typography sx={{ mx: 2 }}> {" > "} </Typography>
 						<Typography
 							onClick={() => {
-								navigate(link.path);
+								handleClickPath(link);
 							}}
 						>
 							{link.name}

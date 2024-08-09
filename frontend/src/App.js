@@ -14,16 +14,14 @@ import UserCalendar from "./Calendars/UserCalendar";
 import OrganizationCalendar from "./Calendars/OrganizationCalendar";
 import EmailPage from "./Email/EmailPage";
 import NavBar from "./NavBar/NavBar";
-import PathContext from "./NavBar/PathContext";
+import OrganizationsContext from "./Contexts/OrganizationsContext";
 
 function App() {
-	const [navbarLinks, setNavbarLinks] = useState([
-		{ name: "Login", path: "/login" },
-	]);
+	const [organizations, setOrganizations] = useState([]);
 
 	return (
 		<Router>
-			<PathContext.Provider value={[navbarLinks, setNavbarLinks]}>
+			<OrganizationsContext.Provider value={[organizations, setOrganizations]}>
 				<NavBar title="Organization Calendar" />
 				<Routes>
 					<Route path="/" element={<Navigate replace to="/login" />} />
@@ -42,7 +40,7 @@ function App() {
 					<Route path="/userCalendar/:userId" element={<UserCalendar />} />
 					<Route path="/organization/:orgId/email" element={<EmailPage />} />
 				</Routes>
-			</PathContext.Provider>
+			</OrganizationsContext.Provider>
 		</Router>
 	);
 }

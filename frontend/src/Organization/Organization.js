@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {
 	getCurrentUser,
@@ -11,10 +11,12 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import NavBar from "../NavBar/NavBar";
 import { IconButton } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import OrganizationsContext from "../Contexts/OrganizationsContext";
 
 const Organization = () => {
+	const [organizations, setOrganizations] = useContext(OrganizationsContext);
+
 	const [user, setUser] = useState(null);
-	const [organizations, setOrganizations] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [orgName, setOrgName] = useState("");
