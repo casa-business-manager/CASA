@@ -13,6 +13,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import OrganizationsContext from "../Contexts/OrganizationsContext";
 import { path } from "slate";
+import { getCurrentUser, getOrganizations } from "../APIUtils/APIUtils";
 
 const parseLocation = (location) => {
 	const path = location.pathname;
@@ -32,7 +33,7 @@ const addOrganizationNameIfOrganizationId = (
 	id,
 	organizations,
 ) => {
-	if (pathWordsArray.length <= 0) {
+	if (pathWordsArray.length <= 0 || organizations.length === 0) {
 		return;
 	}
 
@@ -50,10 +51,26 @@ const NavBar = ({}) => {
 	const location = useLocation();
 
 	useEffect(() => {
+		if (organizations.length !== 0) {
+			return;
+		}
+
+		const fetchData = async () => {
+			try {
+				const orgData = await getOrganizations();
+				setOrganizations(orgData);
+			} catch (error) {
+				console.error("Error:", error);
+			}
+		};
+
+		fetchData();
+	}, [organizations]);
+
+	useEffect(() => {
 		const pathWords = parseLocation(location);
 		const navbarWords = [];
 		for (const word of pathWords) {
-			console.log(word);
 			if (Object.hasOwn(recognizedPathWordsToNavbarWords, word)) {
 				navbarWords.push(recognizedPathWordsToNavbarWords[word]);
 			} else {
@@ -61,7 +78,7 @@ const NavBar = ({}) => {
 			}
 		}
 		setNavbarLinks(navbarWords);
-	}, [location]);
+	}, [location, organizations]);
 
 	const handleClickPath = (clickedLink) => {
 		const pathLinkWords = [];
