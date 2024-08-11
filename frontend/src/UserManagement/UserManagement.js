@@ -16,8 +16,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
-const UserManagement = () => {
-	const { orgId } = useParams();
+const UserManagement = ({ orgId }) => {
 	const [users, setUsers] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
@@ -25,6 +24,10 @@ const UserManagement = () => {
 	const [email, setEmail] = useState("");
 
 	useEffect(() => {
+		if (!orgId) {
+			return;
+		}
+
 		const fetchUsers = async () => {
 			try {
 				const response = await getUsersInOrganization(orgId);
