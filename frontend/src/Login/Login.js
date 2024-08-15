@@ -1,13 +1,32 @@
 import React, { useState } from "react";
-import { Button, Container, Box, TextField, Typography } from "@mui/material";
+import {
+	Button,
+	Box,
+	TextField,
+	Typography,
+	Divider,
+	Checkbox,
+	Link,
+	FormControlLabel,
+} from "@mui/material";
 import { GoogleLoginButton } from "react-social-login-buttons";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import "./Login.css";
 import { GOOGLE_AUTH_URL } from "../Constants/constants";
 import { useNavigate } from "react-router-dom";
 import { login, signup } from "../APIUtils/APIUtils";
 import { ACCESS_TOKEN } from "../Constants/constants";
 import loginImage from "../Assets/loginScreen.jpg";
+import FormControlContext from "@mui/material/FormControl/FormControlContext";
+
+const OrDivider = () => {
+	return (
+		<Box sx={{ display: "flex", alignItems: "center", width: "100%", my: 2 }}>
+			<Divider sx={{ flex: 1 }} />
+			<Typography sx={{ mx: 2 }}>Or</Typography>
+			<Divider sx={{ flex: 1 }} />
+		</Box>
+	);
+};
 
 function Login() {
 	const [formData, setFormData] = useState({
@@ -54,218 +73,222 @@ function Login() {
 		}
 	};
 
+	const GetStarted = () => {
+		return (
+			<Box
+				sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+			>
+				<Typography variant="h4" align="center" sx={{ mb: 2 }}>
+					Get Started
+				</Typography>
+				<Box sx={{ display: "flex", px: 1 }}>
+					<Button
+						variant={"contained"}
+						onClick={() => {
+							setAuthState("signIn");
+							setNextStep(false);
+						}}
+						sx={{
+							marginRight: "10px",
+							height: "50px",
+							width: "200px",
+							borderRadius: "50px",
+						}}
+					>
+						Log In
+					</Button>
+					<Button
+						variant={"contained"}
+						onClick={() => {
+							setAuthState("signUp");
+							setNextStep(false);
+						}}
+						sx={{
+							height: "50px",
+							width: "200px",
+							borderRadius: "50px",
+						}}
+					>
+						Sign Up
+					</Button>
+				</Box>
+			</Box>
+		);
+	};
+
+	const LoginFields = () => {
+		return (
+			<Box>
+				<Typography variant="h4" align="center">
+					Welcome Back
+				</Typography>
+				<TextField
+					label="Email Address"
+					name="email"
+					value={formData.email}
+					onChange={handleChange}
+					fullWidth
+					margin="normal"
+				/>
+				<TextField
+					label="Password"
+					name="password"
+					type="password"
+					value={formData.password}
+					onChange={handleChange}
+					fullWidth
+					margin="normal"
+				/>
+				<Typography
+					variant="body2"
+					align="center"
+					sx={{
+						cursor: "pointer",
+						marginTop: "10px",
+						":hover": { color: "#00705b" },
+					}}
+					onClick={() => setAuthState("signUp")}
+				>
+					Do not have an account? Sign Up
+				</Typography>
+				<Button
+					type="submit"
+					variant="contained"
+					color="primary"
+					onClick={handleSubmit}
+					sx={{ marginTop: "20px", width: "100%" }}
+				>
+					Sign In
+				</Button>
+				<OrDivider />
+				<GoogleLoginButton
+					onClick={() => (window.location.href = GOOGLE_AUTH_URL)}
+					style={{
+						justifyContent: "center",
+						display: "flex",
+						alignItems: "center",
+						border: "1px solid grey",
+					}}
+				>
+					Continue with Google
+				</GoogleLoginButton>
+			</Box>
+		);
+	};
+
+	const SignUpFields = () => {
+		return (
+			<Box>
+				<Typography variant="h4" align="center">
+					Create an Account
+				</Typography>
+				<TextField
+					label="Email Address"
+					name="email"
+					value={formData.email}
+					onChange={handleChange}
+					margin="normal"
+					fullWidth
+				/>
+				<TextField
+					label="Password"
+					name="password"
+					type="password"
+					value={formData.password}
+					onChange={handleChange}
+					margin="normal"
+					fullWidth
+				/>
+				<TextField
+					label="First Name"
+					id="firstName"
+					name="firstName"
+					value={formData.firstName}
+					onChange={handleChange}
+					margin="normal"
+					fullWidth
+				/>
+				<TextField
+					label="Last Name"
+					id="lastName"
+					name="lastName"
+					value={formData.lastName}
+					onChange={handleChange}
+					margin="normal"
+					fullWidth
+				/>
+				<FormControlLabel
+					control={
+						<Checkbox
+							name="termsAccepted"
+							checked={formData.termsAccepted}
+							onChange={handleChange}
+						/>
+					}
+					label={
+						<Typography>
+							I have read and accept the{" "}
+							<Link href="/terms-of-service" target="_blank" rel="noopener">
+								Terms of Service
+							</Link>{" "}
+							and{" "}
+							<Link href="/privacy-policy" target="_blank" rel="noopener">
+								Privacy Policy
+							</Link>
+							.
+						</Typography>
+					}
+				/>
+				<Typography
+					variant="body2"
+					align="center"
+					sx={{
+						cursor: "pointer",
+						marginTop: "10px",
+						":hover": { color: "#00705b" },
+					}}
+					onClick={() => setAuthState("signIn")}
+				>
+					Already have an account? Login
+				</Typography>
+				<Button
+					type="submit"
+					variant="contained"
+					color="primary"
+					onClick={handleSubmit}
+					sx={{ marginTop: "20px", width: "100%" }}
+				>
+					Sign Up
+				</Button>
+				<OrDivider />
+				<GoogleLoginButton
+					onClick={() => (window.location.href = GOOGLE_AUTH_URL)}
+					style={{
+						justifyContent: "center",
+						display: "flex",
+						alignItems: "center",
+						border: "1px solid grey",
+					}}
+				>
+					Continue with Google
+				</GoogleLoginButton>
+			</Box>
+		);
+	};
+
 	return (
-		<div className="wrapper">
-			<div className="left-container">
-				<nav>CASA</nav>
-				<img src={loginImage} alt="Login" className="displayImg" />
-			</div>
-			<div className="right-container">
-				{!authState && (
-					<div>
-						<h2 className="h2">Get Started</h2>
-						<Button
-							variant={"contained"}
-							onClick={() => {
-								setAuthState("signIn");
-								setNextStep(false);
-							}}
-							sx={{
-								marginRight: "10px",
-								height: "50px",
-								width: "200px",
-								borderRadius: "50px",
-							}}
-						>
-							Log In
-						</Button>
-						<Button
-							variant={"contained"}
-							onClick={() => {
-								setAuthState("signUp");
-								setNextStep(false);
-							}}
-							sx={{
-								height: "50px",
-								width: "200px",
-								borderRadius: "50px",
-							}}
-						>
-							Sign Up
-						</Button>
-					</div>
+		<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+			<Box component="img" src={loginImage} sx={{ width: "75%" }} />
+			<Box sx={{ width: "25%", mr: 4 }}>
+				{!authState ? (
+					<GetStarted />
+				) : authState === "signIn" ? (
+					<LoginFields />
+				) : (
+					<SignUpFields />
 				)}
-				{authState === "signIn" && (
-					<div>
-						<h2 className="h2">Welcome Back</h2>
-						<form onSubmit={handleSubmit}>
-							<TextField
-								label="Email Address"
-								name="email"
-								value={formData.email}
-								onChange={handleChange}
-								fullWidth
-								margin="normal"
-							/>
-							<TextField
-								label="Password"
-								name="password"
-								type="password"
-								value={formData.password}
-								onChange={handleChange}
-								fullWidth
-								margin="normal"
-							/>
-							<Typography
-								variant="body2"
-								align="center"
-								sx={{
-									cursor: "pointer",
-									marginTop: "10px",
-									":hover": { color: "#00705b" },
-								}}
-								onClick={() => setAuthState("signUp")}
-							>
-								Do not have an account? Sign Up
-							</Typography>
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "center",
-								}}
-							>
-								<Button
-									type="submit"
-									variant="contained"
-									color="primary"
-									sx={{ marginTop: "20px", width: "100%" }}
-								>
-									Sign In
-								</Button>
-							</div>
-							<div className="hr-with-text">Or</div>
-							<Box
-								sx={{
-									display: "flex",
-									justifyContent: "center",
-								}}
-							>
-								<GoogleLoginButton
-									onClick={() => (window.location.href = GOOGLE_AUTH_URL)}
-									style={{
-										justifyContent: "center",
-										display: "flex",
-										alignItems: "center",
-										border: "1px solid grey",
-									}}
-								>
-									&nbsp;&nbsp;
-									<span>Continue with Google</span>
-								</GoogleLoginButton>
-							</Box>
-						</form>
-					</div>
-				)}
-				{authState === "signUp" && (
-					<div>
-						<h2 className="h2">Create An Account</h2>
-						<form onSubmit={handleSubmit}>
-							<TextField
-								label="Email Address"
-								name="email"
-								value={formData.email}
-								onChange={handleChange}
-								margin="normal"
-								fullWidth
-							/>
-							<TextField
-								label="Password"
-								name="password"
-								type="password"
-								value={formData.password}
-								onChange={handleChange}
-								margin="normal"
-								fullWidth
-							/>
-							<TextField
-								label="First Name"
-								id="firstName"
-								name="firstName"
-								value={formData.firstName}
-								onChange={handleChange}
-								margin="normal"
-								fullWidth
-							/>
-							<TextField
-								label="Last Name"
-								id="lastName"
-								name="lastName"
-								value={formData.lastName}
-								onChange={handleChange}
-								margin="normal"
-								fullWidth
-							/>
-							<label>
-								<input
-									type="checkbox"
-									name="termsAccepted"
-									onChange={handleChange}
-								/>
-								I have read and accept the <a href="#">Terms of Service</a> and{" "}
-								<a href="#">Privacy Policy</a>.
-							</label>
-							<Typography
-								variant="body2"
-								align="center"
-								sx={{
-									cursor: "pointer",
-									marginTop: "10px",
-									":hover": { color: "#00705b" },
-								}}
-								onClick={() => setAuthState("signIn")}
-							>
-								Already have an account? Login
-							</Typography>
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "center",
-								}}
-							>
-								<Button
-									type="submit"
-									variant="contained"
-									color="primary"
-									sx={{ marginTop: "20px", width: "100%" }}
-								>
-									Sign Up
-								</Button>
-							</div>
-							<div className="hr-with-text">Or</div>
-							<Box
-								sx={{
-									display: "flex",
-									justifyContent: "center",
-								}}
-							>
-								<GoogleLoginButton
-									onClick={() => (window.location.href = GOOGLE_AUTH_URL)}
-									style={{
-										justifyContent: "center",
-										display: "flex",
-										alignItems: "center",
-										border: "1px solid grey",
-									}}
-								>
-									&nbsp;&nbsp;
-									<span>Continue with Google</span>
-								</GoogleLoginButton>
-							</Box>
-						</form>
-					</div>
-				)}
-			</div>
-		</div>
+			</Box>
+		</Box>
 	);
 }
 
