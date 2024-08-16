@@ -8,6 +8,8 @@ import {
 	Checkbox,
 	Link,
 	FormControlLabel,
+	FormHelperText,
+	FormControl,
 } from "@mui/material";
 import { GoogleLoginButton } from "react-social-login-buttons";
 import { GOOGLE_AUTH_URL } from "../Constants/constants";
@@ -38,11 +40,19 @@ function Login() {
 
 	const [authState, setAuthState] = useState(null);
 	const [nextStep, setNextStep] = useState(false);
+
+	const [termsError, setTermsError] = useState(false);
+
 	const navigate = useNavigate();
 
 	const handleStateNextStep = (e) => {
 		e.preventDefault();
 		setNextStep(true);
+	};
+
+	const handleSwitchSignupLogin = () => {
+		setAuthState(authState === "signUp" ? "signIn" : "signUp");
+		setTermsError(false);
 	};
 
 	const handleChange = (e) => {
@@ -51,12 +61,13 @@ function Login() {
 			...formData,
 			[name]: type === "checkbox" ? checked : value,
 		});
+		setTermsError(false);
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		if (authState === "signUp" && !formData.termsAccepted) {
-			alert("You must accept the terms of service and privacy policy.");
+			setTermsError(true);
 			return;
 		}
 		try {
@@ -139,7 +150,7 @@ function Login() {
 				sx={{
 					marginTop: 1,
 				}}
-				onClick={() => setAuthState("signUp")}
+				onClick={handleSwitchSignupLogin}
 			>
 				<Link>Don't have an account? Sign Up</Link>
 			</Typography>
@@ -207,34 +218,41 @@ function Login() {
 				margin="normal"
 				fullWidth
 			/>
-			<FormControlLabel
-				control={
-					<Checkbox
-						name="termsAccepted"
-						checked={formData.termsAccepted}
-						onChange={handleChange}
-					/>
-				}
-				label={
-					<Typography sx={{ fontSize: "0.875rem" }}>
-						I have read and accept the{" "}
-						<Link href="/terms-of-service" target="_blank" rel="noopener">
-							Terms of Service
-						</Link>{" "}
-						and{" "}
-						<Link href="/privacy-policy" target="_blank" rel="noopener">
-							Privacy Policy
-						</Link>
-						.
-					</Typography>
-				}
-			/>
+			<FormControl error={termsError}>
+				<FormControlLabel
+					control={
+						<Checkbox
+							name="termsAccepted"
+							checked={formData.termsAccepted}
+							onChange={handleChange}
+						/>
+					}
+					label={
+						<Typography sx={{ fontSize: "0.875rem" }}>
+							I have read and accept the{" "}
+							<Link href="/terms-of-service" target="_blank" rel="noopener">
+								Terms of Service
+							</Link>{" "}
+							and{" "}
+							<Link href="/privacy-policy" target="_blank" rel="noopener">
+								Privacy Policy
+							</Link>
+							.
+						</Typography>
+					}
+				/>
+				{termsError && (
+					<FormHelperText sx={{ mt: -1 }}>
+						You must accept the terms of service and privacy policy.
+					</FormHelperText>
+				)}
+			</FormControl>
 			<Typography
 				align="center"
 				sx={{
 					marginTop: 1,
 				}}
-				onClick={() => setAuthState("signIn")}
+				onClick={handleSwitchSignupLogin}
 			>
 				<Link>Already have an account? Login</Link>
 			</Typography>
