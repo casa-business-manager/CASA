@@ -47,6 +47,7 @@ const addOrganizationNameIfOrganizationId = (
 const NavBar = ({}) => {
 	const navigate = useNavigate();
 	const [organizations, setOrganizations] = useContext(OrganizationsContext);
+	// values from recognizedPathWordsToNavbarWords
 	const [navbarLinks, setNavbarLinks] = useState([]);
 
 	const location = useLocation();
@@ -127,12 +128,16 @@ const NavBar = ({}) => {
 				))}
 				<Box sx={{ flexGrow: 1 }} />
 				{/* Log out and Account buttons. Must make them white manualluy */}
-				<IconButton onClick={handleLogout}>
-					<LogoutIcon sx={{ color: "#fff" }} />
-				</IconButton>
-				<IconButton onClick={handleAccountButton}>
-					<AccountCircleIcon sx={{ color: "#fff" }} />
-				</IconButton>
+				{navbarLinks.find((link) => link.name === "Login") ? null : (
+					<>
+						<IconButton onClick={handleLogout}>
+							<LogoutIcon sx={{ color: "#fff" }} />
+						</IconButton>
+						<IconButton onClick={handleAccountButton}>
+							<AccountCircleIcon sx={{ color: "#fff" }} />
+						</IconButton>
+					</>
+				)}
 			</Toolbar>
 		</AppBar>
 	);
