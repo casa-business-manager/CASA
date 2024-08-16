@@ -10,7 +10,6 @@ import {
 	FormControlLabel,
 } from "@mui/material";
 import { GoogleLoginButton } from "react-social-login-buttons";
-import "./Login.css";
 import { GOOGLE_AUTH_URL } from "../Constants/constants";
 import { useNavigate } from "react-router-dom";
 import { login, signup } from "../APIUtils/APIUtils";

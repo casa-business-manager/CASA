@@ -9,7 +9,6 @@ import Login from "./Login/Login";
 import Organization from "./Organization/Organization";
 import OAuth2RedirectHandler from "././Login/OAuth2RedirectHandler";
 import OrganizationLanding from "./OrganizationLanding/OrganizationLanding";
-import UserManagement from "./UserManagement/UserManagement";
 import UserCalendar from "./Calendars/UserCalendar";
 import OrganizationCalendar from "./Calendars/OrganizationCalendar";
 import EmailPage from "./Email/EmailPage";
