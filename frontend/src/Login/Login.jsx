@@ -108,7 +108,6 @@ function Login() {
 	});
 
 	const [authState, setAuthState] = useState(null);
-	const [nextStep, setNextStep] = useState(false);
 
 	const [errors, setErrors] = useState({
 		email: false,
@@ -121,11 +120,6 @@ function Login() {
 	const [apiError, setApiError] = useState(false);
 
 	const navigate = useNavigate();
-
-	const handleStateNextStep = (e) => {
-		e.preventDefault();
-		setNextStep(true);
-	};
 
 	const handleSwitchSignupLogin = () => {
 		setAuthState(authState === "signUp" ? "signIn" : "signUp");
@@ -158,9 +152,12 @@ function Login() {
 			return;
 		}
 
+		// if signing up a new user, make the signup call first then a login call after signup succeeds
 		try {
-			const response =
-				authState === "signUp" ? await signup(formData) : await login(formData);
+			if (authState === "signUp") {
+				await signup(formData);
+			}
+			const response = await login(formData);
 			sessionStorage.setItem(ACCESS_TOKEN, response.accessToken);
 			navigate("/organization");
 		} catch (error) {
@@ -180,7 +177,6 @@ function Login() {
 					variant={"contained"}
 					onClick={() => {
 						setAuthState("signIn");
-						setNextStep(false);
 					}}
 					sx={{
 						marginRight: "10px",
@@ -195,7 +191,6 @@ function Login() {
 					variant={"contained"}
 					onClick={() => {
 						setAuthState("signUp");
-						setNextStep(false);
 					}}
 					sx={{
 						height: "50px",
