@@ -135,23 +135,20 @@ function Login() {
 				margin="normal"
 			/>
 			<Typography
-				variant="body2"
 				align="center"
 				sx={{
-					cursor: "pointer",
-					marginTop: "10px",
-					":hover": { color: "#00705b" },
+					marginTop: 1,
 				}}
 				onClick={() => setAuthState("signUp")}
 			>
-				Do not have an account? Sign Up
+				<Link>Don't have an account? Sign Up</Link>
 			</Typography>
 			<Button
 				type="submit"
 				variant="contained"
 				color="primary"
 				onClick={handleSubmit}
-				sx={{ marginTop: "20px", width: "100%" }}
+				sx={{ marginTop: 3, width: "100%" }}
 			>
 				Sign In
 			</Button>
@@ -219,7 +216,7 @@ function Login() {
 					/>
 				}
 				label={
-					<Typography>
+					<Typography sx={{ fontSize: "0.875rem" }}>
 						I have read and accept the{" "}
 						<Link href="/terms-of-service" target="_blank" rel="noopener">
 							Terms of Service
@@ -233,23 +230,20 @@ function Login() {
 				}
 			/>
 			<Typography
-				variant="body2"
 				align="center"
 				sx={{
-					cursor: "pointer",
-					marginTop: "10px",
-					":hover": { color: "#00705b" },
+					marginTop: 1,
 				}}
 				onClick={() => setAuthState("signIn")}
 			>
-				Already have an account? Login
+				<Link>Already have an account? Login</Link>
 			</Typography>
 			<Button
 				type="submit"
 				variant="contained"
 				color="primary"
 				onClick={handleSubmit}
-				sx={{ marginTop: "20px", width: "100%" }}
+				sx={{ marginTop: 3, width: "100%" }}
 			>
 				Sign Up
 			</Button>
@@ -271,7 +265,7 @@ function Login() {
 	return (
 		<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
 			<Box component="img" src={loginImage} sx={{ width: "75%" }} />
-			<Box sx={{ width: "25%", mr: 4 }}>
+			<Box sx={{ width: "25%", mx: 4 }}>
 				{!authState
 					? GetStarted
 					: authState === "signIn"
