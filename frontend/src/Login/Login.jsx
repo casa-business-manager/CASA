@@ -18,6 +18,14 @@ import { login, signup } from "../APIUtils/APIUtils";
 import { ACCESS_TOKEN } from "../Constants/constants";
 import loginImage from "../Assets/loginScreen.jpg";
 
+const validateEmail = (email) => {
+	// https://mailtrap.io/blog/react-native-email-validation/
+	// eslint-disable-next-line no-control-regex
+	const expression =
+		/(?!.*\.{2})^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([\t]*\r\n)?[\t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([\t]*\r\n)?[\t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+	return expression.test(String(email).toLowerCase());
+};
+
 const OrDivider = () => {
 	return (
 		<Box sx={{ display: "flex", alignItems: "center", width: "100%", my: 2 }}>
@@ -26,6 +34,67 @@ const OrDivider = () => {
 			<Divider sx={{ flex: 1 }} />
 		</Box>
 	);
+};
+
+const detectErrors = (
+	authState,
+	formData,
+	errors,
+	setErrors,
+	canSetNewErrors = true,
+) => {
+	var errorDetected = false;
+	var newErrors = {
+		email: false,
+		termsAccepted: false,
+		keepLoggedIn: false,
+		firstName: false,
+		lastName: false,
+		password: false,
+	};
+
+	const handleErrorDetected = (flag) => {
+		newErrors = { ...newErrors, [flag]: canSetNewErrors ? true : errors[flag] };
+		errorDetected = true;
+	};
+
+	switch (authState) {
+		case "signUp":
+			if (
+				!formData.email ||
+				formData.email === "" ||
+				!validateEmail(formData.email)
+			) {
+				handleErrorDetected("email");
+			}
+			if (!formData.password || formData.password === "") {
+				handleErrorDetected("password");
+			}
+			if (!formData.firstName || formData.firstName === "") {
+				handleErrorDetected("firstName");
+			}
+			if (!formData.lastName || formData.lastName === "") {
+				handleErrorDetected("lastName");
+			}
+			if (!formData.termsAccepted) {
+				handleErrorDetected("termsAccepted");
+			}
+
+		case "signIn":
+			if (!formData.email || formData.email === "") {
+				handleErrorDetected("email");
+			}
+			if (!formData.password || formData.password === "") {
+				handleErrorDetected("password");
+			}
+
+		default:
+			setErrors(newErrors);
+			if (errorDetected) {
+				return false;
+			}
+	}
+	return true;
 };
 
 function Login() {
@@ -41,7 +110,14 @@ function Login() {
 	const [authState, setAuthState] = useState(null);
 	const [nextStep, setNextStep] = useState(false);
 
-	const [termsError, setTermsError] = useState(false);
+	const [errors, setErrors] = useState({
+		email: false,
+		termsAccepted: false,
+		keepLoggedIn: false,
+		firstName: false,
+		lastName: false,
+		password: false,
+	});
 
 	const navigate = useNavigate();
 
@@ -52,29 +128,36 @@ function Login() {
 
 	const handleSwitchSignupLogin = () => {
 		setAuthState(authState === "signUp" ? "signIn" : "signUp");
-		setTermsError(false);
+		setErrors({
+			email: false,
+			termsAccepted: false,
+			keepLoggedIn: false,
+			firstName: false,
+			lastName: false,
+			password: false,
+		});
 	};
 
 	const handleChange = (e) => {
 		const { name, value, type, checked } = e.target;
-		setFormData({
+		const newFormData = {
 			...formData,
 			[name]: type === "checkbox" ? checked : value,
-		});
-		setTermsError(false);
+		};
+		setFormData(newFormData);
+		detectErrors(authState, newFormData, errors, setErrors, false);
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		if (authState === "signUp" && !formData.termsAccepted) {
-			setTermsError(true);
+
+		if (!detectErrors(authState, formData, errors, setErrors)) {
 			return;
 		}
+
 		try {
 			const response =
 				authState === "signUp" ? await signup(formData) : await login(formData);
-			alert(`${authState === "signUp" ? "Signup" : "Signin"} successful!`);
-			console.log("Access Token:", response.accessToken);
 			sessionStorage.setItem(ACCESS_TOKEN, response.accessToken);
 			navigate("/organization");
 		} catch (error) {
@@ -135,6 +218,8 @@ function Login() {
 				onChange={handleChange}
 				fullWidth
 				margin="normal"
+				error={errors.email}
+				helperText={errors.email && "Please enter a valid email address."}
 			/>
 			<TextField
 				label="Password"
@@ -144,15 +229,18 @@ function Login() {
 				onChange={handleChange}
 				fullWidth
 				margin="normal"
+				error={errors.password}
+				helperText={errors.password && "Please enter a password."}
 			/>
 			<Typography
 				align="center"
 				sx={{
 					marginTop: 1,
 				}}
-				onClick={handleSwitchSignupLogin}
 			>
-				<Link>Don't have an account? Sign Up</Link>
+				<Link onClick={handleSwitchSignupLogin}>
+					Don't have an account? Sign Up
+				</Link>
 			</Typography>
 			<Button
 				type="submit"
@@ -190,6 +278,8 @@ function Login() {
 				onChange={handleChange}
 				margin="normal"
 				fullWidth
+				error={errors.email}
+				helperText={errors.email && "Please enter a valid email address."}
 			/>
 			<TextField
 				label="Password"
@@ -199,6 +289,8 @@ function Login() {
 				onChange={handleChange}
 				margin="normal"
 				fullWidth
+				error={errors.password}
+				helperText={errors.password && "Please enter a password."}
 			/>
 			<TextField
 				label="First Name"
@@ -208,6 +300,8 @@ function Login() {
 				onChange={handleChange}
 				margin="normal"
 				fullWidth
+				error={errors.firstName}
+				helperText={errors.firstName && "Please enter your first name."}
 			/>
 			<TextField
 				label="Last Name"
@@ -217,8 +311,10 @@ function Login() {
 				onChange={handleChange}
 				margin="normal"
 				fullWidth
+				error={errors.lastName}
+				helperText={errors.lastName && "Please enter your last name."}
 			/>
-			<FormControl error={termsError}>
+			<FormControl error={errors.termsAccepted}>
 				<FormControlLabel
 					control={
 						<Checkbox
@@ -241,7 +337,7 @@ function Login() {
 						</Typography>
 					}
 				/>
-				{termsError && (
+				{errors.termsAccepted && (
 					<FormHelperText sx={{ mt: -1 }}>
 						You must accept the terms of service and privacy policy.
 					</FormHelperText>
@@ -252,9 +348,10 @@ function Login() {
 				sx={{
 					marginTop: 1,
 				}}
-				onClick={handleSwitchSignupLogin}
 			>
-				<Link>Already have an account? Login</Link>
+				<Link onClick={handleSwitchSignupLogin}>
+					Already have an account? Login
+				</Link>
 			</Typography>
 			<Button
 				type="submit"
