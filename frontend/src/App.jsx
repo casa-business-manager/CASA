@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import Login from "./Login/Login";
 import Organization from "./Organization/Organization";
-import OAuth2RedirectHandler from "././Login/OAuth2RedirectHandler";
+import OAuth2RedirectHandler from "./Login/OAuth2RedirectHandler";
 import OrganizationLanding from "./OrganizationLanding/OrganizationLanding";
 import UserCalendar from "./Calendars/UserCalendar";
 import OrganizationCalendar from "./Calendars/OrganizationCalendar";
@@ -26,7 +26,7 @@ function App() {
 					value={[organizations, setOrganizations]}
 				>
 					<NavBar title="Organization Calendar" />
-					<Box sx={{ display: "flex", flexGrow: 1, px: 1 }}>
+					<Box sx={{ flexGrow: 1, px: 1 }}>
 						<Routes>
 							<Route path="/" element={<Navigate replace to="/login" />} />
 							<Route path="/login" element={<Login />} />
