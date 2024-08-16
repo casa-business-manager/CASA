@@ -79,6 +79,7 @@ const detectErrors = (
 			if (!formData.termsAccepted) {
 				handleErrorDetected("termsAccepted");
 			}
+			break;
 
 		case "signIn":
 			if (!formData.email || formData.email === "") {
@@ -87,14 +88,15 @@ const detectErrors = (
 			if (!formData.password || formData.password === "") {
 				handleErrorDetected("password");
 			}
+			break;
 
 		default:
-			setErrors(newErrors);
-			if (errorDetected) {
-				return false;
-			}
+		// should never reach here
+		// errorDetected would be false so the return is true
 	}
-	return true;
+
+	setErrors(newErrors);
+	return !errorDetected;
 };
 
 function Login() {
