@@ -10,6 +10,7 @@ import {
 	FormControlLabel,
 	FormHelperText,
 	FormControl,
+	Alert,
 } from "@mui/material";
 import { GoogleLoginButton } from "react-social-login-buttons";
 import { GOOGLE_AUTH_URL } from "../Constants/constants";
@@ -117,6 +118,7 @@ function Login() {
 		lastName: false,
 		password: false,
 	});
+	const [apiError, setApiError] = useState(false);
 
 	const navigate = useNavigate();
 
@@ -135,6 +137,7 @@ function Login() {
 			lastName: false,
 			password: false,
 		});
+		setApiError(false);
 	};
 
 	const handleChange = (e) => {
@@ -149,6 +152,7 @@ function Login() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		setApiError(false);
 
 		if (!detectErrors(authState, formData, errors, setErrors)) {
 			return;
@@ -160,7 +164,7 @@ function Login() {
 			sessionStorage.setItem(ACCESS_TOKEN, response.accessToken);
 			navigate("/organization");
 		} catch (error) {
-			alert(`${authState === "signUp" ? "Signup" : "Signin"} failed: ${error}`);
+			setApiError(true);
 		}
 	};
 
@@ -250,6 +254,15 @@ function Login() {
 			>
 				Sign In
 			</Button>
+			{apiError && (
+				<Alert
+					severity="error"
+					onClose={() => setApiError(false)}
+					sx={{ mt: 2 }}
+				>
+					Log in failed. Please try again.
+				</Alert>
+			)}
 			<OrDivider />
 			<GoogleLoginButton
 				onClick={() => (window.location.href = GOOGLE_AUTH_URL)}
@@ -361,6 +374,15 @@ function Login() {
 			>
 				Sign Up
 			</Button>
+			{apiError && (
+				<Alert
+					severity="error"
+					onClose={() => setApiError(false)}
+					sx={{ mt: 2 }}
+				>
+					Sign up failed. Please try again.
+				</Alert>
+			)}
 			<OrDivider />
 			<GoogleLoginButton
 				onClick={() => (window.location.href = GOOGLE_AUTH_URL)}
