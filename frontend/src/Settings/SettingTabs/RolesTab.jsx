@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { act, useCallback, useEffect, useState } from "react";
 import BaseTab from "./BaseTab";
 import Typography from "@mui/material/Typography";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
@@ -30,16 +30,45 @@ import { createRole, deleteRole, editRole } from "../../APIUtils/APIUtils";
 import MoveUpIcon from "@mui/icons-material/MoveUp";
 import UserChip from "../../common/UserChip";
 
-const lockedRoleColor = "#E8E8E8";
+const lockedRoleColor = "#B8B8B8";
 const controlledRoleColor = "#A2E6FF";
 const ownedRoleColor = "#3B89F3";
 const selectedColor = "#ff7f0e";
+const selectedColorRing = "#ff7f0e";
+const edgeColor = "#a3bdc4";
+const inactiveOpacity = 0.4;
+const canvasBackgroundColor = "#f0f0f0";
 
 const graphTheme = {
 	...lightTheme,
 	node: {
 		...lightTheme.node,
 		activeFill: selectedColor,
+		inactiveOpacity: inactiveOpacity,
+		label: {
+			...lightTheme.node.label,
+			stroke: canvasBackgroundColor,
+			activeColor: selectedColorRing,
+		},
+	},
+	ring: {
+		...lightTheme.ring,
+		activeFill: selectedColorRing,
+	},
+	edge: {
+		...lightTheme.edge,
+		fill: edgeColor,
+		activeFill: edgeColor,
+		inactiveOpacity: inactiveOpacity,
+	},
+	arrow: {
+		...lightTheme.arrow,
+		fill: edgeColor,
+		activeFill: edgeColor,
+	},
+	canvas: {
+		...lightTheme.canvas,
+		background: canvasBackgroundColor,
 	},
 };
 
@@ -221,42 +250,55 @@ const RolesGraph = ({
 	return (
 		<Box
 			sx={{
-				position: "relative",
-				width: "99%",
-				height: "99%",
-				border: 1,
+				width: "100%",
+				height: "100%",
+				backgroundColor: canvasBackgroundColor,
+				borderRadius: 3,
+				// center the graph's Box
+				display: "flex",
+				justifyContent: "center",
+				alignItems: "center",
 			}}
 		>
-			<GraphCanvas
-				nodes={nodes}
-				edges={edges}
-				layoutType="treeTd2d"
-				selections={selected}
-				onNodeClick={(node) => {
-					setSelected(node.id);
-					setSelectedRole(node.data);
-					setEditorIsCreatingNewRole(false);
+			<Box
+				sx={{
+					position: "relative",
+					width: "97%", // must match this to borderradius
+					height: "97%",
+					backgroundColor: canvasBackgroundColor,
 				}}
-				onCanvasClick={() => {
-					setSelected([]);
-					setSelectedRole(null);
-				}}
-				contextMenu={({ data, onClose }) => (
-					<GraphPopup
-						node={data}
-						onClose={onClose}
-						roles={roles}
-						setSelectedRole={setSelectedRole}
-						setRoles={setRoles}
-						setEditorIsCreatingNewRole={setEditorIsCreatingNewRole}
-						setName={setName}
-						setPermissions={setPermissions}
-						setUsers={setUsers}
-						setSelectedNode={setSelected}
-					/>
-				)}
-				theme={graphTheme}
-			/>
+			>
+				<GraphCanvas
+					nodes={nodes}
+					edges={edges}
+					layoutType="treeTd2d"
+					selections={selected}
+					onNodeClick={(node) => {
+						setSelected(node.id);
+						setSelectedRole(node.data);
+						setEditorIsCreatingNewRole(false);
+					}}
+					onCanvasClick={() => {
+						setSelected([]);
+						setSelectedRole(null);
+					}}
+					contextMenu={({ data, onClose }) => (
+						<GraphPopup
+							node={data}
+							onClose={onClose}
+							roles={roles}
+							setSelectedRole={setSelectedRole}
+							setRoles={setRoles}
+							setEditorIsCreatingNewRole={setEditorIsCreatingNewRole}
+							setName={setName}
+							setPermissions={setPermissions}
+							setUsers={setUsers}
+							setSelectedNode={setSelected}
+						/>
+					)}
+					theme={graphTheme}
+				/>
+			</Box>
 		</Box>
 	);
 };
