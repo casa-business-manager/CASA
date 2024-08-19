@@ -1,7 +1,7 @@
 import { API_BASE_URL, ACCESS_TOKEN } from "../Constants/constants";
 
 // TODO: split these into files by controller
-const request = (options) => {
+const request = async (options) => {
 	const headers = new Headers({
 		"Content-Type": "application/json",
 	});
@@ -13,10 +13,11 @@ const request = (options) => {
 		);
 	}
 
-	const defaults = { headers: headers };
+	const defaults = { headers: headers, method: "POST" };
 	options = Object.assign({}, defaults, options);
+	const url = API_BASE_URL + options.url;
 
-	return fetch(options.url, options).then((response) => {
+	return fetch(url, options).then((response) => {
 		if (response.status === 204) {
 			return {};
 		}
@@ -43,23 +44,20 @@ export function getCurrentUser() {
 	}
 
 	return request({
-		url: API_BASE_URL + "/user/me",
-		method: "GET",
+		url: "/getCurrentUser",
 	});
 }
 
 export function login(loginRequest) {
 	return request({
-		url: API_BASE_URL + "/auth/login",
-		method: "POST",
+		url: "/auth/login",
 		body: JSON.stringify(loginRequest),
 	});
 }
 
 export function signup(signupRequest) {
 	return request({
-		url: API_BASE_URL + "/auth/signup",
-		method: "POST",
+		url: "/auth/signup",
 		body: JSON.stringify(signupRequest),
 	});
 }
@@ -70,46 +68,41 @@ export function getCalendarData(
 	startDate = null,
 	endDate = null,
 ) {
+	const paramStartDate = startDate ? `startDate=${startDate}` : "";
+	const paramEndDate = endDate ? `endDate=${endDate}` : "";
+	const params = `?${paramStartDate}&${paramEndDate}`;
+
 	return request({
-		url:
-			API_BASE_URL +
-			`/organizationCalendar/${orgId}/userId/${userId}?${
-				startDate ? "startDate=" + startDate : ""
-			}&${endDate ? "endDate=" + endDate : ""}`,
-		method: "GET",
+		url: `/getCalendarData/organization/${orgId}/user/${userId}` + params,
 	});
 }
 
 export function createEvent(orgId, eventRequest) {
 	return request({
-		url: API_BASE_URL + `/organization/${orgId}/event`,
-		method: "POST",
+		url: `/createEvent/organization/${orgId}`,
 		body: JSON.stringify(eventRequest),
 	});
 }
 
 export function updateEvent(eventId, eventRequest) {
 	return request({
-		url: API_BASE_URL + `/event/${eventId}`,
-		method: "PUT",
+		url: `/updateEvent/event/${eventId}`,
 		body: JSON.stringify(eventRequest),
 	});
 }
 
 export function deleteEvent(eventId) {
 	return request({
-		url: API_BASE_URL + `/event/${eventId}`,
-		method: "DELETE",
+		url: `/deleteEvent/event/${eventId}`,
 	});
 }
 
-export function createOrganization(organizationRequest) {
+export async function createOrganization(organizationRequest) {
 	return getCurrentUser()
 		.then((user) => {
 			const userId = user.id;
-			console.log(userId);
 			return request({
-				url: API_BASE_URL + "/user/" + userId + "/organizations",
+				url: "/createOrganizationForUser/user/" + userId,
 				method: "POST",
 				body: JSON.stringify(organizationRequest),
 			});
@@ -120,17 +113,12 @@ export function createOrganization(organizationRequest) {
 		});
 }
 
-export function getOrganizations() {
+export async function getOrganizations() {
 	return getCurrentUser()
 		.then((user) => {
 			const userId = user.id;
-			console.log(userId);
-			return fetch(API_BASE_URL + "/user/" + userId + "/organizations", {
-				method: "GET",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${sessionStorage.getItem(ACCESS_TOKEN)}`,
-				},
+			return request({
+				url: "/getOrganizationsForUser/user/" + userId,
 			});
 		})
 		.then((response) => {
@@ -149,38 +137,30 @@ export function getOrganizations() {
 }
 
 export const updateOrganization = async (organization) => {
-	console.log("Organization Id: ", organization.orgId);
 	return request({
-		url: API_BASE_URL + "/organization/" + organization.orgId,
-		method: "PUT",
+		url: "/updateOrganization/organization/" + organization.orgId,
 		body: JSON.stringify(organization),
 	});
 };
 
 export const getUsersInOrganization = async (organizationId) => {
 	return request({
-		url: API_BASE_URL + "/organization/" + organizationId + "/users",
-		method: "GET",
+		url: "/getUsersInOrganization/organization/" + organizationId,
 	});
 };
 
 // getUsersInOrganization + org name
 export const getOrganizationInfo = async (organizationId) => {
 	return request({
-		url: API_BASE_URL + "/organization/" + organizationId + "/info",
-		method: "GET",
+		url: "/getOrganizationInfo/organization/" + organizationId,
 	});
 };
 
 export const inviteUserToOrganization = async (organizationId, userEmail) => {
+	const params = `?email=${userEmail}`;
+
 	return request({
-		url:
-			API_BASE_URL +
-			"/organization/" +
-			organizationId +
-			"/invite?email=" +
-			userEmail,
-		method: "POST",
+		url: "/inviteUserToOrganization/organization/" + organizationId + params,
 	})
 		.then((response) => {
 			return response;
@@ -193,8 +173,11 @@ export const inviteUserToOrganization = async (organizationId, userEmail) => {
 
 export const removeUserFromOrganization = async (organizationId, userId) => {
 	return request({
-		url: API_BASE_URL + "/organization/" + organizationId + "/user/" + userId,
-		method: "DELETE",
+		url:
+			"/removeUserFromOrganization/organization/" +
+			organizationId +
+			"/user/" +
+			userId,
 	})
 		.then((response) => {
 			return response;
@@ -207,30 +190,26 @@ export const removeUserFromOrganization = async (organizationId, userId) => {
 
 export const getOrganizationRoles = async (organizationId) => {
 	return request({
-		url: API_BASE_URL + "/organization/" + organizationId + "/roles",
-		method: "GET",
+		url: "/getOrganizationRoles/organization/" + organizationId,
 	});
 };
 
 export const createRole = async (organizationId, roleRequest) => {
 	return request({
-		url: API_BASE_URL + "/organization/" + organizationId + "/roles",
-		method: "POST",
+		url: "/createRole/organization/" + organizationId,
 		body: JSON.stringify(roleRequest),
 	});
 };
 
 export const editRole = async (roleId, roleRequest) => {
 	return request({
-		url: API_BASE_URL + "/roles/" + roleId,
-		method: "PUT",
+		url: "/editRole/role/" + roleId,
 		body: JSON.stringify(roleRequest),
 	});
 };
 
 export const deleteRole = async (roleId) => {
 	return request({
-		url: API_BASE_URL + "/roles/" + roleId,
-		method: "DELETE",
+		url: "/deleteRole/role/" + roleId,
 	});
 };
