@@ -39,7 +39,7 @@ public class RoleController {
 		return ResponseEntity.ok(orgRoles);
 	}
 
-	@PostMapping("/getRoleUsers/roles/{roleId}")
+	@PostMapping("/getRoleUsers/role/{roleId}")
 	public ResponseEntity<?> getRoleUsers(@PathVariable String roleId) {
 		Role role = roleRepository.findById(roleId)
 				.orElseThrow(() -> new RuntimeException("Role could not found with role id: " + roleId));
@@ -100,7 +100,7 @@ public class RoleController {
 		return ResponseEntity.ok(newRole);
 	}
 
-	@PostMapping("/editRole/roles/{roleId}")
+	@PostMapping("/editRole/role/{roleId}")
 	public ResponseEntity<?> editRole(@PathVariable String roleId, @RequestBody RoleDto newRoleData) {
 		Role originalRole = roleRepository.findById(roleId)
 				.orElseThrow(() -> new RuntimeException("Role could not found with role id: " + roleId));
@@ -145,7 +145,7 @@ public class RoleController {
 		return ResponseEntity.ok(originalRole);
 	}
 
-	@PostMapping("/addRoleToUser/user/{userId}/roles/{roleId}")
+	@PostMapping("/addRoleToUser/user/{userId}/role/{roleId}")
 	public ResponseEntity<?> addRoleToUser(@PathVariable String userId, @PathVariable String roleId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new RuntimeException("User could not found with user id: " + userId));
@@ -161,7 +161,7 @@ public class RoleController {
 		return ResponseEntity.ok(user);
 	}
 
-	@PostMapping("/removeRoleFromUser/user/{userId}/roles/{roleId}")
+	@PostMapping("/removeRoleFromUser/user/{userId}/role/{roleId}")
 	public ResponseEntity<?> removeRoleFromUser(@PathVariable String userId, @PathVariable String roleId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new RuntimeException("User could not found with user id: " + userId));
@@ -178,7 +178,7 @@ public class RoleController {
 		return ResponseEntity.ok(user);
 	}
 
-	@DeleteMapping("/deleteRole/roles/{roleId}")
+	@DeleteMapping("/deleteRole/role/{roleId}")
 	public ResponseEntity<?> deleteRole(@PathVariable String roleId) {
 		Role role = roleRepository.findById(roleId)
 				.orElseThrow(() -> new RuntimeException("Role could not be found with id: " + roleId));
