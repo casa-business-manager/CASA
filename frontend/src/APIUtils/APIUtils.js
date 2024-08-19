@@ -136,27 +136,27 @@ export async function getOrganizations() {
 		});
 }
 
-export const updateOrganization = async (organization) => {
+export async function updateOrganization(organization) {
 	return request({
 		url: "/updateOrganization/organization/" + organization.orgId,
 		body: JSON.stringify(organization),
 	});
-};
+}
 
-export const getUsersInOrganization = async (organizationId) => {
+export async function getUsersInOrganization(organizationId) {
 	return request({
 		url: "/getUsersInOrganization/organization/" + organizationId,
 	});
-};
+}
 
 // getUsersInOrganization + org name
-export const getOrganizationInfo = async (organizationId) => {
+export async function getOrganizationInfo(organizationId) {
 	return request({
 		url: "/getOrganizationInfo/organization/" + organizationId,
 	});
-};
+}
 
-export const inviteUserToOrganization = async (organizationId, userEmail) => {
+export async function inviteUserToOrganization(organizationId, userEmail) {
 	const params = `?email=${userEmail}`;
 
 	return request({
@@ -169,9 +169,9 @@ export const inviteUserToOrganization = async (organizationId, userEmail) => {
 			console.error("Failed to invite user:", error);
 			return Promise.reject("Failed to invite user: " + error);
 		});
-};
+}
 
-export const removeUserFromOrganization = async (organizationId, userId) => {
+export async function removeUserFromOrganization(organizationId, userId) {
 	return request({
 		url:
 			"/removeUserFromOrganization/organization/" +
@@ -186,30 +186,30 @@ export const removeUserFromOrganization = async (organizationId, userId) => {
 			console.error("Failed to remove user:", error);
 			return Promise.reject("Failed to remove user: " + error);
 		});
-};
+}
 
-export const getOrganizationRoles = async (organizationId) => {
+export async function getOrganizationRoles(organizationId) {
 	return request({
 		url: "/getOrganizationRoles/organization/" + organizationId,
 	});
-};
+}
 
-export const createRole = async (organizationId, roleRequest) => {
+export async function createRole(organizationId, roleRequest) {
 	return request({
 		url: "/createRole/organization/" + organizationId,
 		body: JSON.stringify(roleRequest),
 	});
-};
+}
 
-export const editRole = async (roleId, roleRequest) => {
+export async function editRole(roleId, roleRequest) {
 	return request({
 		url: "/editRole/role/" + roleId,
 		body: JSON.stringify(roleRequest),
 	});
-};
+}
 
-export const deleteRole = async (roleId) => {
+export async function deleteRole(roleId) {
 	return request({
 		url: "/deleteRole/role/" + roleId,
 	});
-};
+}
