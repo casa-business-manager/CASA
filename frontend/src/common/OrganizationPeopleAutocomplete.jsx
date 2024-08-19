@@ -1,6 +1,6 @@
 import { Autocomplete, Chip, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import { getOrganizationInfo } from "../APIUtils/APIUtils";
+import { getOrganizationInfo } from "../API/OrganizationAPI";
 import UserChip from "./UserChip";
 
 /// Must pass in organizationId or organizationPeopleList

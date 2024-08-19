@@ -4,14 +4,14 @@ import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
+import { getCurrentUser } from "../API/UserAPI";
+import { getOrganizationInfo } from "../API/OrganizationAPI";
 import {
 	getCalendarData,
-	getCurrentUser,
 	createEvent,
 	updateEvent,
 	deleteEvent,
-	getOrganizationInfo,
-} from "../APIUtils/APIUtils";
+} from "../API/EventAPI";
 import EventDialog from "./EventDialog";
 
 const localizer = momentLocalizer(moment);

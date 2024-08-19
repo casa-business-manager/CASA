@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import BaseCalendar from "./BaseCalendar";
-import { getOrganizations } from "../APIUtils/APIUtils";
+import { getOrganizations } from "../API/OrganizationAPI";
 import { useParams } from "react-router-dom";
 
 const UserCalendar = () => {

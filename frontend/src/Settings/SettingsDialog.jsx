@@ -17,7 +17,8 @@ import IntegrationsCollapse from "./SettingsCollapses/IntegrationsCollapse";
 import UserCollapse from "./SettingsCollapses/UserCollapse";
 import MembersTab from "./SettingTabs/MembersTab";
 import RolesTab from "./SettingTabs/RolesTab";
-import { getCurrentUser, getOrganizationRoles } from "../APIUtils/APIUtils";
+import { getCurrentUser } from "../API/UserAPI";
+import { getOrganizationRoles } from "../API/RoleAPI";
 
 // orgId may be null
 const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {

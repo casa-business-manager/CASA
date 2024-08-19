@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { getCurrentUser } from "../API/UserAPI";
 import {
-	getCurrentUser,
 	getOrganizations,
 	createOrganization,
 	updateOrganization,
-} from "../APIUtils/APIUtils";
+} from "../API/OrganizationAPI";
 import "./Organization.css";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import NavBar from "../NavBar/NavBar";
