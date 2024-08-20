@@ -735,10 +735,11 @@ const RolesTabSettings = ({ settings, user }) => {
 	return (
 		<>
 			<Typography variant="h5">Roles</Typography>
-			<Box sx={{ height: "55vh", display: "flex", gap: 1 }}>
+			<Box sx={{ height: "100%", display: "flex", gap: 1 }}>
 				<Box
 					sx={{
 						width: "45%",
+						height: "100%",
 						pt: 1,
 						overflow: "auto",
 					}}

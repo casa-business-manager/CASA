@@ -403,7 +403,7 @@ const MembersTab = ({
 			selected={selected}
 			indentLevel={indentLevel}
 			onClick={onClick}
-			SettingsPage={<UserManagement orgId={orgId} />}
+			SettingsPage={<UserManagement orgId={orgId} settings={settings} />}
 		/>
 	);
 };

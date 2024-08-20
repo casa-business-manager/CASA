@@ -111,7 +111,7 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 			open={dialogOpen}
 			onClose={onCloseWrapper}
 			fullWidth
-			maxWidth="xl"
+			maxWidth="100%"
 			PaperProps={{
 				sx: {
 					height: "80vh",
