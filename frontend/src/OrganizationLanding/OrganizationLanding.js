@@ -5,7 +5,6 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import EmailIcon from "@mui/icons-material/Email";
-import UserManagement from "../UserManagement/UserManagement";
 import SettingsButton from "../Settings/SettingsButton";
 
 const OrganizationLanding = () => {
