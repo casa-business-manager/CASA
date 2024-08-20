@@ -357,7 +357,7 @@ const BaseCalendar = ({ orgIds }) => {
 				)}
 				defaultDate={moment().toDate()}
 				defaultView={Views.WEEK}
-				style={{ height: "90vh" }}
+				style={{ flexGrow: 1, height: "100%" }}
 				onEventDrop={moveEvent}
 				onEventResize={resizeEvent}
 				popup
