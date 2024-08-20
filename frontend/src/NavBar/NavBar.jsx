@@ -109,35 +109,58 @@ const NavBar = ({}) => {
 			sx={{
 				backgroundColor: "#3b89f3",
 				mb: 1,
+				height: "64px", // fixed height for AppBar
+				overflow: "hidden", // hide overflow
 			}}
 		>
-			<Toolbar>
-				<MenuIcon sx={{ marginRight: "50px", color: "#fff" }}></MenuIcon>
-				<Typography onClick={handleLogout}>CASA</Typography>
-				{navbarLinks.map((link) => (
-					<>
-						<ChevronRight sx={{ m: 1 }} />
-						<Typography
-							onClick={() => {
-								handleClickPath(link);
-							}}
-						>
-							{link.name}
-						</Typography>
-					</>
-				))}
-				<Box sx={{ flexGrow: 1 }} />
-				{/* Log out and Account buttons. Must make them white manualluy */}
-				{navbarLinks.find((link) => link.name === "Login") ? null : (
-					<>
-						<IconButton onClick={handleLogout}>
-							<LogoutIcon sx={{ color: "#fff" }} />
-						</IconButton>
-						<IconButton onClick={handleAccountButton}>
-							<AccountCircleIcon sx={{ color: "#fff" }} />
-						</IconButton>
-					</>
-				)}
+			<Toolbar
+				sx={{
+					display: "flex",
+					justifyContent: "space-between",
+					alignItems: "center",
+					height: "100%", // ensure full height is used
+				}}
+			>
+				<Box sx={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+					<MenuIcon sx={{ marginRight: "16px", color: "#fff" }} />
+					<Typography variant="h6" noWrap>
+						CASA
+					</Typography>
+				</Box>
+
+				<Box
+					sx={{
+						display: "flex",
+						alignItems: "center",
+						flexGrow: 1, // allows the middle box to grow and take available space
+						justifyContent: "flex-start", // align contents to the left
+						overflow: "hidden", // prevent overflow
+						flexShrink: 1, // allows the box to shrink if necessary
+						minWidth: 0, // ensures the box can shrink properly
+					}}
+				>
+					{navbarLinks.map((link, index) => (
+						<React.Fragment key={index}>
+							<ChevronRight sx={{ m: 1 }} />
+							<Typography
+								variant="subtitle1"
+								noWrap
+								onClick={() => handleClickPath(link)}
+							>
+								{link.name}
+							</Typography>
+						</React.Fragment>
+					))}
+				</Box>
+
+				<Box sx={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+					<IconButton onClick={handleLogout}>
+						<LogoutIcon sx={{ color: "#fff" }} />
+					</IconButton>
+					<IconButton onClick={handleAccountButton}>
+						<AccountCircleIcon sx={{ color: "#fff" }} />
+					</IconButton>
+				</Box>
 			</Toolbar>
 		</AppBar>
 	);
