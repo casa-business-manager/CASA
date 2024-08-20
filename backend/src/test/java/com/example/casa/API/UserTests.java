@@ -86,7 +86,7 @@ public class UserTests {
 				AuthResponse.class);
 		String token = authResponse.getAccessToken();
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/user/me")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getCurrentUser")
 				.header("Authorization", "Bearer " + token)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -95,7 +95,7 @@ public class UserTests {
 
 	@Test
 	void getCurrentUserWithoutToken() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/user/me")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getCurrentUser")
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isUnauthorized());
 	}

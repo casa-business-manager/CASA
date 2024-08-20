@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import {
 	getUsersInOrganization,
 	inviteUserToOrganization,
 	removeUserFromOrganization,
-} from "../APIUtils/APIUtils";
+} from "../API/OrganizationAPI";
 import { DataGrid } from "@mui/x-data-grid";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";

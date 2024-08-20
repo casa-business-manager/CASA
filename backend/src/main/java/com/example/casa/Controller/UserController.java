@@ -2,7 +2,7 @@ package com.example.casa.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.casa.Exception.ResourceNotFoundException;
@@ -17,7 +17,7 @@ public class UserController {
 	@Autowired
 	private UserRepository userRepository;
 
-	@GetMapping("/user/me")
+	@PostMapping("/getCurrentUser")
 	@PreAuthorize("hasRole('USER')")
 	public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
 		return userRepository.findById(userPrincipal.getId())

@@ -26,7 +26,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import ShieldIcon from "@mui/icons-material/Shield";
 import CloseIcon from "@mui/icons-material/Close";
 import { GraphCanvas, lightTheme } from "reagraph";
-import { createRole, deleteRole, editRole } from "../../APIUtils/APIUtils";
+import { createRole, deleteRole, editRole } from "../../API/RoleAPI";
 import MoveUpIcon from "@mui/icons-material/MoveUp";
 import UserChip from "../../common/UserChip";
 

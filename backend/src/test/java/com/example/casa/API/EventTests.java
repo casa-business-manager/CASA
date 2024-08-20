@@ -92,7 +92,7 @@ public class EventTests {
 	}
 
 	private String getUserId(String token, String email) throws Exception {
-		ResultActions userDataResult = mockMvc.perform(MockMvcRequestBuilders.get("/user/me")
+		ResultActions userDataResult = mockMvc.perform(MockMvcRequestBuilders.post("/getCurrentUser")
 				.header("Authorization", "Bearer " + token)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -148,7 +148,7 @@ public class EventTests {
 		String organizationJson = objectMapper.writeValueAsString(organizationDto);
 
 		// create new org
-		mockMvc.perform(MockMvcRequestBuilders.post("/user/" + waltId + "/organizations")
+		mockMvc.perform(MockMvcRequestBuilders.post("/createOrganizationForUser/user/" + waltId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(organizationJson))
@@ -161,7 +161,7 @@ public class EventTests {
 				.andExpect(jsonPath("$.users[0].id").value(waltId));
 
 		// get new org
-		ResultActions newOrg = mockMvc.perform(MockMvcRequestBuilders.get("/user/" + waltId + "/organizations")
+		ResultActions newOrg = mockMvc.perform(MockMvcRequestBuilders.post("/getOrganizationsForUser/user/" + waltId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -174,7 +174,7 @@ public class EventTests {
 		orgId = extractJsonString(newOrg.andReturn().getResponse().getContentAsString(), "orgId");
 
 		// Invite user Jessie Pinkman
-		mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/invite")
+		mockMvc.perform(MockMvcRequestBuilders.post("/inviteUserToOrganization/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.param("email", jessieEmail)
 				.contentType(MediaType.APPLICATION_JSON))
@@ -186,7 +186,7 @@ public class EventTests {
 	@Test
 	void getEmptyEventsUnbounded() throws Exception {
 		// Get Walt unbounded events - empty
-		mockMvc.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + waltId)
+		mockMvc.perform(MockMvcRequestBuilders.post("/getCalendarData/organization/" + orgId + "/user/" + waltId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -198,7 +198,7 @@ public class EventTests {
 		// Get Walt unbounded events - empty
 		String startISO = DateConverter.numbers2ISO(2024, 7, 22, 21, 30, 40);
 		String endISO = DateConverter.numbers2ISO(2024, 7, 28, 21, 32, 41);
-		mockMvc.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + waltId)
+		mockMvc.perform(MockMvcRequestBuilders.post("/getCalendarData/organization/" + orgId + "/user/" + waltId)
 				.header("Authorization", "Bearer " + waltToken)
 				.param("startDate", startISO)
 				.param("endDate", endISO)
@@ -225,7 +225,7 @@ public class EventTests {
 		newEventDto.setEventCreatorId(waltId);
 		newEventDto.setEventAccessorIds(new String[] { waltId, jessieId });
 		String newEventJson = objectMapper.writeValueAsString(newEventDto);
-		mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/event")
+		mockMvc.perform(MockMvcRequestBuilders.post("/createEvent/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(newEventJson))
@@ -243,7 +243,7 @@ public class EventTests {
 		newEventDto.setEventCreatorId(waltId);
 		newEventDto.setEventAccessorIds(new String[] { waltId });
 		newEventJson = objectMapper.writeValueAsString(newEventDto);
-		mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/event")
+		mockMvc.perform(MockMvcRequestBuilders.post("/createEvent/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(newEventJson))
@@ -261,7 +261,7 @@ public class EventTests {
 		newEventDto.setEventCreatorId(waltId);
 		newEventDto.setEventAccessorIds(new String[] { waltId });
 		newEventJson = objectMapper.writeValueAsString(newEventDto);
-		mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/event")
+		mockMvc.perform(MockMvcRequestBuilders.post("/createEvent/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(newEventJson))
@@ -279,7 +279,7 @@ public class EventTests {
 		newEventDto.setEventCreatorId(waltId);
 		newEventDto.setEventAccessorIds(new String[] { waltId });
 		newEventJson = objectMapper.writeValueAsString(newEventDto);
-		mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/event")
+		mockMvc.perform(MockMvcRequestBuilders.post("/createEvent/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(newEventJson))
@@ -297,7 +297,7 @@ public class EventTests {
 		newEventDto.setEventCreatorId(waltId);
 		newEventDto.setEventAccessorIds(new String[] { waltId });
 		newEventJson = objectMapper.writeValueAsString(newEventDto);
-		mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/event")
+		mockMvc.perform(MockMvcRequestBuilders.post("/createEvent/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(newEventJson))
@@ -315,14 +315,14 @@ public class EventTests {
 		newEventDto.setEventCreatorId(waltId);
 		newEventDto.setEventAccessorIds(new String[] { waltId });
 		newEventJson = objectMapper.writeValueAsString(newEventDto);
-		mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/event")
+		mockMvc.perform(MockMvcRequestBuilders.post("/createEvent/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(newEventJson))
 				.andExpect(status().isOk());
 
 		// Get Walt unbounded events - includes all events
-		mockMvc.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + waltId)
+		mockMvc.perform(MockMvcRequestBuilders.post("/getCalendarData/organization/" + orgId + "/user/" + waltId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -371,7 +371,7 @@ public class EventTests {
 						is("Gaslight Hank"))));
 
 		// Get Jessie unbounded events - just one event
-		mockMvc.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + jessieId)
+		mockMvc.perform(MockMvcRequestBuilders.post("/getCalendarData/organization/" + orgId + "/user/" + jessieId)
 				.header("Authorization", "Bearer " + jessieToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -381,7 +381,7 @@ public class EventTests {
 		// Get Walt bounded events - includes only events in the [6/30, 8/3] block
 		startISO = DateConverter.numbers2ISO(2024, 6, 30);
 		endISO = DateConverter.numbers2ISO(2024, 8, 4);
-		mockMvc.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + waltId)
+		mockMvc.perform(MockMvcRequestBuilders.post("/getCalendarData/organization/" + orgId + "/user/" + waltId)
 				.header("Authorization", "Bearer " + waltToken)
 				.param("startDate", startISO)
 				.param("endDate", endISO)
@@ -418,7 +418,7 @@ public class EventTests {
 		String endISO;
 
 		// Get Jessie unbounded events - empty
-		mockMvc.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + jessieId)
+		mockMvc.perform(MockMvcRequestBuilders.post("/getCalendarData/organization/" + orgId + "/user/" + jessieId)
 				.header("Authorization", "Bearer " + jessieToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -436,7 +436,7 @@ public class EventTests {
 		eventDto.setEventCreatorId(waltId);
 		eventDto.setEventAccessorIds(new String[] { waltId, jessieId });
 		String newEventJson = objectMapper.writeValueAsString(eventDto);
-		mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/event")
+		mockMvc.perform(MockMvcRequestBuilders.post("/createEvent/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(newEventJson))
@@ -444,7 +444,7 @@ public class EventTests {
 
 		// Get Jessie unbounded events - Sees event
 		ResultActions events = mockMvc
-				.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + jessieId)
+				.perform(MockMvcRequestBuilders.post("/getCalendarData/organization/" + orgId + "/user/" + jessieId)
 						.header("Authorization", "Bearer " + jessieToken)
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -455,7 +455,7 @@ public class EventTests {
 		// Walt edits event
 		eventDto.setTitle("Cooking");
 		newEventJson = objectMapper.writeValueAsString(eventDto);
-		mockMvc.perform(MockMvcRequestBuilders.put("/event/" + eventId)
+		mockMvc.perform(MockMvcRequestBuilders.post("/updateEvent/event/" + eventId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(newEventJson))
@@ -463,7 +463,7 @@ public class EventTests {
 				.andExpect(jsonPath("$.title", is("Cooking")));
 
 		// Get Jessie unbounded events - Sees edit
-		mockMvc.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + jessieId)
+		mockMvc.perform(MockMvcRequestBuilders.post("/getCalendarData/organization/" + orgId + "/user/" + jessieId)
 				.header("Authorization", "Bearer " + jessieToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -473,7 +473,7 @@ public class EventTests {
 		// Jessie can't edit event
 		eventDto.setTitle("Mr. White gives me all his money");
 		newEventJson = objectMapper.writeValueAsString(eventDto);
-		mockMvc.perform(MockMvcRequestBuilders.put("/event/" + eventId)
+		mockMvc.perform(MockMvcRequestBuilders.post("/updateEvent/event/" + eventId)
 				.header("Authorization", "Bearer " + jessieToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(newEventJson))
@@ -483,7 +483,7 @@ public class EventTests {
 		eventDto.setTitle("Cooking");
 		eventDto.setEventAccessorIds(new String[] { waltId });
 		newEventJson = objectMapper.writeValueAsString(eventDto);
-		mockMvc.perform(MockMvcRequestBuilders.put("/event/" + eventId)
+		mockMvc.perform(MockMvcRequestBuilders.post("/updateEvent/event/" + eventId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(newEventJson))
@@ -491,7 +491,7 @@ public class EventTests {
 				.andExpect(jsonPath("$.title", is("Cooking")));
 
 		// Get Jessie unbounded events - empty again
-		mockMvc.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + jessieId)
+		mockMvc.perform(MockMvcRequestBuilders.post("/getCalendarData/organization/" + orgId + "/user/" + jessieId)
 				.header("Authorization", "Bearer " + jessieToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -516,7 +516,7 @@ public class EventTests {
 		eventDto.setEventCreatorId(waltId);
 		eventDto.setEventAccessorIds(new String[] { waltId, jessieId });
 		String newEventJson = objectMapper.writeValueAsString(eventDto);
-		mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/event")
+		mockMvc.perform(MockMvcRequestBuilders.post("/createEvent/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(newEventJson))
@@ -524,7 +524,7 @@ public class EventTests {
 
 		// Walt sees event
 		ResultActions events = mockMvc
-				.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + waltId)
+				.perform(MockMvcRequestBuilders.post("/getCalendarData/organization/" + orgId + "/user/" + waltId)
 						.header("Authorization", "Bearer " + waltToken)
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -533,13 +533,13 @@ public class EventTests {
 		String eventId = extractJsonString(events.andReturn().getResponse().getContentAsString(), "eventId");
 
 		// Walt deletes event
-		mockMvc.perform(MockMvcRequestBuilders.delete("/event/" + eventId)
+		mockMvc.perform(MockMvcRequestBuilders.post("/deleteEvent/event/" + eventId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
 		// Walt no longer sees event
-		mockMvc.perform(MockMvcRequestBuilders.get("/organizationCalendar/" + orgId + "/userId/" + waltId)
+		mockMvc.perform(MockMvcRequestBuilders.post("/getCalendarData/organization/" + orgId + "/user/" + waltId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -547,7 +547,7 @@ public class EventTests {
 
 		// Walt shouldn't be able to delete again
 		try {
-			mockMvc.perform(MockMvcRequestBuilders.delete("/event/" + eventId)
+			mockMvc.perform(MockMvcRequestBuilders.post("/deleteEvent/event/" + eventId)
 					.header("Authorization", "Bearer " + waltToken)
 					.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().is4xxClientError());

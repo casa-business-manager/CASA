@@ -36,7 +36,7 @@ public class OrganizationController {
 	@Autowired
 	private EventRepository eventRepository;
 
-	@GetMapping("/user/{userId}/organizations")
+	@PostMapping("/getOrganizationsForUser/user/{userId}")
 	public ResponseEntity<?> getOrganizationsForUser(@PathVariable String userId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
@@ -49,7 +49,7 @@ public class OrganizationController {
 		return ResponseEntity.ok(organizations);
 	}
 
-	@PostMapping("/user/{userId}/organizations")
+	@PostMapping("/createOrganizationForUser/user/{userId}")
 	public ResponseEntity<?> createOrganizationForUser(@PathVariable String userId,
 			@RequestBody OrganizationDto organizationDto) {
 		User user = userRepository.findById(userId)
@@ -88,10 +88,11 @@ public class OrganizationController {
 		return ResponseEntity.ok(organization);
 	}
 
-	@PutMapping("/organization/{id}")
-	public ResponseEntity<?> updateOrganization(@PathVariable String id, @RequestBody OrganizationDto organizationDto) {
-		Organization organization = organizationRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Organization not found with id: " + id));
+	@PostMapping("/updateOrganization/organization/{orgId}")
+	public ResponseEntity<?> updateOrganization(@PathVariable String orgId,
+			@RequestBody OrganizationDto organizationDto) {
+		Organization organization = organizationRepository.findById(orgId)
+				.orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
 
 		organization.setOrgName(organizationDto.getOrgName());
 		organization.setOrgDescription(organizationDto.getOrgDescription());
@@ -101,28 +102,28 @@ public class OrganizationController {
 		return ResponseEntity.ok(updatedOrganization);
 	}
 
-	@DeleteMapping("/organization/{id}")
-	public ResponseEntity<?> deleteOrganization(@PathVariable String id) {
-		Organization organization = organizationRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Organization not found with id: " + id));
+	@PostMapping("/deleteOrganization/organization/{orgId}")
+	public ResponseEntity<?> deleteOrganization(@PathVariable String orgId) {
+		Organization organization = organizationRepository.findById(orgId)
+				.orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
 
-		organizationRepository.deleteById(id);
+		organizationRepository.deleteById(orgId);
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/organization/{id}/users")
-	public ResponseEntity<?> getUsersInOrganization(@PathVariable String id) {
-		Organization organization = organizationRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Organization not found with id: " + id));
+	@PostMapping("/getUsersInOrganization/organization/{orgId}")
+	public ResponseEntity<?> getUsersInOrganization(@PathVariable String orgId) {
+		Organization organization = organizationRepository.findById(orgId)
+				.orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
 
 		Set<User> users = organization.getUsers();
 		return ResponseEntity.ok(users);
 	}
 
-	@GetMapping("/organization/{id}/info")
-	public ResponseEntity<?> getOrganizationInfo(@PathVariable String id) {
-		Organization organization = organizationRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Organization not found with id: " + id));
+	@PostMapping("/getOrganizationInfo/organization/{orgId}")
+	public ResponseEntity<?> getOrganizationInfo(@PathVariable String orgId) {
+		Organization organization = organizationRepository.findById(orgId)
+				.orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
 
 		Set<User> users = organization.getUsers();
 
@@ -133,7 +134,7 @@ public class OrganizationController {
 		return ResponseEntity.ok(orgInfo);
 	}
 
-	@PostMapping("/organization/{orgId}/invite")
+	@PostMapping("/inviteUserToOrganization/organization/{orgId}")
 	public ResponseEntity<?> inviteUserToOrganization(@PathVariable String orgId, @RequestParam String email) {
 		Organization organization = organizationRepository.findById(orgId)
 				.orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
@@ -150,7 +151,7 @@ public class OrganizationController {
 		return ResponseEntity.ok(new ApiResponse(true, "User invited successfully"));
 	}
 
-	@DeleteMapping("/organization/{orgId}/user/{userId}")
+	@PostMapping("/removeUserFromOrganization/organization/{orgId}/user/{userId}")
 	public ResponseEntity<?> removeUserFromOrganization(@PathVariable String orgId, @PathVariable String userId) {
 		Organization organization = organizationRepository.findById(orgId)
 				.orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));

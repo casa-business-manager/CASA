@@ -9,11 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,7 +41,7 @@ public class EventController {
 
 	// Do we want to change this so you pass in [startDate, endDate] instead of
 	// [startDate, endDate) ?
-	@GetMapping("/organizationCalendar/{orgId}/userId/{userId}")
+	@PostMapping("/getCalendarData/organization/{orgId}/user/{userId}")
 	public ResponseEntity<?> getCalendarData(@PathVariable String orgId,
 			@PathVariable String userId,
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
@@ -87,7 +84,7 @@ public class EventController {
 		return ResponseEntity.ok(new CalendarResponse(events));
 	}
 
-	@PostMapping("/organization/{orgId}/event")
+	@PostMapping("/createEvent/organization/{orgId}")
 	public ResponseEntity<?> createEvent(@PathVariable String orgId, @RequestBody EventDto eventRequest) {
 		Event newEvent = new Event();
 		newEvent.setTitle(eventRequest.getTitle());
@@ -119,7 +116,7 @@ public class EventController {
 		return ResponseEntity.ok(newEvent);
 	}
 
-	@PutMapping("/event/{eventId}")
+	@PostMapping("/updateEvent/event/{eventId}")
 	public ResponseEntity<?> updateEvent(@PathVariable String eventId, @RequestBody EventDto eventRequest) {
 		String currentUserId = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -155,7 +152,7 @@ public class EventController {
 		return ResponseEntity.ok(event);
 	}
 
-	@DeleteMapping("/event/{eventId}")
+	@PostMapping("/deleteEvent/event/{eventId}")
 	public ResponseEntity<?> deleteEvent(@PathVariable String eventId) {
 		Event event = eventRepository.findById(eventId)
 				.orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
