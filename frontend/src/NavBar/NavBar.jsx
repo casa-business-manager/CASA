@@ -13,8 +13,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronRight from "@mui/icons-material/ChevronRight";
 import OrganizationsContext from "../Contexts/OrganizationsContext";
-import { path } from "slate";
-import { getCurrentUser, getOrganizations } from "../APIUtils/APIUtils";
+import { getOrganizations } from "../API/OrganizationAPI";
 
 const parseLocation = (location) => {
 	const path = location.pathname;

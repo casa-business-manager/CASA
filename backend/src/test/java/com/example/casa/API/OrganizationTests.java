@@ -87,7 +87,7 @@ public class OrganizationTests {
 	}
 
 	private String getUserId(String token, String email) throws Exception {
-		ResultActions userDataResult = mockMvc.perform(MockMvcRequestBuilders.get("/user/me")
+		ResultActions userDataResult = mockMvc.perform(MockMvcRequestBuilders.post("/getCurrentUser")
 				.header("Authorization", "Bearer " + token)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -145,13 +145,13 @@ public class OrganizationTests {
 		String organizationJson = objectMapper.writeValueAsString(organizationDto);
 
 		// Get nonexistant org
-		mockMvc.perform(MockMvcRequestBuilders.get("/user/" + waltId + "/organizations")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getOrganizationsForUser/user/" + waltId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNoContent());
 
 		// create new org
-		mockMvc.perform(MockMvcRequestBuilders.post("/user/" + waltId + "/organizations")
+		mockMvc.perform(MockMvcRequestBuilders.post("/createOrganizationForUser/user/" + waltId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(organizationJson))
@@ -164,7 +164,7 @@ public class OrganizationTests {
 				.andExpect(jsonPath("$.users[0].id").value(waltId));
 
 		// get new org
-		ResultActions newOrg = mockMvc.perform(MockMvcRequestBuilders.get("/user/" + waltId + "/organizations")
+		ResultActions newOrg = mockMvc.perform(MockMvcRequestBuilders.post("/getOrganizationsForUser/user/" + waltId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -182,7 +182,7 @@ public class OrganizationTests {
 		organizationUpdateDto.setOrgDescription("Make meth");
 		organizationUpdateDto.setOrgLocation("Albuquerque");
 		String organizationUpdateJson = objectMapper.writeValueAsString(organizationUpdateDto);
-		mockMvc.perform(MockMvcRequestBuilders.put("/organization/" + orgId)
+		mockMvc.perform(MockMvcRequestBuilders.post("/updateOrganization/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(organizationUpdateJson))
@@ -195,7 +195,7 @@ public class OrganizationTests {
 				.andExpect(jsonPath("$.users[0].id").value(waltId));
 
 		// Get users - only Walter is in
-		mockMvc.perform(MockMvcRequestBuilders.get("/organization/" + orgId + "/users")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getUsersInOrganization/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -203,7 +203,7 @@ public class OrganizationTests {
 				.andExpect(jsonPath("$[1]").doesNotExist());
 
 		// Invite user Jessie Pinkman
-		mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/invite")
+		mockMvc.perform(MockMvcRequestBuilders.post("/inviteUserToOrganization/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.param("email", jessieEmail)
 				.contentType(MediaType.APPLICATION_JSON))
@@ -212,14 +212,14 @@ public class OrganizationTests {
 				.andExpect(jsonPath("$.message").value("User invited successfully"));
 
 		// Get users - Walter and Jessie
-		mockMvc.perform(MockMvcRequestBuilders.get("/organization/" + orgId + "/users")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getUsersInOrganization/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$[*].id", hasItems(waltId, jessieId)));
 
 		// Get org works for Jessie
-		mockMvc.perform(MockMvcRequestBuilders.get("/user/" + jessieId + "/organizations")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getOrganizationsForUser/user/" + jessieId)
 				.header("Authorization", "Bearer " + jessieToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -227,23 +227,24 @@ public class OrganizationTests {
 				.andExpect(jsonPath("$[0].orgId").value(orgId));
 
 		// TODO: Jessie cant use Walt's ID to get orgs
-		// mockMvc.perform(MockMvcRequestBuilders.get("/user/" + waltId +
-		// "/organizations")
+		// mockMvc.perform(MockMvcRequestBuilders.post("/getOrganizationsForUser/user/"
+		// + jessieId)
 		// .header("Authorization", "Bearer " + jessieToken)
 		// .contentType(MediaType.APPLICATION_JSON))
 		// .andExpect(status().isOk()) // Why is this passing???
 		// .andExpect(jsonPath("$[0].orgName").value("Meth Club"))
 		// .andExpect(jsonPath("$[0].orgId").value(orgId));
-		//
+
 		// Remove user Jessie Pinkman
-		mockMvc.perform(MockMvcRequestBuilders.delete("/organization/" + orgId + "/user/" + jessieId)
-				.header("Authorization", "Bearer " + waltToken)
-				.contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/removeUserFromOrganization/organization/" + orgId + "/user/" + jessieId)
+						.header("Authorization", "Bearer " + waltToken)
+						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.success").value(true));
 
 		// Get users - only Walter is in
-		mockMvc.perform(MockMvcRequestBuilders.get("/organization/" + orgId + "/users")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getUsersInOrganization/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -251,28 +252,29 @@ public class OrganizationTests {
 				.andExpect(jsonPath("$[1]").doesNotExist());
 
 		// TODO: Jessie can't remove Walt
-		// mockMvc.perform(MockMvcRequestBuilders.delete("/organization/" + orgId +
-		// "/user/" + waltId)
+		// mockMvc.perform(MockMvcRequestBuilders.post("/removeUserFromOrganization/organization/"
+		// + orgId + "/user/" + waltId)
 		// .header("Authorization", "Bearer " + jessieToken)
 		// .contentType(MediaType.APPLICATION_JSON))
 		// .andExpect(status().isOk()) // Why is this passing???
 		// .andExpect(jsonPath("$.success").value(true));
-		//
+
 		// Delete org
-		mockMvc.perform(MockMvcRequestBuilders.delete("/organization/" + orgId)
+		mockMvc.perform(MockMvcRequestBuilders.post("/deleteOrganization/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
 		// TODO: Get org doesnt show
-		// mockMvc.perform(MockMvcRequestBuilders.get("/user/" + waltId +
-		// "/organizations")
+		// mockMvc.perform(MockMvcRequestBuilders.post("/getOrganizationsForUser/user/"
+		// + waltId)
 		// .header("Authorization", "Bearer " + waltToken)
 		// .contentType(MediaType.APPLICATION_JSON))
 		// .andExpect(status().isNoContent()); // Not right
-		// System.out.println(12345);
-		// System.out.println(noOrgs.andReturn().getResponse().getContentAsString()); //
-		// Org is still there???
+		// // System.out.println(12345);
+		// // System.out.println(noOrgs.andReturn().getResponse().getContentAsString());
+		// //
+		// // Org is still there???
 	}
 
 	@Test
@@ -283,7 +285,7 @@ public class OrganizationTests {
 		organizationUpdateDto.setOrgLocation("Albuquerque");
 		String organizationUpdateJson = objectMapper.writeValueAsString(organizationUpdateDto);
 		try {
-			mockMvc.perform(MockMvcRequestBuilders.put("/organization/" + "0")
+			mockMvc.perform(MockMvcRequestBuilders.post("/updateOrganization/organization/" + "0")
 					.header("Authorization", "Bearer " + waltToken)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(organizationUpdateJson))

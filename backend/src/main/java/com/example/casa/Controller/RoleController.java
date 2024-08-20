@@ -5,10 +5,8 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,7 +30,7 @@ public class RoleController {
 	@Autowired
 	private RoleRepository roleRepository;
 
-	@GetMapping("/organization/{orgId}/roles")
+	@PostMapping("/getOrganizationRoles/organization/{orgId}")
 	public ResponseEntity<?> getOrganizationRoles(@PathVariable String orgId) {
 		Organization org = organizationRepository.findById(orgId)
 				.orElseThrow(() -> new RuntimeException("Organization could not found with org id: " + orgId));
@@ -41,10 +39,10 @@ public class RoleController {
 		return ResponseEntity.ok(orgRoles);
 	}
 
-	@GetMapping("/roles/{id}/users")
-	public ResponseEntity<?> getRoleUsers(@PathVariable String id) {
-		Role role = roleRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Role could not found with role id: " + id));
+	@PostMapping("/getRoleUsers/role/{roleId}")
+	public ResponseEntity<?> getRoleUsers(@PathVariable String roleId) {
+		Role role = roleRepository.findById(roleId)
+				.orElseThrow(() -> new RuntimeException("Role could not found with role id: " + roleId));
 
 		Set<User> users = role.getUsers();
 		return ResponseEntity.ok(users);
@@ -52,7 +50,7 @@ public class RoleController {
 
 	// Causing issues and not fucking working cuz of duplicate entries
 	// why dont you duplicate the amount of balls in yo jaws spring boot? fuck off
-	// @GetMapping("/user/{userId}/organization/{orgId}/roles")
+	// @PostMapping("/getRolesForUserInOrg/user/{userId}/organization/{orgId}")
 	// public ResponseEntity<?> getRolesForUserInOrg(@PathVariable String userId,
 	// @PathVariable String orgId) {
 	// User user = userRepository.findById(userId)
@@ -71,7 +69,7 @@ public class RoleController {
 	// return ResponseEntity.ok(roles);
 	// }
 
-	@PostMapping("/organization/{orgId}/roles")
+	@PostMapping("/createRole/organization/{orgId}")
 	public ResponseEntity<?> createRole(@PathVariable String orgId, @RequestBody RoleDto newRoleData) {
 		Organization org = organizationRepository.findById(orgId)
 				.orElseThrow(() -> new RuntimeException("Organization could not found with org id: " + orgId));
@@ -102,7 +100,7 @@ public class RoleController {
 		return ResponseEntity.ok(newRole);
 	}
 
-	@PutMapping("/roles/{roleId}")
+	@PostMapping("/editRole/role/{roleId}")
 	public ResponseEntity<?> editRole(@PathVariable String roleId, @RequestBody RoleDto newRoleData) {
 		Role originalRole = roleRepository.findById(roleId)
 				.orElseThrow(() -> new RuntimeException("Role could not found with role id: " + roleId));
@@ -147,7 +145,7 @@ public class RoleController {
 		return ResponseEntity.ok(originalRole);
 	}
 
-	@PutMapping("user/{userId}/roles/{roleId}/add")
+	@PostMapping("/addRoleToUser/user/{userId}/role/{roleId}")
 	public ResponseEntity<?> addRoleToUser(@PathVariable String userId, @PathVariable String roleId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new RuntimeException("User could not found with user id: " + userId));
@@ -163,7 +161,7 @@ public class RoleController {
 		return ResponseEntity.ok(user);
 	}
 
-	@PutMapping("user/{userId}/roles/{roleId}/remove")
+	@PostMapping("/removeRoleFromUser/user/{userId}/role/{roleId}")
 	public ResponseEntity<?> removeRoleFromUser(@PathVariable String userId, @PathVariable String roleId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new RuntimeException("User could not found with user id: " + userId));
@@ -180,14 +178,14 @@ public class RoleController {
 		return ResponseEntity.ok(user);
 	}
 
-	@DeleteMapping("/roles/{id}")
-	public ResponseEntity<?> deleteRole(@PathVariable String id) {
-		Role role = roleRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Role could not be found with id: " + id));
+	@DeleteMapping("/deleteRole/role/{roleId}")
+	public ResponseEntity<?> deleteRole(@PathVariable String roleId) {
+		Role role = roleRepository.findById(roleId)
+				.orElseThrow(() -> new RuntimeException("Role could not be found with id: " + roleId));
 		if (role.getManagedBy() == null) {
 			return ResponseEntity.badRequest().body("Cannot delete root role");
 		}
-		roleRepository.deleteById(id);
+		roleRepository.deleteById(roleId);
 		return ResponseEntity.ok().build();
 	}
 }

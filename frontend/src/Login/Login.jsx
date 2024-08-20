@@ -15,7 +15,7 @@ import {
 import { GoogleLoginButton } from "react-social-login-buttons";
 import { GOOGLE_AUTH_URL } from "../Constants/constants";
 import { useNavigate } from "react-router-dom";
-import { login, signup } from "../APIUtils/APIUtils";
+import { login, signup } from "../API/UserAPI";
 import { ACCESS_TOKEN } from "../Constants/constants";
 import loginImage from "../Assets/loginScreen.jpg";
 

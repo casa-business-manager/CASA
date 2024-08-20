@@ -99,7 +99,7 @@ public class RoleTests {
 	}
 
 	private String getUserId(String token, String email) throws Exception {
-		ResultActions userDataResult = mockMvc.perform(MockMvcRequestBuilders.get("/user/me")
+		ResultActions userDataResult = mockMvc.perform(MockMvcRequestBuilders.post("/getCurrentUser")
 				.header("Authorization", "Bearer " + token)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -155,7 +155,7 @@ public class RoleTests {
 		String organizationJson = objectMapper.writeValueAsString(organizationDto);
 
 		// create new org
-		mockMvc.perform(MockMvcRequestBuilders.post("/user/" + waltId + "/organizations")
+		mockMvc.perform(MockMvcRequestBuilders.post("/createOrganizationForUser/user/" + waltId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(organizationJson))
@@ -168,7 +168,7 @@ public class RoleTests {
 				.andExpect(jsonPath("$.users[0].id").value(waltId));
 
 		// get new org
-		ResultActions newOrg = mockMvc.perform(MockMvcRequestBuilders.get("/user/" + waltId + "/organizations")
+		ResultActions newOrg = mockMvc.perform(MockMvcRequestBuilders.post("/getOrganizationsForUser/user/" + waltId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -181,7 +181,7 @@ public class RoleTests {
 		orgId = extractJsonString(newOrg.andReturn().getResponse().getContentAsString(), "orgId");
 
 		// Invite user Jessie Pinkman
-		mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/invite")
+		mockMvc.perform(MockMvcRequestBuilders.post("/inviteUserToOrganization/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.param("email", jessieEmail)
 				.contentType(MediaType.APPLICATION_JSON))
@@ -193,7 +193,7 @@ public class RoleTests {
 	@Test
 	void getRolesInitial() throws Exception {
 		// Get roles for org
-		ResultActions roles = mockMvc.perform(MockMvcRequestBuilders.get("/organization/" + orgId + "/roles")
+		ResultActions roles = mockMvc.perform(MockMvcRequestBuilders.post("/getOrganizationRoles/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -202,8 +202,8 @@ public class RoleTests {
 		String rootId = extractJsonString(roles.andReturn().getResponse().getContentAsString(), "roleId");
 
 		// // Get roles for Walt
-		// mockMvc.perform(MockMvcRequestBuilders.get("/user/" + waltId +
-		// "/organization/" + orgId + "/roles")
+		// mockMvc.perform(MockMvcRequestBuilders.post("/getRolesForUserInOrg/user/" +
+		// waltId + "/organization/" + orgId)
 		// .header("Authorization", "Bearer " + waltToken)
 		// .contentType(MediaType.APPLICATION_JSON))
 		// .andExpect(status().isOk())
@@ -211,14 +211,14 @@ public class RoleTests {
 		// .andExpect(jsonPath("$[0].name").value("root"));
 
 		// // Get roles for Jessie
-		// mockMvc.perform(MockMvcRequestBuilders.get("/user/" + jessieId +
-		// "/organization/" + orgId + "/roles")
+		// mockMvc.perform(MockMvcRequestBuilders.post("/getRolesForUserInOrg/user/" +
+		// jessieId + "/organization/" + orgId)
 		// .header("Authorization", "Bearer " + jessieToken)
 		// .contentType(MediaType.APPLICATION_JSON))
 		// .andExpect(status().isNoContent());
 
 		// Get users with role "root"
-		mockMvc.perform(MockMvcRequestBuilders.get("/roles/" + rootId + "/users")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getRoleUsers/role/" + rootId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -234,7 +234,7 @@ public class RoleTests {
 		String roleJson;
 
 		// Get root ID
-		ResultActions roles = mockMvc.perform(MockMvcRequestBuilders.get("/organization/" + orgId + "/roles")
+		ResultActions roles = mockMvc.perform(MockMvcRequestBuilders.post("/getOrganizationRoles/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -247,7 +247,7 @@ public class RoleTests {
 		roleDto.setPermissions("everything");
 		roleDto.setManagedById(rootId);
 		roleJson = objectMapper.writeValueAsString(roleDto);
-		ResultActions newRole = mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/roles")
+		ResultActions newRole = mockMvc.perform(MockMvcRequestBuilders.post("/createRole/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(roleJson))
@@ -257,7 +257,7 @@ public class RoleTests {
 		headChefId = extractJsonString(newRole.andReturn().getResponse().getContentAsString(), "roleId");
 
 		// Get roles for org
-		mockMvc.perform(MockMvcRequestBuilders.get("/organization/" + orgId + "/roles")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getOrganizationRoles/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -270,8 +270,8 @@ public class RoleTests {
 						is("Head chef"))));
 
 		// // Get roles for Walt
-		// mockMvc.perform(MockMvcRequestBuilders.get("/user/" + waltId +
-		// "/organization/" + orgId + "/roles")
+		// mockMvc.perform(MockMvcRequestBuilders.post("/getRolesForUserInOrg/user/" +
+		// waltId + "/organization/" + orgId)
 		// .header("Authorization", "Bearer " + waltToken)
 		// .contentType(MediaType.APPLICATION_JSON))
 		// .andExpect(status().isOk())
@@ -279,14 +279,14 @@ public class RoleTests {
 		// .andExpect(jsonPath("$[0].name").value("root"));
 
 		// // Get roles for Jessie
-		// mockMvc.perform(MockMvcRequestBuilders.get("/user/" + jessieId +
-		// "/organization/" + orgId + "/roles")
+		// mockMvc.perform(MockMvcRequestBuilders.post("/getRolesForUserInOrg/user/" +
+		// jessieId + "/organization/" + orgId)
 		// .header("Authorization", "Bearer " + jessieToken)
 		// .contentType(MediaType.APPLICATION_JSON))
 		// .andExpect(status().isNoContent());
 
 		// Get users with role "root"
-		mockMvc.perform(MockMvcRequestBuilders.get("/roles/" + rootId + "/users")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getRoleUsers/role/" + rootId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -294,7 +294,7 @@ public class RoleTests {
 				.andExpect(jsonPath("$[0].email").value(waltEmail));
 
 		// Delete role "Head chef"
-		mockMvc.perform(MockMvcRequestBuilders.get("/roles/" + headChefId + "/users")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getRoleUsers/role/" + headChefId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
@@ -308,7 +308,7 @@ public class RoleTests {
 		String roleJson;
 
 		// Get root ID
-		ResultActions roles = mockMvc.perform(MockMvcRequestBuilders.get("/organization/" + orgId + "/roles")
+		ResultActions roles = mockMvc.perform(MockMvcRequestBuilders.post("/getOrganizationRoles/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -321,7 +321,7 @@ public class RoleTests {
 		roleDto.setPermissions("everything");
 		roleDto.setManagedById(rootId);
 		roleJson = objectMapper.writeValueAsString(roleDto);
-		ResultActions headChef = mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/roles")
+		ResultActions headChef = mockMvc.perform(MockMvcRequestBuilders.post("/createRole/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(roleJson))
@@ -338,7 +338,7 @@ public class RoleTests {
 			}
 		});
 		roleJson = objectMapper.writeValueAsString(roleDto);
-		mockMvc.perform(MockMvcRequestBuilders.put("/roles/" + headChefId)
+		mockMvc.perform(MockMvcRequestBuilders.post("/editRole/role/" + headChefId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(roleJson))
@@ -347,7 +347,7 @@ public class RoleTests {
 				.andExpect(jsonPath("$.name").value("Heisenberg"));
 
 		// Get roles for org
-		mockMvc.perform(MockMvcRequestBuilders.get("/organization/" + orgId + "/roles")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getOrganizationRoles/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -359,9 +359,9 @@ public class RoleTests {
 						is("root"),
 						is("Heisenberg"))));
 
-		// // Get roles for Walt
-		// mockMvc.perform(MockMvcRequestBuilders.get("/user/" + waltId +
-		// "/organization/" + orgId + "/roles")
+		// Get roles for Walt
+		// mockMvc.perform(MockMvcRequestBuilders.post("/getRolesForUserInOrg/user/" +
+		// waltId + "/organization/" + orgId)
 		// .header("Authorization", "Bearer " + waltToken)
 		// .contentType(MediaType.APPLICATION_JSON))
 		// .andExpect(status().isOk())
@@ -374,14 +374,14 @@ public class RoleTests {
 		// is("Heisenberg"))));
 
 		// // Get roles for Jessie
-		// mockMvc.perform(MockMvcRequestBuilders.get("/user/" + jessieId +
-		// "/organization/" + orgId + "/roles")
+		// mockMvc.perform(MockMvcRequestBuilders.post("/getRolesForUserInOrg/user/" +
+		// jessieId + "/organization/" + orgId)
 		// .header("Authorization", "Bearer " + jessieToken)
 		// .contentType(MediaType.APPLICATION_JSON))
 		// .andExpect(status().isNoContent());
 
 		// Get users with role "root"
-		mockMvc.perform(MockMvcRequestBuilders.get("/roles/" + rootId + "/users")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getRoleUsers/role/" + rootId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -389,7 +389,7 @@ public class RoleTests {
 				.andExpect(jsonPath("$[0].email").value(waltEmail));
 
 		// Delete role "Head chef"
-		mockMvc.perform(MockMvcRequestBuilders.get("/roles/" + headChefId + "/users")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getRoleUsers/role/" + headChefId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
@@ -403,7 +403,7 @@ public class RoleTests {
 		String roleJson;
 
 		// Get root ID
-		ResultActions roles = mockMvc.perform(MockMvcRequestBuilders.get("/organization/" + orgId + "/roles")
+		ResultActions roles = mockMvc.perform(MockMvcRequestBuilders.post("/getOrganizationRoles/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -421,7 +421,7 @@ public class RoleTests {
 		});
 		roleDto.setManagedById(rootId);
 		roleJson = objectMapper.writeValueAsString(roleDto);
-		ResultActions headChef = mockMvc.perform(MockMvcRequestBuilders.post("/organization/" + orgId + "/roles")
+		ResultActions headChef = mockMvc.perform(MockMvcRequestBuilders.post("/createRole/organization/" + orgId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(roleJson))
@@ -432,14 +432,14 @@ public class RoleTests {
 		headChefId = extractJsonString(headChef.andReturn().getResponse().getContentAsString(), "roleId");
 
 		// Add Jessie to "Head chef"
-		mockMvc.perform(MockMvcRequestBuilders.put("/user/" + jessieId + "/roles/" + headChefId + "/add")
+		mockMvc.perform(MockMvcRequestBuilders.post("/addRoleToUser/user/" + jessieId + "/role/" + headChefId)
 				.header("Authorization", "Bearer " + jessieToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
 		// // Get roles for Jessie
-		// mockMvc.perform(MockMvcRequestBuilders.get("/user/" + jessieId +
-		// "/organization/" + orgId + "/roles")
+		// mockMvc.perform(MockMvcRequestBuilders.post("/getRolesForUserInOrg/user/" +
+		// jessieId + "/organization/" + orgId)
 		// .header("Authorization", "Bearer " + jessieToken)
 		// .contentType(MediaType.APPLICATION_JSON))
 		// .andExpect(status().isOk())
@@ -447,7 +447,7 @@ public class RoleTests {
 		// .andExpect(jsonPath("$[0].name", is("Head chef")));
 
 		// Get users with role "Head chef"
-		mockMvc.perform(MockMvcRequestBuilders.get("/roles/" + headChefId + "/users")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getRoleUsers/role/" + headChefId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -460,20 +460,20 @@ public class RoleTests {
 						is(jessieEmail))));
 
 		// Remove Jessie from "Head chef"
-		mockMvc.perform(MockMvcRequestBuilders.put("/user/" + jessieId + "/roles/" + headChefId + "/remove")
+		mockMvc.perform(MockMvcRequestBuilders.post("/removeRoleFromUser/user/" + jessieId + "/role/" + headChefId)
 				.header("Authorization", "Bearer " + jessieToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
 		// // Get roles for Jessie
-		// mockMvc.perform(MockMvcRequestBuilders.get("/user/" + jessieId +
-		// "/organization/" + orgId + "/roles")
+		// mockMvc.perform(MockMvcRequestBuilders.post("/getRolesForUserInOrg/user/" +
+		// jessieId + "/organization/" + orgId)
 		// .header("Authorization", "Bearer " + jessieToken)
 		// .contentType(MediaType.APPLICATION_JSON))
 		// .andExpect(status().isNoContent());
 
 		// Get users with role "Head chef"
-		mockMvc.perform(MockMvcRequestBuilders.get("/roles/" + headChefId + "/users")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getRoleUsers/role/" + headChefId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -483,15 +483,15 @@ public class RoleTests {
 						is(jessieEmail))));
 
 		// Delete role "Head chef"
-		mockMvc.perform(MockMvcRequestBuilders.get("/roles/" + headChefId + "/users")
+		mockMvc.perform(MockMvcRequestBuilders.post("/getRoleUsers/role/" + headChefId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
 		// // Remove Walt from "Root"
 		// // Deleting the org also doesnt work
-		// mockMvc.perform(MockMvcRequestBuilders.put("/user/" + waltId + "/roles/" +
-		// rootId + "/remove")
+		// mockMvc.perform(MockMvcRequestBuilders.post("/removeRoleFromUser/user/" +
+		// waltId + "/role/" + rootId)
 		// .header("Authorization", "Bearer " + waltId)
 		// .contentType(MediaType.APPLICATION_JSON))
 		// .andExpect(status().isOk());
