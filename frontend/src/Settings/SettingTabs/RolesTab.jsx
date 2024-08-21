@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { act, useCallback, useEffect, useState } from "react";
 import BaseTab from "./BaseTab";
 import Typography from "@mui/material/Typography";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
@@ -30,16 +30,45 @@ import { createRole, deleteRole, editRole } from "../../API/RoleAPI";
 import MoveUpIcon from "@mui/icons-material/MoveUp";
 import UserChip from "../../common/UserChip";
 
-const lockedRoleColor = "#E8E8E8";
+const lockedRoleColor = "#B8B8B8";
 const controlledRoleColor = "#A2E6FF";
 const ownedRoleColor = "#3B89F3";
 const selectedColor = "#ff7f0e";
+const selectedColorRing = "#ff7f0e";
+const edgeColor = "#a3bdc4";
+const inactiveOpacity = 0.4;
+const canvasBackgroundColor = "#f0f0f0";
 
 const graphTheme = {
 	...lightTheme,
 	node: {
 		...lightTheme.node,
 		activeFill: selectedColor,
+		inactiveOpacity: inactiveOpacity,
+		label: {
+			...lightTheme.node.label,
+			stroke: canvasBackgroundColor,
+			activeColor: selectedColorRing,
+		},
+	},
+	ring: {
+		...lightTheme.ring,
+		activeFill: selectedColorRing,
+	},
+	edge: {
+		...lightTheme.edge,
+		fill: edgeColor,
+		activeFill: edgeColor,
+		inactiveOpacity: inactiveOpacity,
+	},
+	arrow: {
+		...lightTheme.arrow,
+		fill: edgeColor,
+		activeFill: edgeColor,
+	},
+	canvas: {
+		...lightTheme.canvas,
+		background: canvasBackgroundColor,
 	},
 };
 
@@ -221,42 +250,55 @@ const RolesGraph = ({
 	return (
 		<Box
 			sx={{
-				position: "relative",
-				width: "99%",
-				height: "99%",
-				border: 1,
+				width: "100%",
+				height: "100%",
+				backgroundColor: canvasBackgroundColor,
+				borderRadius: 3,
+				// center the graph's Box
+				display: "flex",
+				justifyContent: "center",
+				alignItems: "center",
 			}}
 		>
-			<GraphCanvas
-				nodes={nodes}
-				edges={edges}
-				layoutType="treeTd2d"
-				selections={selected}
-				onNodeClick={(node) => {
-					setSelected(node.id);
-					setSelectedRole(node.data);
-					setEditorIsCreatingNewRole(false);
+			<Box
+				sx={{
+					position: "relative",
+					width: "97%", // must match this to borderradius
+					height: "97%",
+					backgroundColor: canvasBackgroundColor,
 				}}
-				onCanvasClick={() => {
-					setSelected([]);
-					setSelectedRole(null);
-				}}
-				contextMenu={({ data, onClose }) => (
-					<GraphPopup
-						node={data}
-						onClose={onClose}
-						roles={roles}
-						setSelectedRole={setSelectedRole}
-						setRoles={setRoles}
-						setEditorIsCreatingNewRole={setEditorIsCreatingNewRole}
-						setName={setName}
-						setPermissions={setPermissions}
-						setUsers={setUsers}
-						setSelectedNode={setSelected}
-					/>
-				)}
-				theme={graphTheme}
-			/>
+			>
+				<GraphCanvas
+					nodes={nodes}
+					edges={edges}
+					layoutType="treeTd2d"
+					selections={selected}
+					onNodeClick={(node) => {
+						setSelected(node.id);
+						setSelectedRole(node.data);
+						setEditorIsCreatingNewRole(false);
+					}}
+					onCanvasClick={() => {
+						setSelected([]);
+						setSelectedRole(null);
+					}}
+					contextMenu={({ data, onClose }) => (
+						<GraphPopup
+							node={data}
+							onClose={onClose}
+							roles={roles}
+							setSelectedRole={setSelectedRole}
+							setRoles={setRoles}
+							setEditorIsCreatingNewRole={setEditorIsCreatingNewRole}
+							setName={setName}
+							setPermissions={setPermissions}
+							setUsers={setUsers}
+							setSelectedNode={setSelected}
+						/>
+					)}
+					theme={graphTheme}
+				/>
+			</Box>
 		</Box>
 	);
 };
@@ -266,6 +308,7 @@ const PermissionRow = ({
 	value,
 	setPermissions,
 	permissionIndex,
+	editTrackerWrapper,
 }) => {
 	const togglePermission = () => {
 		setPermissions((prevPermissions) => {
@@ -286,7 +329,7 @@ const PermissionRow = ({
 				<Switch
 					key={`permission-switch-${permissionIndex}`}
 					checked={value}
-					onChange={togglePermission}
+					onChange={editTrackerWrapper(togglePermission)}
 				/>
 			) : (
 				// TODO: permissions that are not true/false
@@ -296,7 +339,7 @@ const PermissionRow = ({
 	);
 };
 
-const UserRow = ({ user, setUsers }) => {
+const UserRow = ({ user, setUsers, editTrackerWrapper }) => {
 	return (
 		<Box
 			key={`userrow-box-${user.id}`}
@@ -310,14 +353,14 @@ const UserRow = ({ user, setUsers }) => {
 		>
 			<UserChip user={user} />
 			<IconButton
-				onClick={() => {
+				onClick={editTrackerWrapper(() => {
 					setUsers((prevUsers) => {
 						const newUsers = prevUsers.filter(
 							(roleUser) => roleUser.id !== user.id,
 						);
 						return newUsers.sort((a, b) => a.lastName > b.lastName);
 					});
-				}}
+				})}
 				key={`userrow-button-${user.id}`}
 			>
 				<CloseIcon />
@@ -343,6 +386,7 @@ const RoleEditor = ({
 	const [organizationUsers, setOrganizationUsers] = useState(null);
 	const [managedById, setManagedById] = useState(null);
 	const [nonDescendants, setNonDescendants] = useState([]);
+	const [editMade, setEditMade] = useState(false);
 
 	const updateOrganizationUsers = useCallback(() => {
 		if (selectedRole) {
@@ -366,6 +410,7 @@ const RoleEditor = ({
 		}
 
 		const managedByRole = findManagingRole(selectedRole);
+		setEditMade(false);
 
 		if (!managedByRole) {
 			setManagedById(null);
@@ -497,6 +542,7 @@ const RoleEditor = ({
 				}
 			});
 			setSelectedRole(editedRole);
+			setEditMade(false);
 		} catch {
 			console.error("Save failed");
 		}
@@ -513,6 +559,13 @@ const RoleEditor = ({
 		});
 	};
 
+	const editTrackerWrapper = (onChangeFunction) => {
+		return (e, extra) => {
+			onChangeFunction(e, extra);
+			setEditMade(true);
+		};
+	};
+
 	return (
 		<>
 			<Typography variant="h6" sx={{ mb: 1 }}>
@@ -525,7 +578,7 @@ const RoleEditor = ({
 				fullWidth
 				variant="standard"
 				value={name}
-				onChange={(e) => setName(e.target.value)}
+				onChange={editTrackerWrapper((e) => setName(e.target.value))}
 				sx={{ mb: 2 }}
 				InputProps={{ sx: { fontSize: "1.5rem" } }}
 				InputLabelProps={{ sx: { fontSize: "1.5rem" } }}
@@ -543,9 +596,9 @@ const RoleEditor = ({
 						<InputLabel>Managed by</InputLabel>
 						<Select
 							value={managedById}
-							onChange={(e) => {
+							onChange={editTrackerWrapper((e) => {
 								setManagedById(e.target.value);
-							}}
+							})}
 							label="Managed by"
 						>
 							{nonDescendants.map((role) => (
@@ -572,6 +625,7 @@ const RoleEditor = ({
 							setPermissions={setPermissions}
 							permissionIndex={index}
 							key={`permission-${permissions[index]}`}
+							editTrackerWrapper={editTrackerWrapper}
 						/>
 					))}
 				</BaseCollapse>
@@ -592,7 +646,7 @@ const RoleEditor = ({
 						getOptionLabel={(option) => getUserFullName(option)}
 						defaultValue={[]}
 						value={[]}
-						onChange={handleAddPerson}
+						onChange={editTrackerWrapper(handleAddPerson)}
 						filterSelectedOptions
 						renderInput={(params) => (
 							<TextField
@@ -605,7 +659,12 @@ const RoleEditor = ({
 						sx={{ pl: 4, width: "83%" }}
 					/>
 					{users.map((user) => (
-						<UserRow user={user} setUsers={setUsers} key={`chip-${user.id}`} />
+						<UserRow
+							user={user}
+							setUsers={setUsers}
+							key={`chip-${user.id}`}
+							editTrackerWrapper={editTrackerWrapper}
+						/>
 					))}
 				</BaseCollapse>
 			</List>
@@ -619,9 +678,15 @@ const RoleEditor = ({
 						Create
 					</Button>
 				) : (
-					<Button variant="contained" color="primary" onClick={handleEditRole}>
-						Save
-					</Button>
+					editMade && (
+						<Button
+							variant="contained"
+							color="primary"
+							onClick={handleEditRole}
+						>
+							Save
+						</Button>
+					)
 				)}
 			</Box>
 		</>
@@ -670,10 +735,11 @@ const RolesTabSettings = ({ settings, user }) => {
 	return (
 		<>
 			<Typography variant="h5">Roles</Typography>
-			<Box sx={{ height: "55vh", display: "flex", gap: 1 }}>
+			<Box sx={{ height: "100%", display: "flex", gap: 1 }}>
 				<Box
 					sx={{
 						width: "45%",
+						height: "100%",
 						pt: 1,
 						overflow: "auto",
 					}}

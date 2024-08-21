@@ -112,7 +112,7 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 			open={dialogOpen}
 			onClose={onCloseWrapper}
 			fullWidth
-			maxWidth="xl"
+			maxWidth="100%"
 			PaperProps={{
 				sx: {
 					height: "80vh",
@@ -139,8 +139,7 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 					{/* Scrollable list of settings */}
 					<List
 						sx={{
-							width: "100%",
-							maxWidth: 360,
+							width: "22%",
 							overflow: "auto",
 							// looks ass with the light blue select color
 							// bgcolor: "lightgray",
