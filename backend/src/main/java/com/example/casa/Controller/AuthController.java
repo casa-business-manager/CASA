@@ -32,6 +32,7 @@ import com.example.casa.Repository.UserRepository;
 import com.example.casa.Security.TokenProvider;
 
 import jakarta.validation.Valid;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/auth")
@@ -50,6 +51,13 @@ public class AuthController {
 
 	@Autowired
 	private TokenProvider tokenProvider;
+
+	private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
+	private static final Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
+
+	private boolean isValidPwdCpx(String password) {
+		return pattern.matcher(password).matches();
+	}
 
 	@PostMapping("/login")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -84,6 +92,11 @@ public class AuthController {
 			throw new BadRequestException("Email address already in use.");
 		}
 
+
+		if (!isValidPwdCpx(signUpRequest.getPassword())) {
+			throw new BadRequestException("Password must contain at least one upper case letter, one lower case letter, one digit, and one special character.");
+		}
+
 		// Creating user's account
 		User user = new User();
 		user.setFirstName(signUpRequest.getFirstName());
@@ -103,5 +116,4 @@ public class AuthController {
 		return ResponseEntity.created(location)
 				.body(new ApiResponse(true, "User registered successfully"));
 	}
-
 }
