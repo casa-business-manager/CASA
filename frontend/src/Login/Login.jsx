@@ -157,13 +157,14 @@ function Login() {
 		// if signing up a new user, make the signup call first then a login call after signup succeeds
 		try {
 			if (authState === "signUp") {
-				await signup(formData);
+				const signupResponse = await signup(formData);
+				console.log("signupResponse", signupResponse);
 			}
 			const response = await login(formData);
 			sessionStorage.setItem(ACCESS_TOKEN, response.accessToken);
 			navigate("/organization");
 		} catch (error) {
-			setApiError(true);
+			setApiError(error);
 		}
 	};
 
@@ -257,7 +258,9 @@ function Login() {
 					onClose={() => setApiError(false)}
 					sx={{ mt: 2 }}
 				>
-					Log in failed. Please try again.
+					{typeof apiError == "boolean"
+						? "Log in failed. Please try again."
+						: apiError}
 				</Alert>
 			)}
 			<OrDivider />
@@ -377,7 +380,9 @@ function Login() {
 					onClose={() => setApiError(false)}
 					sx={{ mt: 2 }}
 				>
-					Sign up failed. Please try again.
+					{typeof apiError == "boolean"
+						? "Sign up failed. Please try again."
+						: apiError}
 				</Alert>
 			)}
 			<OrDivider />

@@ -1,6 +1,7 @@
 package com.example.casa.Controller;
 
 import java.net.URI;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.example.casa.Exception.BadRequestException;
 import com.example.casa.Model.AuthProvider;
 import com.example.casa.Model.User;
 import com.example.casa.Payload.ApiResponse;
@@ -32,7 +32,6 @@ import com.example.casa.Repository.UserRepository;
 import com.example.casa.Security.TokenProvider;
 
 import jakarta.validation.Valid;
-import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/auth")
@@ -89,12 +88,12 @@ public class AuthController {
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
 		if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-			throw new BadRequestException("Email address already in use.");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Email address already in use.");
 		}
 
-
 		if (!isValidPwdCpx(signUpRequest.getPassword())) {
-			throw new BadRequestException("Password must contain at least one upper case letter, one lower case letter, one digit, and one special character.");
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+					"Password must contain at least one upper case letter, one lower case letter, one digit, and one special character.");
 		}
 
 		// Creating user's account
