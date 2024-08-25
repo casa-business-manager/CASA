@@ -1,7 +1,6 @@
 package com.example.casa.Controller;
 
 import java.net.URI;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,11 +50,17 @@ public class AuthController {
 	@Autowired
 	private TokenProvider tokenProvider;
 
-	private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
-	private static final Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
+	private static final String UPPERCASE_PATTERN = ".*[A-Z].*";
+	private static final String LOWERCASE_PATTERN = ".*[a-z].*";
+	private static final String NUMBER_PATTERN = ".*\\d.*";
+	private static final String SPECIAL_CHARACTER_PATTERN = ".*[!@#$%^&+=].*";
 
 	private boolean isValidPwdCpx(String password) {
-		return pattern.matcher(password).matches();
+		logger.info("Checking password complexity for password: {}", password);
+		return password.matches(UPPERCASE_PATTERN) &&
+				password.matches(LOWERCASE_PATTERN) &&
+				password.matches(NUMBER_PATTERN) &&
+				password.matches(SPECIAL_CHARACTER_PATTERN);
 	}
 
 	@PostMapping("/login")
