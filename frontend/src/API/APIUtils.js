@@ -20,18 +20,16 @@ export const request = async (options) => {
 		if (response.status === 204) {
 			return {};
 		}
+
 		return response.text().then((text) => {
 			if (!text) {
 				return {};
 			}
 			try {
 				const json = JSON.parse(text);
-				if (!response.ok) {
-					return Promise.reject(json);
-				}
-				return json;
+				return response.ok ? json : Promise.reject(json);
 			} catch (error) {
-				return Promise.reject("Failed to parse JSON: " + text);
+				return Promise.reject(text);
 			}
 		});
 	});
