@@ -112,13 +112,29 @@ const NavBar = ({}) => {
 		>
 			<Toolbar>
 				<MenuIcon sx={{ marginRight: "50px", color: "#fff" }}></MenuIcon>
-				<Typography onClick={handleLogout}>CASA</Typography>
+				<Typography
+					onClick={handleLogout}
+					sx={{
+						"&:hover": {
+							textDecoration: "underline",
+							textDecorationThickness: "2px",
+						},
+					}}
+				>
+					CASA
+				</Typography>
 				{navbarLinks.map((link) => (
 					<>
 						<ChevronRight sx={{ m: 1 }} />
 						<Typography
 							onClick={() => {
 								handleClickPath(link);
+							}}
+							sx={{
+								"&:hover": {
+									textDecoration: "underline",
+									textDecorationThickness: "2px",
+								},
 							}}
 						>
 							{link.name}
