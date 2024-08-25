@@ -48,7 +48,7 @@ public class UserTests {
 	@BeforeAll
 	void setup() throws Exception {
 		newUserEmail = "walter@white.com";
-		newUserPassword = "password";
+		newUserPassword = "Password123!";
 
 		// Signup request
 		SignUpRequest signUpRequest = new SignUpRequest();

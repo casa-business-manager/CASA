@@ -42,7 +42,7 @@ public class AuthControllerIntegrationTest {
 	@BeforeAll
 	void setup() throws Exception {
 		newUserEmail = "walter@white.com";
-		newUserPassword = "password";
+		newUserPassword = "Password123!";
 
 		// Signup request
 		SignUpRequest signUpRequest = new SignUpRequest();
@@ -66,7 +66,7 @@ public class AuthControllerIntegrationTest {
 		mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(signupJson))
-				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+				.andExpect(MockMvcResultMatchers.status().isConflict());
 	}
 
 	@Test
