@@ -42,9 +42,6 @@ public class OrganizationController {
 				.orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
 		Set<Organization> organizations = user.getOrganizations();
-		if (organizations.isEmpty()) {
-			return ResponseEntity.noContent().build();
-		}
 
 		return ResponseEntity.ok(organizations);
 	}

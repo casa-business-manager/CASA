@@ -26,13 +26,7 @@ export async function getOrganizations() {
 			});
 		})
 		.then((response) => {
-			if (!response.ok) {
-				return Promise.reject("Failed to fetch organizations");
-			}
-			if (response.status === 204) {
-				return [];
-			}
-			return response.json();
+			return response;
 		})
 		.catch((error) => {
 			console.error("Error fetching organizations:", error);

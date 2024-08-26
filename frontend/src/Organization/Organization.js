@@ -30,11 +30,9 @@ const Organization = () => {
 		const fetchData = async () => {
 			try {
 				const userData = await getCurrentUser();
-				console.log("User data:", userData);
 				setUser(userData);
 
 				const orgData = await getOrganizations();
-				console.log("Organization data:", orgData);
 				setOrganizations(orgData);
 			} catch (error) {
 				console.error("Error:", error);
@@ -53,7 +51,6 @@ const Organization = () => {
 
 		try {
 			const data = await createOrganization(organizationDto);
-			console.log("Organization created:", data);
 			setOrganizations([...organizations, data]);
 			setOrgName("");
 			setOrgDescription("");
@@ -83,7 +80,6 @@ const Organization = () => {
 
 		try {
 			const data = await updateOrganization(updatedOrg);
-			console.log("Organization updated:", data);
 			setOrganizations(
 				organizations.map((org) => (org.orgId === data.orgId ? data : org)),
 			);
