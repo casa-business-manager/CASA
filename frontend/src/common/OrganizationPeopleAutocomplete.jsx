@@ -39,18 +39,6 @@ const OrganizationPeopleAutocomplete = ({
 			const orgInfo = await getOrganizationInfo(organizationId);
 
 			setOrgPeople(orgInfo.people);
-			console.log("orgpeople", orgInfo.people);
-			console.log("default", defaultPeopleList);
-			console.log(
-				"value",
-				orgPeople
-					? orgPeople.filter((orgPerson) =>
-							selectedPeople.some(
-								(selectedPerson) => selectedPerson.id === orgPerson.id,
-							),
-						)
-					: defaultPeopleList,
-			);
 		};
 
 		fetchPeople();
