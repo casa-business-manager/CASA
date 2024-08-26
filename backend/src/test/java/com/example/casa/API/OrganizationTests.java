@@ -148,7 +148,7 @@ public class OrganizationTests {
 		mockMvc.perform(MockMvcRequestBuilders.post("/getOrganizationsForUser/user/" + waltId)
 				.header("Authorization", "Bearer " + waltToken)
 				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNoContent());
+				.andExpect(status().isOk());
 
 		// create new org
 		mockMvc.perform(MockMvcRequestBuilders.post("/createOrganizationForUser/user/" + waltId)
