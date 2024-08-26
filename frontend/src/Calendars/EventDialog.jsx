@@ -23,6 +23,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import UserChip from "../common/UserChip";
+import OrganizationPeopleAutocomplete from "../common/OrganizationPeopleAutocomplete";
 
 const EventDialog = ({
 	open,
@@ -265,57 +266,21 @@ const EventDialog = ({
 				{/* People */}
 				<Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
 					<PeopleAltIcon sx={{ color: "action.active", mr: 1, my: 2.5 }} />
-					<Autocomplete
+					<OrganizationPeopleAutocomplete
+						parentSetSelectedPeople={setPeople}
+						organizationId={organization.orgId}
+						defaultPeopleList={[currentUser]}
+						rejectAddPersonFunction={(newUserList) =>
+							!newUserList.find(
+								(user) => user.id === initialEvent.eventCreator.id,
+							)
+						}
+						userIsDeletableFunction={(user) =>
+							isEventCreator() && user.id !== currentUser.id
+						}
 						disabled={!isEventCreator()}
-						multiple
-						freeSolo
-						disableClearable
-						options={
-							organization && orgInfo
-								? orgInfo
-										.find((org) => org.orgId === organization.orgId)
-										.people.filter((person) => person.id !== currentUser.id)
-								: []
-						}
-						getOptionLabel={(option) => getUserFullName(option)}
-						value={
-							organization && orgInfo
-								? orgInfo
-										.find((org) => org.orgId === organization.orgId)
-										.people.filter((user) =>
-											people.map((user) => user.id).includes(user.id),
-										)
-								: [currentUser]
-						}
-						onChange={handleAddPerson}
-						renderTags={(value, getTagProps) =>
-							value.map((user, index) => {
-								const deletable =
-									isEventCreator() && user.id !== currentUser.id;
-								const handleDeleteForSpecificPerson = deletable
-									? () => handleDeletePerson(user.id)
-									: undefined;
-								return (
-									<UserChip
-										user={user}
-										onDelete={handleDeleteForSpecificPerson}
-									/>
-								);
-							})
-						}
-						renderInput={(params) => (
-							<TextField
-								{...params}
-								variant="standard"
-								label="People"
-								placeholder="Add people"
-								InputProps={{
-									...params.InputProps,
-									endAdornment: null,
-								}}
-								sx={{ width: "500px" }} // Fixed width
-							/>
-						)}
+						variant="standard"
+						fullWidth={true}
 					/>
 				</Box>
 

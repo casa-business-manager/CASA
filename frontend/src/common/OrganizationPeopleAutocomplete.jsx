@@ -13,15 +13,15 @@ const OrganizationPeopleAutocomplete = ({
 	defaultPeopleList = [],
 	filterOptions,
 	rejectAddPersonFunction = () => false,
-	rejectDeletePersonFunction = () => false,
 	userIsDeletableFunction = () => true,
 	disabled,
 	variant = "outlined",
+	fullWidth = null,
 	sx,
 	...props
 }) => {
 	const [orgPeople, setOrgPeople] = useState([]);
-	const [selectedPeople, setSelectedPeople] = useState([]);
+	const [selectedPeople, setSelectedPeople] = useState([...defaultPeopleList]);
 
 	const filterOptionsFunction =
 		filterOptions ??
@@ -39,6 +39,18 @@ const OrganizationPeopleAutocomplete = ({
 			const orgInfo = await getOrganizationInfo(organizationId);
 
 			setOrgPeople(orgInfo.people);
+			console.log("orgpeople", orgInfo.people);
+			console.log("default", defaultPeopleList);
+			console.log(
+				"value",
+				orgPeople
+					? orgPeople.filter((orgPerson) =>
+							selectedPeople.some(
+								(selectedPerson) => selectedPerson.id === orgPerson.id,
+							),
+						)
+					: defaultPeopleList,
+			);
 		};
 
 		fetchPeople();
@@ -57,9 +69,6 @@ const OrganizationPeopleAutocomplete = ({
 	};
 
 	const handleDeletePerson = (userId) => {
-		if (rejectDeletePersonFunction(userId)) {
-			return;
-		}
 		setSelectedPeopleWrapper((oldSelectedPeople) =>
 			oldSelectedPeople.filter((person) => person.id !== userId),
 		);
@@ -71,6 +80,7 @@ const OrganizationPeopleAutocomplete = ({
 	return (
 		<Autocomplete
 			disabled={disabled}
+			fullWidth={fullWidth}
 			multiple
 			freeSolo
 			disableClearable
@@ -105,7 +115,7 @@ const OrganizationPeopleAutocomplete = ({
 						...params.InputProps,
 						endAdornment: null,
 					}}
-					sx={sx} // Fixed width
+					sx={sx}
 				/>
 			)}
 		/>

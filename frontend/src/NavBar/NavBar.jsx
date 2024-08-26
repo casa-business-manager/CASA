@@ -23,23 +23,23 @@ const parseLocation = (location) => {
 const recognizedPathWordsToNavbarWords = {
 	login: { name: "Login", path: "login" },
 	organization: { name: "My Organizations", path: "organization" },
-	user: { name: "Me", path: "user" },
+	user: { name: "User", path: "user" },
 	calendar: { name: "Calendar", path: "calendar" },
 	email: { name: "Email", path: "email" },
 };
 
-const addOrganizationNameIfOrganizationId = (
-	pathWordsArray,
-	id,
-	organizations,
-) => {
+const addNameIfId = (pathWordsArray, id, organizations) => {
 	if (pathWordsArray.length <= 0 || organizations.length === 0) {
 		return;
 	}
 
-	if (pathWordsArray[pathWordsArray.length - 1].path === "organization") {
+	const idType = pathWordsArray[pathWordsArray.length - 1].path;
+
+	if (idType === "organization") {
 		const organizationOfId = organizations.find((org) => org.orgId === id);
 		pathWordsArray.push({ name: organizationOfId.orgName, path: `${id}` });
+	} else if (idType === "user") {
+		pathWordsArray.push({ name: "Me", path: `${id}` });
 	}
 };
 
@@ -75,7 +75,7 @@ const NavBar = ({}) => {
 			if (Object.hasOwn(recognizedPathWordsToNavbarWords, word)) {
 				navbarWords.push(recognizedPathWordsToNavbarWords[word]);
 			} else {
-				addOrganizationNameIfOrganizationId(navbarWords, word, organizations);
+				addNameIfId(navbarWords, word, organizations);
 			}
 		}
 		setNavbarLinks(navbarWords);

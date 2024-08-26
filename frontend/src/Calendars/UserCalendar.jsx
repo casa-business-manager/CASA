@@ -24,11 +24,7 @@ const UserCalendar = () => {
 		fetchOrganizations();
 	}, [userId]);
 
-	return (
-		<div className="UserCalendar">
-			<BaseCalendar orgIds={organizations} />
-		</div>
-	);
+	return <BaseCalendar orgIds={organizations} />;
 };
 
 export default UserCalendar;
