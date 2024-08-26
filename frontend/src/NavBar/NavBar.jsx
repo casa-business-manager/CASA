@@ -28,19 +28,28 @@ const recognizedPathWordsToNavbarWords = {
 	email: { name: "Email", path: "email" },
 };
 
+/// the function takes in IDs from the route url in order to replace them with
+/// words in the navbar. Since we maintain that IDs in the URL will be preceeded
+/// by their type (i.e. /organization/abcde-fg123-... or /user/abcde-fg123-...),
+/// we can use the preceeding type to determine how to fill in the word for the
+/// navbar.
+/// Will mutate the array pathWordsArray and add the new object with name and path
 const addNameIfId = (pathWordsArray, id, organizations) => {
 	if (pathWordsArray.length <= 0 || organizations.length === 0) {
 		return;
 	}
 
 	const idType = pathWordsArray[pathWordsArray.length - 1].path;
+	const newPathWordObj = { path: id };
 
 	if (idType === "organization") {
 		const organizationOfId = organizations.find((org) => org.orgId === id);
-		pathWordsArray.push({ name: organizationOfId.orgName, path: `${id}` });
+		newPathWordObj.name = organizationOfId.orgName;
 	} else if (idType === "user") {
-		pathWordsArray.push({ name: "Me", path: `${id}` });
+		newPathWordObj.name = "Me";
 	}
+
+	pathWordsArray.push(newPathWordObj);
 };
 
 const NavBar = ({}) => {
