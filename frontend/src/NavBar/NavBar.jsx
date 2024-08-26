@@ -23,24 +23,33 @@ const parseLocation = (location) => {
 const recognizedPathWordsToNavbarWords = {
 	login: { name: "Login", path: "login" },
 	organization: { name: "My Organizations", path: "organization" },
-	user: { name: "Me", path: "user" },
+	user: { name: "User", path: "user" },
 	calendar: { name: "Calendar", path: "calendar" },
 	email: { name: "Email", path: "email" },
 };
 
-const addOrganizationNameIfOrganizationId = (
-	pathWordsArray,
-	id,
-	organizations,
-) => {
+/// the function takes in IDs from the route url in order to replace them with
+/// words in the navbar. Since we maintain that IDs in the URL will be preceeded
+/// by their type (i.e. /organization/abcde-fg123-... or /user/abcde-fg123-...),
+/// we can use the preceeding type to determine how to fill in the word for the
+/// navbar.
+/// Will mutate the array pathWordsArray and add the new object with name and path
+const addNameIfId = (pathWordsArray, id, organizations) => {
 	if (pathWordsArray.length <= 0 || organizations.length === 0) {
 		return;
 	}
 
-	if (pathWordsArray[pathWordsArray.length - 1].path === "organization") {
+	const idType = pathWordsArray[pathWordsArray.length - 1].path;
+	const newPathWordObj = { path: id };
+
+	if (idType === "organization") {
 		const organizationOfId = organizations.find((org) => org.orgId === id);
-		pathWordsArray.push({ name: organizationOfId.orgName, path: `${id}` });
+		newPathWordObj.name = organizationOfId.orgName;
+	} else if (idType === "user") {
+		newPathWordObj.name = "Me";
 	}
+
+	pathWordsArray.push(newPathWordObj);
 };
 
 const NavBar = ({}) => {
@@ -75,7 +84,7 @@ const NavBar = ({}) => {
 			if (Object.hasOwn(recognizedPathWordsToNavbarWords, word)) {
 				navbarWords.push(recognizedPathWordsToNavbarWords[word]);
 			} else {
-				addOrganizationNameIfOrganizationId(navbarWords, word, organizations);
+				addNameIfId(navbarWords, word, organizations);
 			}
 		}
 		setNavbarLinks(navbarWords);
@@ -112,13 +121,29 @@ const NavBar = ({}) => {
 		>
 			<Toolbar>
 				<MenuIcon sx={{ marginRight: "50px", color: "#fff" }}></MenuIcon>
-				<Typography onClick={handleLogout}>CASA</Typography>
+				<Typography
+					onClick={handleLogout}
+					sx={{
+						"&:hover": {
+							textDecoration: "underline",
+							textDecorationThickness: "2px",
+						},
+					}}
+				>
+					CASA
+				</Typography>
 				{navbarLinks.map((link) => (
 					<>
 						<ChevronRight sx={{ m: 1 }} />
 						<Typography
 							onClick={() => {
 								handleClickPath(link);
+							}}
+							sx={{
+								"&:hover": {
+									textDecoration: "underline",
+									textDecorationThickness: "2px",
+								},
 							}}
 						>
 							{link.name}

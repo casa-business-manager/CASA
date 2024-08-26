@@ -27,7 +27,7 @@ export const request = async (options) => {
 			}
 			try {
 				const json = JSON.parse(text);
-				return response.ok ? json : Promise.reject(json);
+				return response.ok ? json : Promise.reject(json.error);
 			} catch (error) {
 				return Promise.reject(text);
 			}
