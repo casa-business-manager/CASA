@@ -8,15 +8,13 @@ import {
 } from "../API/OrganizationAPI";
 import "./Organization.css";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import NavBar from "../NavBar/NavBar";
-import { IconButton } from "@mui/material";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import OrganizationsContext from "../Contexts/OrganizationsContext";
+import CurrentUserContext from "../Contexts/CurrentUserContext";
 
 const Organization = () => {
+	const [currentUser, setCurrentUser] = useContext(CurrentUserContext);
 	const [organizations, setOrganizations] = useContext(OrganizationsContext);
 
-	const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [orgName, setOrgName] = useState("");
@@ -30,7 +28,7 @@ const Organization = () => {
 		const fetchData = async () => {
 			try {
 				const userData = await getCurrentUser();
-				setUser(userData);
+				setCurrentUser(userData);
 
 				const orgData = await getOrganizations();
 				setOrganizations(orgData);

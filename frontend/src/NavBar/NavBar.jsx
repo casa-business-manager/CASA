@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import {
 	AppBar,
@@ -16,6 +15,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronRight from "@mui/icons-material/ChevronRight";
 import OrganizationsContext from "../Contexts/OrganizationsContext";
 import { getOrganizations } from "../API/OrganizationAPI";
+import CurrentUserContext from "../Contexts/CurrentUserContext";
 
 const parseLocation = (location) => {
 	const path = location.pathname;
@@ -56,6 +56,7 @@ const addNameIfId = (pathWordsArray, id, organizations) => {
 
 const NavBar = ({}) => {
 	const navigate = useNavigate();
+	const [currentUser, setCurrentUser] = useContext(CurrentUserContext);
 	const [organizations, setOrganizations] = useContext(OrganizationsContext);
 	// values from recognizedPathWordsToNavbarWords
 	const [navbarLinks, setNavbarLinks] = useState([]);
@@ -111,7 +112,7 @@ const NavBar = ({}) => {
 	};
 
 	const handleCalendarClick = () => {
-		navigate(`/user/${user.id}/calendar`);
+		navigate(`/user/${currentUser.id}/calendar`);
 	};
 
 	const handleAccountButton = (event) => {
@@ -186,6 +187,7 @@ const NavBar = ({}) => {
 							<MenuItem onClick={handleMenuClickWrapper(handleCalendarClick)}>
 								My Calendar
 							</MenuItem>
+							<Divider />
 							<MenuItem
 								onClick={handleMenuClickWrapper(handleLogout)}
 								sx={{ color: "red" }}
