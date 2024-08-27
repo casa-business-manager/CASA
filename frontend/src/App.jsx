@@ -16,6 +16,7 @@ import NavBar from "./NavBar/NavBar";
 import OrganizationsContext from "./Contexts/OrganizationsContext";
 import { Box } from "@mui/material";
 import { CurrentUserProvider } from "./Contexts/CurrentUserContext";
+import Sidebar from "./Sidebar/Sidebar";
 
 function App() {
 	const [organizations, setOrganizations] = useState([]);
@@ -41,20 +42,32 @@ function App() {
 									element={<OAuth2RedirectHandler />}
 								/>
 								<Route
-									path="/organization/:orgId"
-									element={<OrganizationLanding />}
-								/>
-								<Route
-									path="/organization/:orgId/calendar"
-									element={<OrganizationCalendar />}
-								/>
-								<Route
 									path="/user/:userId/calendar"
 									element={<UserCalendar />}
 								/>
 								<Route
+									path="/organization/:orgId"
+									element={
+										<Sidebar>
+											<OrganizationLanding />
+										</Sidebar>
+									}
+								/>
+								<Route
+									path="/organization/:orgId/calendar"
+									element={
+										<Sidebar>
+											<OrganizationCalendar />
+										</Sidebar>
+									}
+								/>
+								<Route
 									path="/organization/:orgId/email"
-									element={<EmailPage />}
+									element={
+										<Sidebar>
+											<EmailPage />
+										</Sidebar>
+									}
 								/>
 							</Routes>
 						</Box>
