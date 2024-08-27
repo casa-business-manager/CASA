@@ -143,6 +143,7 @@ const TemplateDrawer = ({
 				}}
 				open
 			>
+				<Toolbar />
 				<Toolbar>
 					<Box
 						sx={{
@@ -271,6 +272,7 @@ const TemplateMenu = ({ open, closeDrawer }) => {
 	const TemplateTopbar = ({}) => {
 		return (
 			<>
+				<Toolbar />
 				<Toolbar>
 					<Box
 						sx={{
@@ -370,7 +372,7 @@ const TemplateMenu = ({ open, closeDrawer }) => {
 								flexDirection: "column",
 								justifyContent: "center",
 								alignItems: "center",
-								height: "100%",
+								height: "95%",
 							}}
 						>
 							<RichTextEditor

@@ -63,7 +63,10 @@ const Sidebar = ({ selected, children }) => {
 					{options.map((option) => (
 						<ListItem>
 							<ListItemButton
-								selected={selected === option.label}
+								selected={
+									selected === option.label ||
+									(!selected && option.label === "Home")
+								}
 								onClick={option.navigation}
 							>
 								<ListItemIcon>{option.icon}</ListItemIcon>
