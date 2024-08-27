@@ -116,15 +116,34 @@ const Organization = () => {
 					sx={{ height: 140, backgroundColor: "green" }}
 				/>
 				<CardContent>
-					<Typography gutterBottom variant="h5" component="div">
-						{name}
-					</Typography>
-					<Typography variant="body2" color="text.secondary">
-						{description}
-					</Typography>
-					<Typography variant="body3" color="text.secondary">
-						{location}
-					</Typography>
+					<Box sx={{ maxHeight: 80, overflowY: "auto" }}>
+						<Typography
+							gutterBottom
+							variant="h5"
+							component="div"
+							sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+						>
+							{name}
+						</Typography>
+					</Box>
+					<Box sx={{ maxHeight: 80, overflowY: "auto" }}>
+						<Typography
+							variant="body2"
+							color="text.secondary"
+							sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+						>
+							{description}
+						</Typography>
+					</Box>
+					<Box sx={{ maxHeight: 80, overflowY: "auto" }}>
+						<Typography
+							variant="body3"
+							color="text.primary"
+							sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+						>
+							{location}
+						</Typography>
+					</Box>
 				</CardContent>
 			</CardActionArea>
 			<CardActions sx={{ justifyContent: "right" }}>
