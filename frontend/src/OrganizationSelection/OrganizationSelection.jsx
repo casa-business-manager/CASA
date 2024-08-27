@@ -6,7 +6,6 @@ import {
 	createOrganization,
 	updateOrganization,
 } from "../API/OrganizationAPI";
-import "./OrganizationSelection.css";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddIcon from "@mui/icons-material/Add";
 import OrganizationsContext from "../Contexts/OrganizationsContext";
@@ -113,7 +112,7 @@ const Organization = () => {
 			<CardActionArea onClick={() => handleCardClick(id)}>
 				<CardMedia
 					// TODO: Add image
-					sx={{ height: 140, backgroundColor: "green" }}
+					sx={{ height: 140, backgroundColor: "OliveDrab" }}
 				/>
 				<CardContent>
 					<Box sx={{ maxHeight: 80, overflowY: "auto" }}>
