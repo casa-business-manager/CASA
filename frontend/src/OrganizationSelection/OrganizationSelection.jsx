@@ -108,7 +108,7 @@ const Organization = () => {
 	if (loading) return <div>Loading...</div>;
 
 	const OrganizationCard = ({ id, name, description, location }) => (
-		<Card>
+		<Card sx={{ boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.2)" }}>
 			<CardActionArea onClick={() => handleCardClick(id)}>
 				<CardMedia
 					// TODO: Add image
@@ -145,12 +145,12 @@ const Organization = () => {
 					</Box>
 				</CardContent>
 			</CardActionArea>
-			<CardActions sx={{ justifyContent: "right" }}>
-				{/* TODO: what goes in here? */}
-				<IconButton>
+			{/* <CardActions sx={{ justifyContent: "right" }}> 
+			TODO: what goes in here?
+			<IconButton>
 					<MoreVertIcon />
 				</IconButton>
-			</CardActions>
+			</CardActions> */}
 		</Card>
 	);
 
@@ -264,7 +264,7 @@ const Organization = () => {
 				fullWidth
 				sx={{
 					display: "flex",
-					justifyContent: "space-between",
+					gap: 2,
 					alignItems: "center",
 				}}
 			>
