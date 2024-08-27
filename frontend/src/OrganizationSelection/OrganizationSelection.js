@@ -6,7 +6,7 @@ import {
 	createOrganization,
 	updateOrganization,
 } from "../API/OrganizationAPI";
-import "./Organization.css";
+import "./OrganizationSelection.css";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import OrganizationsContext from "../Contexts/OrganizationsContext";
 import CurrentUserContext from "../Contexts/CurrentUserContext";

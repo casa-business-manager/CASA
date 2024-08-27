@@ -6,7 +6,7 @@ import {
 	Navigate,
 } from "react-router-dom";
 import Login from "./Login/Login";
-import Organization from "./Organization/Organization";
+import OrganizationSelection from "./OrganizationSelection/OrganizationSelection";
 import OAuth2RedirectHandler from "./Login/OAuth2RedirectHandler";
 import OrganizationLanding from "./OrganizationLanding/OrganizationLanding";
 import UserCalendar from "./Calendars/UserCalendar";
@@ -15,16 +15,15 @@ import EmailPage from "./Email/EmailPage";
 import NavBar from "./NavBar/NavBar";
 import OrganizationsContext from "./Contexts/OrganizationsContext";
 import { Box } from "@mui/material";
-import CurrentUserContext from "./Contexts/CurrentUserContext";
+import { CurrentUserProvider } from "./Contexts/CurrentUserContext";
 
 function App() {
-	const [currentUser, setCurrentUser] = useState(null);
 	const [organizations, setOrganizations] = useState([]);
 
 	return (
 		<Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
 			<Router>
-				<CurrentUserContext.Provider value={[currentUser, setCurrentUser]}>
+				<CurrentUserProvider>
 					<OrganizationsContext.Provider
 						value={[organizations, setOrganizations]}
 					>
@@ -33,7 +32,10 @@ function App() {
 							<Routes>
 								<Route path="/" element={<Navigate replace to="/login" />} />
 								<Route path="/login" element={<Login />} />
-								<Route path="/organization" element={<Organization />} />
+								<Route
+									path="/organization"
+									element={<OrganizationSelection />}
+								/>
 								<Route
 									path="/oauth2/redirect"
 									element={<OAuth2RedirectHandler />}
@@ -57,7 +59,7 @@ function App() {
 							</Routes>
 						</Box>
 					</OrganizationsContext.Provider>
-				</CurrentUserContext.Provider>
+				</CurrentUserProvider>
 			</Router>
 		</Box>
 	);
