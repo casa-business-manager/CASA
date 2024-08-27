@@ -110,22 +110,11 @@ const Organization = () => {
 		navigate(`/organization/${orgId}`);
 	};
 
-	const handleCalendarClick = () => {
-		navigate(`/user/${user.id}/calendar`);
-	};
-
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error: {error}</div>;
 
 	return (
 		<div>
-			<IconButton
-				aria-label="user calendar button"
-				onClick={handleCalendarClick}
-			>
-				<CalendarTodayIcon />
-			</IconButton>
-
 			{organizations.length > 0 ? (
 				organizations.map((org) => (
 					<div

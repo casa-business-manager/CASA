@@ -5,8 +5,10 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import {
 	AppBar,
 	Box,
+	Divider,
 	IconButton,
 	Menu,
+	MenuItem,
 	Toolbar,
 	Typography,
 } from "@mui/material";
@@ -57,6 +59,7 @@ const NavBar = ({}) => {
 	const [organizations, setOrganizations] = useContext(OrganizationsContext);
 	// values from recognizedPathWordsToNavbarWords
 	const [navbarLinks, setNavbarLinks] = useState([]);
+	const [anchorEl, setAnchorEl] = useState(null);
 
 	const location = useLocation();
 
@@ -107,8 +110,19 @@ const NavBar = ({}) => {
 		navigate("/login");
 	};
 
-	const handleAccountButton = () => {
-		console.log("TODO: Account button clicked");
+	const handleCalendarClick = () => {
+		navigate(`/user/${user.id}/calendar`);
+	};
+
+	const handleAccountButton = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
+
+	const handleMenuClickWrapper = (clickFunction) => {
+		return (...params) => {
+			setAnchorEl(null);
+			clickFunction(...params);
+		};
 	};
 
 	return (
@@ -154,12 +168,31 @@ const NavBar = ({}) => {
 				{/* Log out and Account buttons. Must make them white manualluy */}
 				{navbarLinks.find((link) => link.name === "Login") ? null : (
 					<>
-						<IconButton onClick={handleLogout}>
-							<LogoutIcon sx={{ color: "#fff" }} />
-						</IconButton>
 						<IconButton onClick={handleAccountButton}>
 							<AccountCircleIcon sx={{ color: "#fff" }} />
 						</IconButton>
+						<Menu
+							anchorEl={anchorEl}
+							open={Boolean(anchorEl)}
+							onClose={() => setAnchorEl(null)}
+							transformOrigin={{
+								horizontal: "center",
+							}}
+						>
+							{/* TODO: My Account page */}
+							<MenuItem onClick={handleMenuClickWrapper(handleLogout)}>
+								My Account
+							</MenuItem>
+							<MenuItem onClick={handleMenuClickWrapper(handleCalendarClick)}>
+								My Calendar
+							</MenuItem>
+							<MenuItem
+								onClick={handleMenuClickWrapper(handleLogout)}
+								sx={{ color: "red" }}
+							>
+								Logout
+							</MenuItem>
+						</Menu>
 					</>
 				)}
 			</Toolbar>
