@@ -12,6 +12,7 @@ import AddIcon from "@mui/icons-material/Add";
 import OrganizationsContext from "../Contexts/OrganizationsContext";
 import CurrentUserContext from "../Contexts/CurrentUserContext";
 import {
+	Alert,
 	Box,
 	Button,
 	Card,
@@ -19,8 +20,13 @@ import {
 	CardActions,
 	CardContent,
 	CardMedia,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
 	Divider,
 	IconButton,
+	TextField,
 	Typography,
 } from "@mui/material";
 
@@ -29,11 +35,6 @@ const Organization = () => {
 	const [organizations, setOrganizations] = useContext(OrganizationsContext);
 
 	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
-	const [orgName, setOrgName] = useState("");
-	const [orgDescription, setOrgDescription] = useState("");
-	const [orgLocation, setOrgLocation] = useState("");
-	const [editingOrg, setEditingOrg] = useState(null);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const navigate = useNavigate();
 
@@ -47,7 +48,7 @@ const Organization = () => {
 				setOrganizations(orgData);
 			} catch (error) {
 				console.error("Error:", error);
-				setError(error.message);
+				setLoading(true);
 			} finally {
 				setLoading(false);
 			}
@@ -55,23 +56,6 @@ const Organization = () => {
 
 		fetchData();
 	}, []);
-
-	const handleCreateOrganization = async (event) => {
-		event.preventDefault();
-		event.stopPropagation();
-		const organizationDto = { orgName, orgDescription, orgLocation };
-
-		try {
-			const data = await createOrganization(organizationDto);
-			setOrganizations([...organizations, data]);
-			setOrgName("");
-			setOrgDescription("");
-			setOrgLocation("");
-			setIsDialogOpen(false);
-		} catch (error) {
-			setError(error.message);
-		}
-	};
 
 	// const handleEditOrganization = (org) => {
 	// 	setEditingOrg(org);
@@ -123,7 +107,6 @@ const Organization = () => {
 	};
 
 	if (loading) return <div>Loading...</div>;
-	if (error) return <div>Error: {error}</div>;
 
 	const OrganizationCard = ({ id, name, description, location }) => (
 		<Card>
@@ -144,13 +127,118 @@ const Organization = () => {
 					</Typography>
 				</CardContent>
 			</CardActionArea>
-			<CardActions>
-				<Button size="small" color="primary">
-					Share
-				</Button>
+			<CardActions sx={{ justifyContent: "right" }}>
+				{/* TODO: what goes in here? */}
+				<IconButton>
+					<MoreVertIcon />
+				</IconButton>
 			</CardActions>
 		</Card>
 	);
+
+	const CreateDialog = ({ isOpen, setIsOpen }) => {
+		const [orgName, setOrgName] = useState("");
+		const [orgDescription, setOrgDescription] = useState("");
+		const [orgLocation, setOrgLocation] = useState("");
+
+		const [orgNameError, setOrgNameError] = useState(false);
+		const [orgDescriptionError, setOrgDescriptionError] = useState(false);
+		const [orgLocationError, setOrgLocationError] = useState(false);
+		const [apiError, setApiError] = useState("");
+
+		const handleCreateOrganization = async (event) => {
+			event.preventDefault();
+			event.stopPropagation();
+
+			var flag = false;
+			if (!orgName) {
+				setOrgNameError(true);
+				flag = true;
+			}
+			if (!orgDescription) {
+				setOrgDescriptionError(true);
+				flag = true;
+			}
+			if (!orgLocation) {
+				setOrgLocationError(true);
+				flag = true;
+			}
+			if (flag) {
+				return;
+			}
+
+			const organizationDto = { orgName, orgDescription, orgLocation };
+
+			try {
+				const data = await createOrganization(organizationDto);
+				setOrganizations([...organizations, data]);
+				setIsOpen(false);
+			} catch (error) {
+				console.error("Error creating organization:", error);
+				setApiError(`${error}`);
+			}
+		};
+
+		return (
+			<>
+				<Dialog open={isOpen} onClose={() => setIsDialogOpen(false)}>
+					<DialogTitle variant="h4">Create Organization</DialogTitle>
+					<DialogContent>
+						{apiError !== "" && <Alert severity="error">{apiError}</Alert>}
+						<TextField
+							id="organization-name"
+							label="Organization Name"
+							value={orgName}
+							onChange={(e) => {
+								setOrgName(e.target.value);
+								setOrgNameError(false);
+							}}
+							fullWidth
+							margin="normal"
+							required
+							error={orgNameError}
+						/>
+						<TextField
+							label="Organization Description"
+							value={orgDescription}
+							onChange={(e) => {
+								setOrgDescription(e.target.value);
+								setOrgDescriptionError(false);
+							}}
+							fullWidth
+							margin="normal"
+							required
+							error={orgDescriptionError}
+						/>
+						<TextField
+							label="Organization Location"
+							value={orgLocation}
+							onChange={(e) => {
+								setOrgLocation(e.target.value);
+								setOrgLocationError(false);
+							}}
+							fullWidth
+							margin="normal"
+							required
+							error={orgLocationError}
+						/>
+					</DialogContent>
+					<DialogActions>
+						<Button color="primary" onClick={() => setIsOpen(false)}>
+							Cancel
+						</Button>
+						<Button
+							variant="contained"
+							color="primary"
+							onClick={handleCreateOrganization}
+						>
+							Create
+						</Button>
+					</DialogActions>
+				</Dialog>
+			</>
+		);
+	};
 
 	return (
 		<>
@@ -163,7 +251,7 @@ const Organization = () => {
 				}}
 			>
 				<Typography variant="h4">Organizations</Typography>
-				<IconButton onClick={handleCreateOrganization}>
+				<IconButton onClick={() => setIsDialogOpen(true)}>
 					<AddIcon />
 				</IconButton>
 			</Box>
@@ -191,6 +279,7 @@ const Organization = () => {
 					<>No organization data available.</>
 				)}
 			</Box>
+			<CreateDialog isOpen={isDialogOpen} setIsOpen={setIsDialogOpen} />
 		</>
 	);
 };
