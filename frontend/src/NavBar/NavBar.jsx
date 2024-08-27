@@ -79,7 +79,7 @@ const NavBar = ({}) => {
 		};
 
 		fetchData();
-	}, [organizations]);
+	}, []);
 
 	useEffect(() => {
 		const pathWords = parseLocation(location);
