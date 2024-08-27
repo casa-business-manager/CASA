@@ -8,8 +8,21 @@ import {
 } from "../API/OrganizationAPI";
 import "./OrganizationSelection.css";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import AddIcon from "@mui/icons-material/Add";
 import OrganizationsContext from "../Contexts/OrganizationsContext";
 import CurrentUserContext from "../Contexts/CurrentUserContext";
+import {
+	Box,
+	Button,
+	Card,
+	CardActionArea,
+	CardActions,
+	CardContent,
+	CardMedia,
+	Divider,
+	IconButton,
+	Typography,
+} from "@mui/material";
 
 const Organization = () => {
 	const [currentUser, setCurrentUser] = useContext(CurrentUserContext);
@@ -41,10 +54,11 @@ const Organization = () => {
 		};
 
 		fetchData();
-	}, []); // Empty dependency array ensures this runs only once
+	}, []);
 
 	const handleCreateOrganization = async (event) => {
 		event.preventDefault();
+		event.stopPropagation();
 		const organizationDto = { orgName, orgDescription, orgLocation };
 
 		try {
@@ -59,50 +73,50 @@ const Organization = () => {
 		}
 	};
 
-	const handleEditOrganization = (org) => {
-		setEditingOrg(org);
-		setOrgName(org.orgName);
-		setOrgDescription(org.orgDescription);
-		setOrgLocation(org.orgLocation);
-		setIsDialogOpen(true);
-	};
+	// const handleEditOrganization = (org) => {
+	// 	setEditingOrg(org);
+	// 	setOrgName(org.orgName);
+	// 	setOrgDescription(org.orgDescription);
+	// 	setOrgLocation(org.orgLocation);
+	// 	setIsDialogOpen(true);
+	// };
 
-	const handleUpdateOrganization = async (event) => {
-		event.preventDefault();
-		const updatedOrg = {
-			...editingOrg,
-			orgName,
-			orgDescription,
-			orgLocation,
-		};
+	// const handleUpdateOrganization = async (event) => {
+	// 	event.preventDefault();
+	// 	const updatedOrg = {
+	// 		...editingOrg,
+	// 		orgName,
+	// 		orgDescription,
+	// 		orgLocation,
+	// 	};
 
-		try {
-			const data = await updateOrganization(updatedOrg);
-			setOrganizations(
-				organizations.map((org) => (org.orgId === data.orgId ? data : org)),
-			);
-			setEditingOrg(null);
-			setOrgName("");
-			setOrgDescription("");
-			setOrgLocation("");
-			setIsDialogOpen(false);
-		} catch (error) {
-			console.error("Error updating organization:", error);
-			setError(error.message);
-		}
-	};
+	// 	try {
+	// 		const data = await updateOrganization(updatedOrg);
+	// 		setOrganizations(
+	// 			organizations.map((org) => (org.orgId === data.orgId ? data : org)),
+	// 		);
+	// 		setEditingOrg(null);
+	// 		setOrgName("");
+	// 		setOrgDescription("");
+	// 		setOrgLocation("");
+	// 		setIsDialogOpen(false);
+	// 	} catch (error) {
+	// 		console.error("Error updating organization:", error);
+	// 		setError(error.message);
+	// 	}
+	// };
 
-	const openDialog = () => {
-		setEditingOrg(null);
-		setOrgName("");
-		setOrgDescription("");
-		setOrgLocation("");
-		setIsDialogOpen(true);
-	};
+	// const openDialog = () => {
+	// 	setEditingOrg(null);
+	// 	setOrgName("");
+	// 	setOrgDescription("");
+	// 	setOrgLocation("");
+	// 	setIsDialogOpen(true);
+	// };
 
-	const closeDialog = () => {
-		setIsDialogOpen(false);
-	};
+	// const closeDialog = () => {
+	// 	setIsDialogOpen(false);
+	// };
 
 	const handleCardClick = (orgId) => {
 		navigate(`/organization/${orgId}`);
@@ -111,78 +125,73 @@ const Organization = () => {
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error: {error}</div>;
 
+	const OrganizationCard = ({ id, name, description, location }) => (
+		<Card>
+			<CardActionArea onClick={() => handleCardClick(id)}>
+				<CardMedia
+					// TODO: Add image
+					sx={{ height: 140, backgroundColor: "green" }}
+				/>
+				<CardContent>
+					<Typography gutterBottom variant="h5" component="div">
+						{name}
+					</Typography>
+					<Typography variant="body2" color="text.secondary">
+						{description}
+					</Typography>
+					<Typography variant="body3" color="text.secondary">
+						{location}
+					</Typography>
+				</CardContent>
+			</CardActionArea>
+			<CardActions>
+				<Button size="small" color="primary">
+					Share
+				</Button>
+			</CardActions>
+		</Card>
+	);
+
 	return (
-		<div>
-			{organizations.length > 0 ? (
-				organizations.map((org) => (
-					<div
-						key={org.orgId}
-						className="card"
-						onClick={() => handleCardClick(org.orgId)}
-					>
-						<MoreVertIcon
-							className="more-icon"
-							onClick={(e) => {
-								e.stopPropagation();
-								handleEditOrganization(org);
-							}}
-						/>
-						<h2>{org.orgName}</h2>
-						<p>ID: {org.orgId}</p>
-						<p>Description: {org.orgDescription}</p>
-						<p>Location: {org.orgLocation}</p>
-					</div>
-				))
-			) : (
-				<p>No organization data available.</p>
-			)}
-
-			{isDialogOpen && (
-				<div className="dialog-overlay" onClick={closeDialog}>
-					<div className="dialog" onClick={(e) => e.stopPropagation()}>
-						<h2>{editingOrg ? "Edit Organization" : "Create Organization"}</h2>
-						<form
-							onSubmit={
-								editingOrg ? handleUpdateOrganization : handleCreateOrganization
-							}
-						>
-							<div>
-								<label>Organization Name:</label>
-								<input
-									type="text"
-									value={orgName}
-									onChange={(e) => setOrgName(e.target.value)}
-									required
-								/>
-							</div>
-							<div>
-								<label>Organization Description:</label>
-								<input
-									type="text"
-									value={orgDescription}
-									onChange={(e) => setOrgDescription(e.target.value)}
-									required
-								/>
-							</div>
-							<div>
-								<label>Organization Location:</label>
-								<input
-									type="text"
-									value={orgLocation}
-									onChange={(e) => setOrgLocation(e.target.value)}
-									required
-								/>
-							</div>
-							<button type="submit">{editingOrg ? "Update" : "Create"}</button>
-						</form>
-					</div>
-				</div>
-			)}
-
-			<button className="floating-button" onClick={openDialog}>
-				+
-			</button>
-		</div>
+		<>
+			<Box
+				fullWidth
+				sx={{
+					display: "flex",
+					justifyContent: "space-between",
+					alignItems: "center",
+				}}
+			>
+				<Typography variant="h4">Organizations</Typography>
+				<IconButton onClick={handleCreateOrganization}>
+					<AddIcon />
+				</IconButton>
+			</Box>
+			<Divider sx={{ my: 1 }} />
+			<Box
+				sx={{
+					display: "grid",
+					gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+					gap: 2,
+				}}
+			>
+				{organizations.length > 0 ? (
+					organizations
+						.toSorted((a, b) => a.orgName > b.orgName)
+						.map((org) => (
+							<OrganizationCard
+								key={org.orgId}
+								id={org.orgId}
+								name={org.orgName}
+								description={org.orgDescription}
+								location={org.orgLocation}
+							/>
+						))
+				) : (
+					<>No organization data available.</>
+				)}
+			</Box>
+		</>
 	);
 };
 
