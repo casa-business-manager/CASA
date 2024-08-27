@@ -8,7 +8,7 @@ import {
 import Login from "./Login/Login";
 import OrganizationSelection from "./OrganizationSelection/OrganizationSelection";
 import OAuth2RedirectHandler from "./Login/OAuth2RedirectHandler";
-import OrganizationLanding from "./OrganizationLanding/OrganizationLanding";
+import OrganizationHome from "./OrganizationHome/OrganizationHome";
 import UserCalendar from "./Calendars/UserCalendar";
 import OrganizationCalendar from "./Calendars/OrganizationCalendar";
 import EmailPage from "./Email/EmailPage";
@@ -16,6 +16,7 @@ import NavBar from "./NavBar/NavBar";
 import OrganizationsContext from "./Contexts/OrganizationsContext";
 import { Box } from "@mui/material";
 import { CurrentUserProvider } from "./Contexts/CurrentUserContext";
+import Sidebar from "./Sidebar/Sidebar";
 
 function App() {
 	const [organizations, setOrganizations] = useState([]);
@@ -41,20 +42,32 @@ function App() {
 									element={<OAuth2RedirectHandler />}
 								/>
 								<Route
-									path="/organization/:orgId"
-									element={<OrganizationLanding />}
-								/>
-								<Route
-									path="/organization/:orgId/calendar"
-									element={<OrganizationCalendar />}
-								/>
-								<Route
 									path="/user/:userId/calendar"
 									element={<UserCalendar />}
 								/>
 								<Route
+									path="/organization/:orgId"
+									element={
+										<Sidebar>
+											<OrganizationHome />
+										</Sidebar>
+									}
+								/>
+								<Route
+									path="/organization/:orgId/calendar"
+									element={
+										<Sidebar selected={"Calendar"}>
+											<OrganizationCalendar />
+										</Sidebar>
+									}
+								/>
+								<Route
 									path="/organization/:orgId/email"
-									element={<EmailPage />}
+									element={
+										<Sidebar selected={"Email"}>
+											<EmailPage />
+										</Sidebar>
+									}
 								/>
 							</Routes>
 						</Box>

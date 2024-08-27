@@ -16,11 +16,8 @@ import ChevronRight from "@mui/icons-material/ChevronRight";
 import OrganizationsContext from "../Contexts/OrganizationsContext";
 import { getOrganizations } from "../API/OrganizationAPI";
 import CurrentUserContext from "../Contexts/CurrentUserContext";
-
-const parseLocation = (location) => {
-	const path = location.pathname;
-	return path.split("/").filter((word) => word !== "");
-};
+import zIndex from "@mui/material/styles/zIndex";
+import { parseLocation } from "../util/path";
 
 const recognizedPathWordsToNavbarWords = {
 	login: { name: "Login", path: "login" },
@@ -132,6 +129,7 @@ const NavBar = ({}) => {
 			sx={{
 				backgroundColor: "#3b89f3",
 				mb: 1,
+				zIndex: zIndex.drawer + 1,
 			}}
 		>
 			<Toolbar>
