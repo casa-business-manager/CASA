@@ -17,11 +17,7 @@ import OrganizationsContext from "../Contexts/OrganizationsContext";
 import { getOrganizations } from "../API/OrganizationAPI";
 import CurrentUserContext from "../Contexts/CurrentUserContext";
 import zIndex from "@mui/material/styles/zIndex";
-
-const parseLocation = (location) => {
-	const path = location.pathname;
-	return path.split("/").filter((word) => word !== "");
-};
+import { parseLocation } from "../util/path";
 
 const recognizedPathWordsToNavbarWords = {
 	login: { name: "Login", path: "login" },

@@ -56,7 +56,7 @@ function App() {
 								<Route
 									path="/organization/:orgId/calendar"
 									element={
-										<Sidebar>
+										<Sidebar selected={"Calendar"}>
 											<OrganizationCalendar />
 										</Sidebar>
 									}
@@ -64,7 +64,7 @@ function App() {
 								<Route
 									path="/organization/:orgId/email"
 									element={
-										<Sidebar>
+										<Sidebar selected={"Email"}>
 											<EmailPage />
 										</Sidebar>
 									}
