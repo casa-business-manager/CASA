@@ -8,7 +8,7 @@ import {
 import Login from "./Login/Login";
 import OrganizationSelection from "./OrganizationSelection/OrganizationSelection";
 import OAuth2RedirectHandler from "./Login/OAuth2RedirectHandler";
-import OrganizationLanding from "./OrganizationLanding/OrganizationLanding";
+import OrganizationHome from "./OrganizationHome/OrganizationHome";
 import UserCalendar from "./Calendars/UserCalendar";
 import OrganizationCalendar from "./Calendars/OrganizationCalendar";
 import EmailPage from "./Email/EmailPage";
@@ -49,7 +49,7 @@ function App() {
 									path="/organization/:orgId"
 									element={
 										<Sidebar>
-											<OrganizationLanding />
+											<OrganizationHome />
 										</Sidebar>
 									}
 								/>

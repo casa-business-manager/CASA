@@ -12,13 +12,21 @@ import {
 } from "@mui/material";
 import { CalendarIcon } from "@mui/x-date-pickers/icons";
 import EmailIcon from "@mui/icons-material/Email";
+import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate, useParams } from "react-router-dom";
+import SettingsButton from "../Settings/SettingsButton";
 
 const Sidebar = ({ selected, children }) => {
 	const { orgId } = useParams();
 	const navigate = useNavigate();
 
+	// TODO: Move settings to its own page instead of dialog box
 	const options = [
+		{
+			label: "Home",
+			icon: <HomeIcon />,
+			navigation: () => navigate(`/organization/${orgId}`),
+		},
 		{
 			label: "Calendar",
 			icon: <CalendarIcon />,
@@ -29,6 +37,11 @@ const Sidebar = ({ selected, children }) => {
 			icon: <EmailIcon />,
 			navigation: () => navigate(`/organization/${orgId}/email`),
 		},
+		// {
+		// 	label: "Settings",
+		// 	icon: <SettingsIcon />,
+		// 	navigation: () => navigate(`/organization/${orgId}/settings`),
+		// }
 	];
 
 	return (
@@ -47,14 +60,6 @@ const Sidebar = ({ selected, children }) => {
 			>
 				<Toolbar />
 				<List>
-					<ListItem>
-						<ListItemText
-							primary={<Typography variant="h6">Applications</Typography>}
-						/>
-					</ListItem>
-
-					<Divider />
-
 					{options.map((option) => (
 						<ListItem>
 							<ListItemButton
@@ -66,6 +71,9 @@ const Sidebar = ({ selected, children }) => {
 							</ListItemButton>
 						</ListItem>
 					))}
+					<ListItem>
+						<SettingsButton orgId={orgId} />
+					</ListItem>
 				</List>
 			</Drawer>
 			<Box sx={{ flexGrow: 1 }}>{children}</Box>
