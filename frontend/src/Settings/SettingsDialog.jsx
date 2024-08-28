@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect, Fragment, useContext } from "react";
 import {
 	Dialog,
 	DialogActions,
@@ -17,8 +17,8 @@ import IntegrationsCollapse from "./SettingsCollapses/IntegrationsCollapse";
 import UserCollapse from "./SettingsCollapses/UserCollapse";
 import MembersTab from "./SettingTabs/MembersTab";
 import RolesTab from "./SettingTabs/RolesTab";
-import { getCurrentUser } from "../API/UserAPI";
 import { getOrganizationRoles } from "../API/RoleAPI";
+import CurrentUserContext from "../Contexts/CurrentUserContext";
 
 // orgId may be null
 const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
@@ -26,9 +26,9 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 		<Typography variant="h5">Select a setting</Typography>
 	);
 
+	const [currentUser, setCurrentUser] = useContext(CurrentUserContext);
 	const [selected, setSelected] = useState(-1);
 	const [settingsPage, setSettingsPage] = useState(defaultComponent);
-	const [user, setUser] = useState(null);
 	const [orgSettings, setOrgSettings] = useState({});
 	const [availableIntegrations, setAvailableIntegrations] = useState({});
 	const [roleSettings, setRoleSettings] = useState({});
@@ -43,11 +43,6 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 
 	// get settings if clicked
 	useEffect(() => {
-		const fetchCurrentUser = async () => {
-			const user = await getCurrentUser();
-			setUser(user);
-		};
-
 		const fetchOrganizationSettings = async () => {
 			// TODO: Make real backend function
 			// const settings = await SomeAPICallHere(orgId);
@@ -84,7 +79,6 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 			fetchOrganizationSettings();
 			fetchAvailableIntegrations();
 			fetchRoleSettings();
-			fetchCurrentUser();
 		}
 	}, [dialogOpen, orgId, settingsPage]);
 
@@ -161,7 +155,7 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 							/>
 							<RolesTab
 								settings={roleSettings}
-								user={user}
+								user={currentUser}
 								onClick={handleTabClick}
 								selected={selected}
 							/>

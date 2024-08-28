@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext } from "react";
 
 /// Tuple of [organizations, setOrganizations]
 /// organizations is a list matching the format returned by getOrganizations

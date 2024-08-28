@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import {
 	AppBar,
 	Box,
+	Divider,
 	IconButton,
 	Menu,
+	MenuItem,
 	Toolbar,
 	Typography,
 } from "@mui/material";
@@ -14,11 +15,9 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronRight from "@mui/icons-material/ChevronRight";
 import OrganizationsContext from "../Contexts/OrganizationsContext";
 import { getOrganizations } from "../API/OrganizationAPI";
-
-const parseLocation = (location) => {
-	const path = location.pathname;
-	return path.split("/").filter((word) => word !== "");
-};
+import CurrentUserContext from "../Contexts/CurrentUserContext";
+import zIndex from "@mui/material/styles/zIndex";
+import { parseLocation } from "../util/path";
 
 const recognizedPathWordsToNavbarWords = {
 	login: { name: "Login", path: "login" },
@@ -54,9 +53,11 @@ const addNameIfId = (pathWordsArray, id, organizations) => {
 
 const NavBar = ({}) => {
 	const navigate = useNavigate();
+	const [currentUser, setCurrentUser] = useContext(CurrentUserContext);
 	const [organizations, setOrganizations] = useContext(OrganizationsContext);
 	// values from recognizedPathWordsToNavbarWords
 	const [navbarLinks, setNavbarLinks] = useState([]);
+	const [anchorEl, setAnchorEl] = useState(null);
 
 	const location = useLocation();
 
@@ -75,7 +76,7 @@ const NavBar = ({}) => {
 		};
 
 		fetchData();
-	}, [organizations]);
+	}, []);
 
 	useEffect(() => {
 		const pathWords = parseLocation(location);
@@ -107,8 +108,19 @@ const NavBar = ({}) => {
 		navigate("/login");
 	};
 
-	const handleAccountButton = () => {
-		console.log("TODO: Account button clicked");
+	const handleCalendarClick = () => {
+		navigate(`/user/${currentUser.id}/calendar`);
+	};
+
+	const handleAccountButton = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
+
+	const handleMenuClickWrapper = (clickFunction) => {
+		return (...params) => {
+			setAnchorEl(null);
+			clickFunction(...params);
+		};
 	};
 
 	return (
@@ -117,6 +129,7 @@ const NavBar = ({}) => {
 			sx={{
 				backgroundColor: "#3b89f3",
 				mb: 1,
+				zIndex: zIndex.drawer + 1,
 			}}
 		>
 			<Toolbar>
@@ -154,12 +167,32 @@ const NavBar = ({}) => {
 				{/* Log out and Account buttons. Must make them white manualluy */}
 				{navbarLinks.find((link) => link.name === "Login") ? null : (
 					<>
-						<IconButton onClick={handleLogout}>
-							<LogoutIcon sx={{ color: "#fff" }} />
-						</IconButton>
 						<IconButton onClick={handleAccountButton}>
 							<AccountCircleIcon sx={{ color: "#fff" }} />
 						</IconButton>
+						<Menu
+							anchorEl={anchorEl}
+							open={Boolean(anchorEl)}
+							onClose={() => setAnchorEl(null)}
+							transformOrigin={{
+								horizontal: "center",
+							}}
+						>
+							{/* TODO: My Account page */}
+							<MenuItem onClick={handleMenuClickWrapper(handleLogout)}>
+								My Account
+							</MenuItem>
+							<MenuItem onClick={handleMenuClickWrapper(handleCalendarClick)}>
+								My Calendar
+							</MenuItem>
+							<Divider />
+							<MenuItem
+								onClick={handleMenuClickWrapper(handleLogout)}
+								sx={{ color: "red" }}
+							>
+								Logout
+							</MenuItem>
+						</Menu>
 					</>
 				)}
 			</Toolbar>
