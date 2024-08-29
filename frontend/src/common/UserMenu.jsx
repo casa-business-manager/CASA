@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import OrganizationsContext from "../Contexts/OrganizationsContext";
 import {
 	Avatar,
@@ -13,10 +13,14 @@ import ChatIcon from "@mui/icons-material/Chat";
 import EmailIcon from "@mui/icons-material/Email";
 import { getUserFullName } from "../util/user";
 import { useContext } from "react";
+import EmailContext from "../Contexts/EmailContext";
 
 const UserMenu = ({ anchorEl, onClose, user }) => {
+	const navigate = useNavigate();
+
 	const { orgId } = useParams();
 	const [organizations, setOrganizations] = useContext(OrganizationsContext);
+	const [emailRecipients, setEmailRecipients] = useContext(EmailContext);
 
 	const open = Boolean(anchorEl);
 
@@ -24,6 +28,11 @@ const UserMenu = ({ anchorEl, onClose, user }) => {
 	const userRoles = roles.filter((role) =>
 		role.users.some((roleUser) => roleUser.id === user.id),
 	);
+
+	const handleEmailClick = () => {
+		setEmailRecipients([user]);
+		navigate(`/organization/${orgId}/email`);
+	};
 
 	return (
 		<Menu anchorEl={anchorEl} open={open} onClose={onClose}>
@@ -87,7 +96,10 @@ const UserMenu = ({ anchorEl, onClose, user }) => {
 							gap: 1,
 						}}
 					>
-						<Button sx={{ gap: 1, color: "text.secondary" }}>
+						<Button
+							onClick={handleEmailClick}
+							sx={{ gap: 1, color: "text.secondary" }}
+						>
 							<EmailIcon sx={{ color: "text.primary" }} />
 							Email
 						</Button>
