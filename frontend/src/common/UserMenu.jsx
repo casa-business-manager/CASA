@@ -20,43 +20,59 @@ const UserMenu = ({ anchorEl, onClose, user }) => {
 
 	const open = Boolean(anchorEl);
 
+	const roles = organizations.find((org) => org.orgId === orgId).roles;
+	const userRoles = roles.filter((role) =>
+		role.users.some((roleUser) => roleUser.id === user.id),
+	);
 	console.log("orgs", organizations);
+	console.log("roles", roles);
+	console.log("userRoles", userRoles);
 
 	return (
 		<Menu anchorEl={anchorEl} open={open} onClose={onClose}>
 			{user ? (
-				<div>
+				<Box
+					sx={{
+						px: 2,
+						py: 1,
+					}}
+				>
 					<Box
 						sx={{
 							display: "flex",
 							alignItems: "center",
-							p: 2,
 							mr: 4,
+							mb: 2,
 						}}
 					>
-						<Avatar>
+						<Avatar sx={{ mr: 2 }}>
 							{user.firstName[0]}
 							{user.lastName[0]}
 						</Avatar>
 						<Box>
-							<Typography sx={{ ml: 2 }}>{getUserFullName(user)}</Typography>
-							<Typography variant="body2" sx={{ ml: 2 }}>
-								{user.email}
-							</Typography>
+							<Typography>{getUserFullName(user)}</Typography>
+							<Typography variant="body2">{user.email}</Typography>
 						</Box>
 					</Box>
 
-					<Chip />
+					{userRoles.map((role) => (
+						<Chip
+							key={role.id}
+							label={role.name}
+							color="primary"
+							variant="outlined"
+							sx={{ mr: 1 }}
+						/>
+					))}
 
-					<Divider />
+					<Divider sx={{ my: 2 }} />
 
 					<Box
 						sx={{
 							display: "flex",
 							alignItems: "center",
-							p: 2,
 							pb: 1,
-							gap: 2,
+							gap: 1,
 						}}
 					>
 						<Button sx={{ gap: 1, color: "text.secondary" }}>
@@ -68,7 +84,7 @@ const UserMenu = ({ anchorEl, onClose, user }) => {
 							Chat
 						</Button>
 					</Box>
-				</div>
+				</Box>
 			) : (
 				<>Loading...</>
 			)}
