@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Avatar, Chip } from "@mui/material";
-import { useParams } from "react-router-dom";
 import UserMenu from "./UserMenu";
 import { getUserFullName } from "../util/user";
 
 const UserChip = ({ user, onDelete, variant = "outlined " }) => {
-	const { orgId } = useParams();
 	const [anchorEl, setAnchorEl] = useState(null);
 
 	const handleMenuOpen = (event) => {

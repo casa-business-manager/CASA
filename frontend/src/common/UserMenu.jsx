@@ -1,10 +1,26 @@
-import { Avatar, Box, Button, Divider, Menu, Typography } from "@mui/material";
+import { useParams } from "react-router-dom";
+import OrganizationsContext from "../Contexts/OrganizationsContext";
+import {
+	Avatar,
+	Box,
+	Button,
+	Chip,
+	Divider,
+	Menu,
+	Typography,
+} from "@mui/material";
 import ChatIcon from "@mui/icons-material/Chat";
 import EmailIcon from "@mui/icons-material/Email";
 import { getUserFullName } from "../util/user";
+import { useContext } from "react";
 
 const UserMenu = ({ anchorEl, onClose, user }) => {
+	const { orgId } = useParams();
+	const [organizations, setOrganizations] = useContext(OrganizationsContext);
+
 	const open = Boolean(anchorEl);
+
+	console.log("orgs", organizations);
 
 	return (
 		<Menu anchorEl={anchorEl} open={open} onClose={onClose}>
@@ -30,6 +46,8 @@ const UserMenu = ({ anchorEl, onClose, user }) => {
 						</Box>
 					</Box>
 
+					<Chip />
+
 					<Divider />
 
 					<Box
@@ -37,6 +55,7 @@ const UserMenu = ({ anchorEl, onClose, user }) => {
 							display: "flex",
 							alignItems: "center",
 							p: 2,
+							pb: 1,
 							gap: 2,
 						}}
 					>
