@@ -52,25 +52,30 @@ const UserMenu = ({ anchorEl, onClose, user }) => {
 							<Typography variant="body2">{user.email}</Typography>
 						</Box>
 					</Box>
-					<Divider sx={{ my: 2 }} />
 
-					<Box
-						sx={{
-							display: "flex",
-							flexWrap: "wrap",
-							gap: 1,
-						}}
-					>
-						{userRoles.map((role) => (
-							<Chip
-								key={role.roleId}
-								label={role.name}
-								color="primary"
-								variant="outlined"
-								sx={{ mb: 1 }}
-							/>
-						))}
-					</Box>
+					{userRoles.length > 0 && (
+						<>
+							<Divider sx={{ my: 2 }} />
+
+							<Box
+								sx={{
+									display: "flex",
+									flexWrap: "wrap",
+									gap: 1,
+								}}
+							>
+								{userRoles.map((role) => (
+									<Chip
+										key={role.roleId}
+										label={role.name}
+										color="primary"
+										variant="outlined"
+										sx={{ mb: 1 }}
+									/>
+								))}
+							</Box>
+						</>
+					)}
 
 					<Divider sx={{ my: 2 }} />
 
