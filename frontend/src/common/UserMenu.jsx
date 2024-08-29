@@ -24,15 +24,13 @@ const UserMenu = ({ anchorEl, onClose, user }) => {
 	const userRoles = roles.filter((role) =>
 		role.users.some((roleUser) => roleUser.id === user.id),
 	);
-	console.log("orgs", organizations);
-	console.log("roles", roles);
-	console.log("userRoles", userRoles);
 
 	return (
 		<Menu anchorEl={anchorEl} open={open} onClose={onClose}>
 			{user ? (
 				<Box
 					sx={{
+						maxWidth: "30vw",
 						px: 2,
 						py: 1,
 					}}
@@ -55,15 +53,23 @@ const UserMenu = ({ anchorEl, onClose, user }) => {
 						</Box>
 					</Box>
 
-					{userRoles.map((role) => (
-						<Chip
-							key={role.id}
-							label={role.name}
-							color="primary"
-							variant="outlined"
-							sx={{ mr: 1 }}
-						/>
-					))}
+					<Box
+						sx={{
+							display: "flex",
+							flexWrap: "wrap", // Add this line to enable wrapping
+							gap: 1,
+						}}
+					>
+						{userRoles.map((role) => (
+							<Chip
+								key={role.id}
+								label={role.name}
+								color="primary"
+								variant="outlined"
+								sx={{ mr: 1, mb: 1 }} // Add mb: 1 to create spacing between chips
+							/>
+						))}
+					</Box>
 
 					<Divider sx={{ my: 2 }} />
 
