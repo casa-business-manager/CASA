@@ -400,7 +400,7 @@ const EmailEditor = ({ orgId, sx }) => {
 	const handleSendEmail = async () => {
 		// send email
 		console.log(`subject is ${subject}`);
-		console.log(`people are ${people}`);
+		console.log(`people are`, people);
 		console.log(`TODO: get the body info from the RichTextEditor`);
 
 		try {

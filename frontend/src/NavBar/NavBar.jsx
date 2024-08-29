@@ -145,8 +145,8 @@ const NavBar = ({}) => {
 				>
 					CASA
 				</Typography>
-				{navbarLinks.map((link) => (
-					<>
+				{navbarLinks.map((link, index) => (
+					<React.Fragment key={index}>
 						<ChevronRight sx={{ m: 1 }} />
 						<Typography
 							onClick={() => {
@@ -161,7 +161,7 @@ const NavBar = ({}) => {
 						>
 							{link.name}
 						</Typography>
-					</>
+					</React.Fragment>
 				))}
 				<Box sx={{ flexGrow: 1 }} />
 				{/* Log out and Account buttons. Must make them white manualluy */}
