@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
 	Typography,
 	Box,
@@ -24,6 +24,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CloseIcon from "@mui/icons-material/Close";
 import ArticleIcon from "@mui/icons-material/Article";
+import EmailContext from "../Contexts/EmailContext";
 
 const TemplateTab = ({
 	name,
@@ -394,7 +395,7 @@ const TemplateMenu = ({ open, closeDrawer }) => {
 
 const EmailEditor = ({ orgId, sx }) => {
 	const [subject, setSubject] = useState("");
-	const [people, setPeople] = useState([]);
+	const [people, setPeople] = useContext(EmailContext);
 
 	const handleSendEmail = async () => {
 		// send email
@@ -442,7 +443,7 @@ const EmailEditor = ({ orgId, sx }) => {
 					Discard
 					<DeleteIcon sx={{ ml: 1 }} />
 				</Button>
-				<Button variant="contained">
+				<Button variant="contained" onClick={handleSendEmail}>
 					Send
 					<SendIcon sx={{ ml: 1 }} />
 				</Button>

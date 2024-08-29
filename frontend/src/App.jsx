@@ -17,9 +17,11 @@ import OrganizationsContext from "./Contexts/OrganizationsContext";
 import { Box } from "@mui/material";
 import { CurrentUserProvider } from "./Contexts/CurrentUserContext";
 import Sidebar from "./Sidebar/Sidebar";
+import EmailContext from "./Contexts/EmailContext";
 
 function App() {
 	const [organizations, setOrganizations] = useState([]);
+	const [emailRecipients, setEmailRecipients] = useState([]);
 
 	return (
 		<Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
@@ -28,49 +30,53 @@ function App() {
 					<OrganizationsContext.Provider
 						value={[organizations, setOrganizations]}
 					>
-						<NavBar title="Organization Calendar" />
-						<Box sx={{ flexGrow: 1, px: 1 }}>
-							<Routes>
-								<Route path="/" element={<Navigate replace to="/login" />} />
-								<Route path="/login" element={<Login />} />
-								<Route
-									path="/organization"
-									element={<OrganizationSelection />}
-								/>
-								<Route
-									path="/oauth2/redirect"
-									element={<OAuth2RedirectHandler />}
-								/>
-								<Route
-									path="/user/:userId/calendar"
-									element={<UserCalendar />}
-								/>
-								<Route
-									path="/organization/:orgId"
-									element={
-										<Sidebar>
-											<OrganizationHome />
-										</Sidebar>
-									}
-								/>
-								<Route
-									path="/organization/:orgId/calendar"
-									element={
-										<Sidebar selected={"Calendar"}>
-											<OrganizationCalendar />
-										</Sidebar>
-									}
-								/>
-								<Route
-									path="/organization/:orgId/email"
-									element={
-										<Sidebar selected={"Email"}>
-											<EmailPage />
-										</Sidebar>
-									}
-								/>
-							</Routes>
-						</Box>
+						<EmailContext.Provider
+							value={[emailRecipients, setEmailRecipients]}
+						>
+							<NavBar title="Organization Calendar" />
+							<Box sx={{ flexGrow: 1, px: 1 }}>
+								<Routes>
+									<Route path="/" element={<Navigate replace to="/login" />} />
+									<Route path="/login" element={<Login />} />
+									<Route
+										path="/organization"
+										element={<OrganizationSelection />}
+									/>
+									<Route
+										path="/oauth2/redirect"
+										element={<OAuth2RedirectHandler />}
+									/>
+									<Route
+										path="/user/:userId/calendar"
+										element={<UserCalendar />}
+									/>
+									<Route
+										path="/organization/:orgId"
+										element={
+											<Sidebar>
+												<OrganizationHome />
+											</Sidebar>
+										}
+									/>
+									<Route
+										path="/organization/:orgId/calendar"
+										element={
+											<Sidebar selected={"Calendar"}>
+												<OrganizationCalendar />
+											</Sidebar>
+										}
+									/>
+									<Route
+										path="/organization/:orgId/email"
+										element={
+											<Sidebar selected={"Email"}>
+												<EmailPage />
+											</Sidebar>
+										}
+									/>
+								</Routes>
+							</Box>
+						</EmailContext.Provider>
 					</OrganizationsContext.Provider>
 				</CurrentUserProvider>
 			</Router>
