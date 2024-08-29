@@ -90,7 +90,13 @@ const OrganizationPeopleAutocomplete = ({
 					const handleDeleteSpecificPerson = deletable
 						? () => handleDeletePerson(user.id)
 						: undefined;
-					return <UserChip user={user} onDelete={handleDeleteSpecificPerson} />;
+					return (
+						<UserChip
+							key={index}
+							user={user}
+							onDelete={handleDeleteSpecificPerson}
+						/>
+					);
 				})
 			}
 			renderInput={(params) => (
