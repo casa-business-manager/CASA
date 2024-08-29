@@ -52,11 +52,12 @@ const UserMenu = ({ anchorEl, onClose, user }) => {
 							<Typography variant="body2">{user.email}</Typography>
 						</Box>
 					</Box>
+					<Divider sx={{ my: 2 }} />
 
 					<Box
 						sx={{
 							display: "flex",
-							flexWrap: "wrap", // Add this line to enable wrapping
+							flexWrap: "wrap",
 							gap: 1,
 						}}
 					>
@@ -66,7 +67,7 @@ const UserMenu = ({ anchorEl, onClose, user }) => {
 								label={role.name}
 								color="primary"
 								variant="outlined"
-								sx={{ mr: 1, mb: 1 }} // Add mb: 1 to create spacing between chips
+								sx={{ mb: 1 }}
 							/>
 						))}
 					</Box>
