@@ -20,6 +20,7 @@ import com.example.casa.Model.User;
 import com.example.casa.Payload.ApiResponse;
 import com.example.casa.Payload.Organization.OrganizationDto;
 import com.example.casa.Payload.Organization.OrganizationInformation;
+import com.example.casa.Payload.Organization.OrganizationWithRoles;
 import com.example.casa.Repository.EventRepository;
 import com.example.casa.Repository.OrganizationRepository;
 import com.example.casa.Repository.UserRepository;
@@ -43,7 +44,19 @@ public class OrganizationController {
 
 		Set<Organization> organizations = user.getOrganizations();
 
-		return ResponseEntity.ok(organizations);
+		Set<OrganizationWithRoles> organizationWithInfoSet = new HashSet<>();
+		for (Organization organization : organizations) {
+			Set<User> users = organization.getUsers();
+			Set<Role> roles = organization.getRoles();
+
+			OrganizationWithRoles orgInfo = new OrganizationWithRoles(organization);
+			orgInfo.setUsers(users);
+			orgInfo.setRoles(roles);
+
+			organizationWithInfoSet.add(orgInfo);
+		}
+
+		return ResponseEntity.ok(organizationWithInfoSet);
 	}
 
 	@PostMapping("/createOrganizationForUser/user/{userId}")

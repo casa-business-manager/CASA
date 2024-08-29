@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
 	Typography,
 	Box,
@@ -24,6 +24,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CloseIcon from "@mui/icons-material/Close";
 import ArticleIcon from "@mui/icons-material/Article";
+import EmailContext from "../Contexts/EmailContext";
 
 const TemplateTab = ({
 	name,
@@ -394,12 +395,12 @@ const TemplateMenu = ({ open, closeDrawer }) => {
 
 const EmailEditor = ({ orgId, sx }) => {
 	const [subject, setSubject] = useState("");
-	const [people, setPeople] = useState([]);
+	const [people, setPeople] = useContext(EmailContext);
 
 	const handleSendEmail = async () => {
 		// send email
 		console.log(`subject is ${subject}`);
-		console.log(`people are ${people}`);
+		console.log(`people are`, people);
 		console.log(`TODO: get the body info from the RichTextEditor`);
 
 		try {
@@ -408,6 +409,7 @@ const EmailEditor = ({ orgId, sx }) => {
 				return;
 			};
 			const response = await sendEmail(people, subject, "body");
+			setPeople([]);
 		} catch {
 			console.error("Failed to send email");
 		}
@@ -423,6 +425,8 @@ const EmailEditor = ({ orgId, sx }) => {
 			<OrganizationPeopleAutocomplete
 				parentSetSelectedPeople={setPeople}
 				organizationId={orgId}
+				defaultPeopleList={people}
+				controlled={true}
 				sx={{ mt: 1 }}
 			/>
 			<Box
@@ -442,7 +446,7 @@ const EmailEditor = ({ orgId, sx }) => {
 					Discard
 					<DeleteIcon sx={{ ml: 1 }} />
 				</Button>
-				<Button variant="contained">
+				<Button variant="contained" onClick={handleSendEmail}>
 					Send
 					<SendIcon sx={{ ml: 1 }} />
 				</Button>

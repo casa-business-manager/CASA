@@ -60,8 +60,8 @@ const Sidebar = ({ selected, children }) => {
 			>
 				<Toolbar />
 				<List>
-					{options.map((option) => (
-						<ListItem>
+					{options.map((option, index) => (
+						<ListItem key={index}>
 							<ListItemButton
 								selected={
 									selected === option.label ||
