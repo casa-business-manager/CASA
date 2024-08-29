@@ -108,12 +108,11 @@ const Organization = () => {
 	if (loading) return <div>Loading...</div>;
 
 	const OrganizationCard = ({ id, name, description, location }) => (
-		<Card sx={{ boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.2)" }}>
+		<Card key={id} sx={{ boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.2)" }}>
 			<CardActionArea onClick={() => handleCardClick(id)}>
-				<CardMedia
-					// TODO: Add image
-					sx={{ height: 140, backgroundColor: "OliveDrab" }}
-				/>
+				<CardMedia sx={{ height: 140, backgroundColor: "OliveDrab" }}>
+					TODO: Add Image
+				</CardMedia>
 				<CardContent>
 					<Box sx={{ maxHeight: 80, overflowY: "auto" }}>
 						<Typography
@@ -261,7 +260,6 @@ const Organization = () => {
 	return (
 		<>
 			<Box
-				fullWidth
 				sx={{
 					display: "flex",
 					gap: 2,

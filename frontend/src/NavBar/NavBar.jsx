@@ -176,6 +176,7 @@ const NavBar = ({}) => {
 							onClose={() => setAnchorEl(null)}
 							transformOrigin={{
 								horizontal: "center",
+								vertical: "top",
 							}}
 						>
 							{/* TODO: My Account page */}
