@@ -409,6 +409,7 @@ const EmailEditor = ({ orgId, sx }) => {
 				return;
 			};
 			const response = await sendEmail(people, subject, "body");
+			setPeople([]);
 		} catch {
 			console.error("Failed to send email");
 		}
@@ -424,6 +425,8 @@ const EmailEditor = ({ orgId, sx }) => {
 			<OrganizationPeopleAutocomplete
 				parentSetSelectedPeople={setPeople}
 				organizationId={orgId}
+				defaultPeopleList={people}
+				controlled={true}
 				sx={{ mt: 1 }}
 			/>
 			<Box

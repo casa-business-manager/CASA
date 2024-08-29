@@ -17,6 +17,7 @@ const OrganizationPeopleAutocomplete = ({
 	disabled,
 	variant = "outlined",
 	fullWidth = null,
+	controlled = false,
 	sx,
 	...props
 }) => {
@@ -43,6 +44,12 @@ const OrganizationPeopleAutocomplete = ({
 
 		fetchPeople();
 	}, [organizationId]);
+
+	useEffect(() => {
+		if (controlled) {
+			setSelectedPeople(defaultPeopleList);
+		}
+	}, [defaultPeopleList]);
 
 	const setSelectedPeopleWrapper = (newSelectedPeople) => {
 		parentSetSelectedPeople(newSelectedPeople);
