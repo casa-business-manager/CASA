@@ -75,7 +75,16 @@ const OrganizationHome = ({}) => {
 	/// Text should be a ListItemText component
 	const NotificationCard = ({ icon, text, onClick }) => {
 		return (
-			<Card onClick={onClick} sx={{ width: "90%" }}>
+			<Card
+				onClick={onClick}
+				sx={{
+					width: "90%",
+					"&:hover": {
+						cursor: "pointer",
+						backgroundColor: "#f5f5f5",
+					},
+				}}
+			>
 				<ListItem>
 					<ListItemAvatar>
 						<Avatar>{icon}</Avatar>
