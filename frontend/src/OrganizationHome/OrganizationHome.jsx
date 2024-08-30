@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
 	Avatar,
@@ -13,16 +13,54 @@ import {
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import ChatIcon from "@mui/icons-material/Chat";
 import EventIcon from "@mui/icons-material/Event";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import TodayIcon from "@mui/icons-material/Today";
+import { getCalendarData } from "../API/EventAPI";
+import CurrentUserContext from "../Contexts/CurrentUserContext";
+import { getMMDDHHMM12hr } from "../util/date";
 
 const OrganizationHome = ({}) => {
 	const { orgId } = useParams();
+	const [currentUser, _] = useContext(CurrentUserContext);
 
-	const [taskNotifications, setTaskNotifications] = useState([1, 2]);
-	const [messageNotifications, setMessageNotifications] = useState([1, 2]);
-	const [eventNotifications, setEventNotifications] = useState([
-		1, 2, 3, 1, 2, 3, 1, 2, 31, 2, 31, 2, 31, 2, 31, 2, 31, 2, 31, 2, 3,
+	const [taskNotifications, setTaskNotifications] = useState([
+		"task1",
+		"task2",
 	]);
+	const [messageNotifications, setMessageNotifications] = useState([
+		"message1",
+		"message2",
+	]);
+	/// Event notifications for [today, 7 days from now] fetched from the backend
+	const [eventNotifications, setEventNotifications] = useState([]);
+
+	useEffect(() => {
+		if (!currentUser) {
+			return;
+		}
+
+		const fetchNotifications = async () => {
+			try {
+				const currentDate = new Date();
+				const oneWeekFromNow = new Date();
+				oneWeekFromNow.setDate(currentDate.getDate() + 7);
+
+				const response = await getCalendarData(
+					orgId,
+					currentUser.id,
+					currentDate.toISOString(),
+					oneWeekFromNow.toISOString(),
+				);
+				setEventNotifications(
+					response.events.sort((a, b) => new Date(a.start) - new Date(b.start)),
+				);
+			} catch (error) {
+				console.error("Error fetching notifications:", error);
+			}
+		};
+
+		fetchNotifications();
+	}, [currentUser]);
 
 	/// Text should be a ListItemText component
 	const NotificationCard = ({ icon, text, onClick }) => {
@@ -75,8 +113,15 @@ const OrganizationHome = ({}) => {
 						<Typography>No tasks!</Typography>
 					) : (
 						// TODO: Make notification cards for tasks
-						taskNotifications.map((task) => <Typography>{task}</Typography>)
+						taskNotifications.map((task, index) => (
+							<NotificationCard
+								key={index}
+								icon={<TaskAltIcon />}
+								text={<ListItemText primary={task} secondary={task} />}
+							/>
+						))
 					)}
+					TODO: Make project management and integrate notifications here
 				</Column>
 
 				<Divider
@@ -90,10 +135,19 @@ const OrganizationHome = ({}) => {
 						<Typography>No new messages</Typography>
 					) : (
 						// TODO: Make notification cards for tasks
-						messageNotifications.map((messageNotification) => (
-							<Typography>{messageNotification}</Typography>
+						messageNotifications.map((messageNotification, index) => (
+							<NotificationCard
+								key={index}
+								text={
+									<ListItemText
+										primary={messageNotification}
+										secondary={messageNotification}
+									/>
+								}
+							/>
 						))
 					)}
+					TODO: Make messages and integrate notifications here
 				</Column>
 
 				<Divider
@@ -106,13 +160,14 @@ const OrganizationHome = ({}) => {
 					{eventNotifications.length === 0 ? (
 						<Typography>No upcoming events</Typography>
 					) : (
-						eventNotifications.map((eventNotification) => (
+						eventNotifications.map((event, index) => (
 							<NotificationCard
+								key={index}
 								icon={<TodayIcon />}
 								text={
 									<ListItemText
-										primary={eventNotification}
-										secondary={eventNotification}
+										primary={event.title}
+										secondary={`${getMMDDHHMM12hr(new Date(event.start))} - ${getMMDDHHMM12hr(new Date(event.end))}`}
 									/>
 								}
 							/>
