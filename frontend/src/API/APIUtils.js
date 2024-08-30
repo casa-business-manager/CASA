@@ -22,7 +22,7 @@ export const request = async (options) => {
 				const json = JSON.parse(text);
 				return response.ok ? json : Promise.reject(json.error);
 			} catch (error) {
-				return Promise.reject(text);
+				return text === "" ? text : Promise.reject(text);
 			}
 		});
 	});

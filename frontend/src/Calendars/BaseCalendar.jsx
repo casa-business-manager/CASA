@@ -19,7 +19,7 @@ const DragAndDropCalendar = withDragAndDrop(Calendar);
 
 // TODO: color events by org?
 const BaseCalendar = ({ orgIds }) => {
-	const [currentUser, setCurrentUser] = useContext(CurrentUserContext);
+	const [currentUser, _] = useContext(CurrentUserContext);
 	const [events, setEvents] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [dialogOpen, setDialogOpen] = useState(false);
@@ -119,67 +119,6 @@ const BaseCalendar = ({ orgIds }) => {
 		[currentUser],
 	);
 
-	// Base function for both saving and editing an event, needing function and id
-	const saveEvent = useCallback(
-		(apiFunction, id) =>
-			async (title, description, startTime, endTime, location, people) => {
-				if (!currentUser) return;
-
-				const peopleIds = people.map((person) => person.id);
-
-				try {
-					const newEvent = {
-						title,
-						description,
-						location,
-						start: moment(startTime).format(), // ISO time includes time zone so it is fine
-						end: moment(endTime).format(), // ISO time includes time zone so it is fine
-						allDay: false,
-						eventCreatorId: currentUser.id,
-						eventAccessorIds: peopleIds,
-					};
-
-					const createdEvent = await apiFunction(id, newEvent);
-
-					setEvents((prev) => {
-						const filterOutCurrentEvent = prev.filter(
-							(event) => event.eventId !== createdEvent.eventId,
-						);
-						createdEvent.organization = {
-							...createdEvent.organization,
-							people: createdEvent.organization.users,
-							name: createdEvent.organization.orgName,
-						};
-						return [
-							...filterOutCurrentEvent,
-							{
-								...createdEvent,
-								start: moment(createdEvent.start).local().toDate(), // Converting to date
-								end: moment(createdEvent.end).local().toDate(), // Converting to date
-							},
-						];
-					});
-				} catch (error) {
-					console.error("Error creating event:", error);
-				} finally {
-					setDialogOpen(false);
-					setTemporaryEvent(null);
-				}
-			},
-	);
-
-	// function to create a new event given orgID
-	const handleSaveEvent = useCallback(
-		(orgId) => saveEvent(createEvent, orgId),
-		[saveEvent],
-	);
-
-	// function to save an edited event
-	const handleEditEvent = useCallback(
-		(eventId) => saveEvent(updateEvent, eventId),
-		[saveEvent],
-	);
-
 	// control dialog closing
 	const handleCloseDialog = useCallback(() => {
 		setDialogOpen(false);
@@ -191,16 +130,6 @@ const BaseCalendar = ({ orgIds }) => {
 		setMenuEvent(event);
 		setEditMenu(true);
 		setDialogOpen(true);
-	}, []);
-
-	// control dialog for deleting an event
-	const handleDeleteEvent = useCallback(async (eventId) => {
-		setDialogOpen(false);
-		setTemporaryEvent(null);
-		await deleteEvent(eventId);
-		setEvents((prevEvents) =>
-			prevEvents.filter((prevEvent) => prevEvent.eventId !== eventId),
-		);
 	}, []);
 
 	// drag event to on calendar
@@ -356,13 +285,12 @@ const BaseCalendar = ({ orgIds }) => {
 			<EventDialog
 				open={dialogOpen}
 				onClose={handleCloseDialog}
-				onSave={handleSaveEvent}
-				onEdit={handleEditEvent}
-				onDelete={handleDeleteEvent}
 				initialEvent={menuEvent}
 				initialIsEditing={editMenu}
-				currentUser={currentUser}
 				orgInfo={orgInfo}
+				setEvents={setEvents}
+				setDialogOpen={setDialogOpen}
+				setTemporaryEvent={setTemporaryEvent}
 			/>
 		</div>
 	);

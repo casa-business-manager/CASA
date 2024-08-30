@@ -18,10 +18,17 @@ import TodayIcon from "@mui/icons-material/Today";
 import { getCalendarData } from "../API/EventAPI";
 import CurrentUserContext from "../Contexts/CurrentUserContext";
 import { getMMDDHHMM12hr } from "../util/date";
+import EventDialog from "../Calendars/EventDialog";
+import OrganizationsContext from "../Contexts/OrganizationsContext";
+
+const getOrgInfo = (organization) => {
+	return {};
+};
 
 const OrganizationHome = ({}) => {
 	const { orgId } = useParams();
 	const [currentUser, _] = useContext(CurrentUserContext);
+	const [organizations, __] = useContext(OrganizationsContext);
 
 	const [taskNotifications, setTaskNotifications] = useState([
 		"task1",
@@ -33,6 +40,9 @@ const OrganizationHome = ({}) => {
 	]);
 	/// Event notifications for [today, 7 days from now] fetched from the backend
 	const [eventNotifications, setEventNotifications] = useState([]);
+
+	const [openEventDialog, setOpenEventDialog] = useState(false);
+	const [selectedEvent, setSelectedEvent] = useState({});
 
 	useEffect(() => {
 		if (!currentUser) {
@@ -170,11 +180,23 @@ const OrganizationHome = ({}) => {
 										secondary={`${getMMDDHHMM12hr(new Date(event.start))} - ${getMMDDHHMM12hr(new Date(event.end))}`}
 									/>
 								}
+								onClick={() => {
+									setSelectedEvent(event);
+									setOpenEventDialog(true);
+								}}
 							/>
 						))
 					)}
 				</Column>
 			</Box>
+
+			<EventDialog
+				open={openEventDialog}
+				onClose={() => setOpenEventDialog(false)}
+				initialEvent={selectedEvent}
+				initialIsEditing={true}
+				orgInfo={[organizations.find((org) => org.orgId === orgId)]}
+			/>
 		</>
 	);
 };
