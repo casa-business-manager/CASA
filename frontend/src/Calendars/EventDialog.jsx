@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
 	Dialog,
 	DialogActions,
@@ -10,6 +10,7 @@ import {
 	MenuItem,
 	IconButton,
 	Chip,
+	Menu,
 } from "@mui/material";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -24,18 +25,21 @@ import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import UserChip from "../common/UserChip";
 import OrganizationPeopleAutocomplete from "../common/OrganizationPeopleAutocomplete";
+import CurrentUserContext from "../Contexts/CurrentUserContext";
 
 const EventDialog = ({
-	open,
+	anchorEl,
 	onClose,
 	onSave,
 	onEdit,
 	onDelete,
 	initialEvent,
 	initialIsEditing = false,
-	currentUser,
 	orgInfo,
 }) => {
+	const [currentUser, _] = useContext(CurrentUserContext);
+
+	const open = Boolean(anchorEl);
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
 	const [startTime, setStartTime] = useState(dayjs());
@@ -111,17 +115,6 @@ const EventDialog = ({
 
 	const handleEdit = () => handleBackend(true);
 
-	const handleAddPerson = (e, newUserList) => {
-		if (!newUserList.find((user) => user.id === initialEvent.eventCreator.id)) {
-			return;
-		}
-		setPeople(newUserList);
-	};
-
-	const handleDeletePerson = (userId) => {
-		setPeople(people.filter((person) => person.id !== userId));
-	};
-
 	const onCloseWrapper = () => {
 		onClose();
 		setTitleError(false);
@@ -137,15 +130,12 @@ const EventDialog = ({
 		);
 	}
 
-	const getUserFullName = (userObject) =>
-		userObject.firstName + " " + userObject.lastName;
-
 	if (!organization) {
 		return <>Loading</>;
 	}
 
 	return (
-		<Dialog open={open} onClose={onCloseWrapper} fullWidth>
+		<Menu anchorEl={anchorEl} open={open} onClose={onCloseWrapper} fullWidth>
 			<DialogTitle>
 				<Box display="flex" alignItems="center">
 					<Box flexGrow={1}>
@@ -365,7 +355,7 @@ const EventDialog = ({
 					</>
 				)}
 			</DialogActions>
-		</Dialog>
+		</Menu>
 	);
 };
 

@@ -22,7 +22,7 @@ const BaseCalendar = ({ orgIds }) => {
 	const [currentUser, setCurrentUser] = useContext(CurrentUserContext);
 	const [events, setEvents] = useState([]);
 	const [loading, setLoading] = useState(true);
-	const [dialogOpen, setDialogOpen] = useState(false);
+	const [menuAnchor, setMenuAnchor] = useState(false);
 	const [temporaryEvent, setTemporaryEvent] = useState(null); // shows on the calendar
 	const [menuEvent, setMenuEvent] = useState({}); // passed to the menu
 	const [editMenu, setEditMenu] = useState(false); // passed to the menu
@@ -114,7 +114,7 @@ const BaseCalendar = ({ orgIds }) => {
 			setTemporaryEvent(fakeTempEventToKeepTheBoxOpen);
 			setMenuEvent(fakeTempEventToKeepTheBoxOpen);
 			setEditMenu(false);
-			setDialogOpen(true);
+			setMenuAnchor(true);
 		},
 		[currentUser],
 	);
@@ -162,7 +162,7 @@ const BaseCalendar = ({ orgIds }) => {
 				} catch (error) {
 					console.error("Error creating event:", error);
 				} finally {
-					setDialogOpen(false);
+					setMenuAnchor(null);
 					setTemporaryEvent(null);
 				}
 			},
@@ -182,20 +182,22 @@ const BaseCalendar = ({ orgIds }) => {
 
 	// control dialog closing
 	const handleCloseDialog = useCallback(() => {
-		setDialogOpen(false);
+		setMenuAnchor(null);
 		setTemporaryEvent(null);
 	}, []);
 
 	// control dialog for editing an event
-	const handleSelectEvent = useCallback((event) => {
+	const handleSelectEvent = useCallback((event, target) => {
+		console.log(target);
+
 		setMenuEvent(event);
 		setEditMenu(true);
-		setDialogOpen(true);
+		setMenuAnchor(target.currentTarget);
 	}, []);
 
 	// control dialog for deleting an event
 	const handleDeleteEvent = useCallback(async (eventId) => {
-		setDialogOpen(false);
+		setMenuAnchor(null);
 		setTemporaryEvent(null);
 		await deleteEvent(eventId);
 		setEvents((prevEvents) =>
@@ -352,16 +354,16 @@ const BaseCalendar = ({ orgIds }) => {
 				draggableAccessor={(event) =>
 					event.eventCreator && event.eventCreator.id === currentUser.id
 				}
+				elementProps={{ onClick: (e) => setMenuAnchor(e.currentTarget) }}
 			/>
 			<EventDialog
-				open={dialogOpen}
+				anchorEl={menuAnchor}
 				onClose={handleCloseDialog}
 				onSave={handleSaveEvent}
 				onEdit={handleEditEvent}
 				onDelete={handleDeleteEvent}
 				initialEvent={menuEvent}
 				initialIsEditing={editMenu}
-				currentUser={currentUser}
 				orgInfo={orgInfo}
 			/>
 		</div>
