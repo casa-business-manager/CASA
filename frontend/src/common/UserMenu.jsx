@@ -12,22 +12,31 @@ import {
 import ChatIcon from "@mui/icons-material/Chat";
 import EmailIcon from "@mui/icons-material/Email";
 import { getUserFullName } from "../util/user";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import EmailContext from "../Contexts/EmailContext";
 
 const UserMenu = ({ anchorEl, onClose, user }) => {
 	const navigate = useNavigate();
 
 	const { orgId } = useParams();
-	const [organizations, setOrganizations] = useContext(OrganizationsContext);
-	const [emailRecipients, setEmailRecipients] = useContext(EmailContext);
+	const [organizations, _] = useContext(OrganizationsContext);
+	const [__, setEmailRecipients] = useContext(EmailContext);
+	const [userRoles, setUserRoles] = useState([]);
 
 	const open = Boolean(anchorEl);
 
-	const roles = organizations.find((org) => org.orgId === orgId).roles;
-	const userRoles = roles.filter((role) =>
-		role.users.some((roleUser) => roleUser.id === user.id),
-	);
+	useEffect(() => {
+		if (!orgId) {
+			return;
+		}
+		const organization = organizations.find((org) => org.orgId === orgId);
+		const orgRoles = organization.roles;
+		setUserRoles(
+			orgRoles.filter((role) =>
+				role.users.some((roleUser) => roleUser.id === user.id),
+			),
+		);
+	}, [orgId]);
 
 	const handleEmailClick = () => {
 		setEmailRecipients([user]);

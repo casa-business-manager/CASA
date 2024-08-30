@@ -34,8 +34,6 @@ const EventDialog = ({
 	orgInfo,
 	setEvents = () => {},
 }) => {
-	console.log("orginfo", orgInfo);
-
 	const [currentUser, _] = useContext(CurrentUserContext);
 
 	const [title, setTitle] = useState("");
@@ -121,11 +119,7 @@ const EventDialog = ({
 	// control dialog for deleting an event
 	const onDelete = useCallback(async (eventId) => {
 		onCloseWrapper();
-		console.log("Deleting event with id:", eventId);
-
 		await deleteEvent(eventId);
-		console.log("Deleted event with id:", eventId);
-
 		setEvents((prevEvents) =>
 			prevEvents.filter((prevEvent) => prevEvent.eventId !== eventId),
 		);
@@ -139,7 +133,6 @@ const EventDialog = ({
 		setLocation(initialEvent.location ?? "");
 		setPeople(initialEvent.eventAccessors ?? []);
 		setOrganization(initialEvent.organization ?? orgInfo[0]); // TODO: No orgs?
-		console.log(initialEvent.organization ?? orgInfo[0]);
 	}, [initialEvent]);
 
 	const handleBackend = async (isEdit = false) => {
