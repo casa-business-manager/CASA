@@ -34,6 +34,8 @@ const EventDialog = ({
 	orgInfo,
 	setEvents = () => {},
 }) => {
+	console.log("orginfo", orgInfo);
+
 	const [currentUser, _] = useContext(CurrentUserContext);
 
 	const [title, setTitle] = useState("");
@@ -137,6 +139,7 @@ const EventDialog = ({
 		setLocation(initialEvent.location ?? "");
 		setPeople(initialEvent.eventAccessors ?? []);
 		setOrganization(initialEvent.organization ?? orgInfo[0]); // TODO: No orgs?
+		console.log(initialEvent.organization ?? orgInfo[0]);
 	}, [initialEvent]);
 
 	const handleBackend = async (isEdit = false) => {
@@ -359,12 +362,12 @@ const EventDialog = ({
 						sx={{ width: "30%" }}
 						onChange={(e) => setOrganization(e.target.value)}
 						SelectProps={{
-							renderValue: (selected) => selected.name,
+							renderValue: (selected) => selected.name ?? selected.orgName,
 						}}
 					>
 						{orgInfo.map((org, index) => (
 							<MenuItem key={index} value={org}>
-								{org.name}
+								{org.name ?? org.orgName}
 							</MenuItem>
 						))}
 					</TextField>

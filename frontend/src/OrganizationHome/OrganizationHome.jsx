@@ -195,6 +195,7 @@ const OrganizationHome = ({}) => {
 				onClose={() => setOpenEventDialog(false)}
 				initialEvent={selectedEvent}
 				initialIsEditing={true}
+				setEvents={setEventNotifications}
 				orgInfo={[organizations.find((org) => org.orgId === orgId)]}
 			/>
 		</>
