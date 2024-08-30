@@ -14,7 +14,7 @@ import OrganizationCalendar from "./Calendars/OrganizationCalendar";
 import EmailPage from "./Email/EmailPage";
 import NavBar from "./NavBar/NavBar";
 import OrganizationsContext from "./Contexts/OrganizationsContext";
-import { Box } from "@mui/material";
+import { Box, Toolbar } from "@mui/material";
 import { CurrentUserProvider } from "./Contexts/CurrentUserContext";
 import Sidebar from "./Sidebar/Sidebar";
 import EmailContext from "./Contexts/EmailContext";
@@ -34,6 +34,8 @@ function App() {
 							value={[emailRecipients, setEmailRecipients]}
 						>
 							<NavBar title="Organization Calendar" />
+							{/* For spacing */}
+							<Toolbar sx={{ mb: 1 }} />
 							<Box sx={{ flexGrow: 1, px: 1 }}>
 								<Routes>
 									<Route path="/" element={<Navigate replace to="/login" />} />

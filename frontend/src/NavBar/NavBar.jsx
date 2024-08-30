@@ -125,10 +125,10 @@ const NavBar = ({}) => {
 
 	return (
 		<AppBar
-			position="relative"
+			position="fixed"
 			sx={{
 				backgroundColor: "#3b89f3",
-				mb: 1,
+				mb: 2,
 				zIndex: zIndex.drawer + 1,
 			}}
 		>
