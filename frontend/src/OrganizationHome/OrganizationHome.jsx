@@ -24,16 +24,15 @@ const OrganizationHome = ({}) => {
 		1, 2, 3, 1, 2, 3, 1, 2, 31, 2, 31, 2, 31, 2, 31, 2, 31, 2, 31, 2, 3,
 	]);
 
-	const EventNotification = ({ event }) => {
+	/// Text should be a ListItemText component
+	const NotificationCard = ({ icon, text, onClick }) => {
 		return (
-			<Card sx={{ width: "90%" }}>
+			<Card onClick={onClick} sx={{ width: "90%" }}>
 				<ListItem>
 					<ListItemAvatar>
-						<Avatar>
-							<TodayIcon />
-						</Avatar>
+						<Avatar>{icon}</Avatar>
 					</ListItemAvatar>
-					<ListItemText primary={event} secondary={event} />
+					{text}
 				</ListItem>
 			</Card>
 		);
@@ -70,7 +69,7 @@ const OrganizationHome = ({}) => {
 
 	return (
 		<>
-			<Box display="flex" sx={{ flexGrow: 1, height: "100%", my: 2 }}>
+			<Box display="flex" sx={{ flexGrow: 1, height: "100%", my: 1 }}>
 				<Column title={"Upcoming Tasks"} icon={<AssignmentTurnedInIcon />}>
 					{taskNotifications.length === 0 ? (
 						<Typography>No tasks!</Typography>
@@ -108,7 +107,15 @@ const OrganizationHome = ({}) => {
 						<Typography>No upcoming events</Typography>
 					) : (
 						eventNotifications.map((eventNotification) => (
-							<EventNotification event={eventNotification} />
+							<NotificationCard
+								icon={<TodayIcon />}
+								text={
+									<ListItemText
+										primary={eventNotification}
+										secondary={eventNotification}
+									/>
+								}
+							/>
 						))
 					)}
 				</Column>
