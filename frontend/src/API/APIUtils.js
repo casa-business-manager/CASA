@@ -19,10 +19,13 @@ export const request = async (options) => {
 	return fetch(url, options).then((response) => {
 		return response.text().then((text) => {
 			try {
-				const json = JSON.parse(text);
-				return response.ok ? json : Promise.reject(json.error);
+				if (response.ok) {
+					return text === "" ? response.ok : JSON.parse(text);
+				}
+				return Promise.reject(json.error);
 			} catch (error) {
-				return text === "" ? text : Promise.reject(text);
+				console.error("Error parsing JSON response:", error);
+				return Promise.reject(text);
 			}
 		});
 	});

@@ -21,10 +21,6 @@ import { getMMDDHHMM12hr } from "../util/date";
 import EventDialog from "../Calendars/EventDialog";
 import OrganizationsContext from "../Contexts/OrganizationsContext";
 
-const getOrgInfo = (organization) => {
-	return {};
-};
-
 const OrganizationHome = ({}) => {
 	const { orgId } = useParams();
 	const [currentUser, _] = useContext(CurrentUserContext);
