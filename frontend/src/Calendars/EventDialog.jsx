@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import {
 	Dialog,
 	DialogActions,
@@ -9,7 +9,6 @@ import {
 	Box,
 	MenuItem,
 	IconButton,
-	Chip,
 } from "@mui/material";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -22,20 +21,21 @@ import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import ApartmentIcon from "@mui/icons-material/Apartment";
-import UserChip from "../common/UserChip";
 import OrganizationPeopleAutocomplete from "../common/OrganizationPeopleAutocomplete";
+import CurrentUserContext from "../Contexts/CurrentUserContext";
+import moment from "moment";
+import { createEvent, updateEvent, deleteEvent } from "../API/EventAPI";
 
 const EventDialog = ({
 	open,
 	onClose,
-	onSave,
-	onEdit,
-	onDelete,
 	initialEvent,
 	initialIsEditing = false,
-	currentUser,
 	orgInfo,
+	setEvents = () => {},
 }) => {
+	const [currentUser, _] = useContext(CurrentUserContext);
+
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
 	const [startTime, setStartTime] = useState(dayjs());
@@ -55,6 +55,75 @@ const EventDialog = ({
 		"Location 2",
 		"Location 3",
 	]);
+
+	// Base function for both saving and editing an event, needing function and id
+	const saveEvent = useCallback(
+		(apiFunction, id) =>
+			async (title, description, startTime, endTime, location, people) => {
+				if (!currentUser) return;
+
+				const peopleIds = people.map((person) => person.id);
+
+				try {
+					const newEvent = {
+						title,
+						description,
+						location,
+						start: moment(startTime).format(), // ISO time includes time zone so it is fine
+						end: moment(endTime).format(), // ISO time includes time zone so it is fine
+						allDay: false,
+						eventCreatorId: currentUser.id,
+						eventAccessorIds: peopleIds,
+					};
+
+					const createdEvent = await apiFunction(id, newEvent);
+
+					setEvents((prev) => {
+						const filterOutCurrentEvent = prev.filter(
+							(event) => event.eventId !== createdEvent.eventId,
+						);
+						createdEvent.organization = {
+							...createdEvent.organization,
+							people: createdEvent.organization.users,
+							name: createdEvent.organization.orgName,
+						};
+						return [
+							...filterOutCurrentEvent,
+							{
+								...createdEvent,
+								start: moment(createdEvent.start).local().toDate(), // Converting to date
+								end: moment(createdEvent.end).local().toDate(), // Converting to date
+							},
+						];
+					});
+				} catch (error) {
+					console.error("Error creating event:", error);
+				} finally {
+					onCloseWrapper();
+				}
+			},
+	);
+
+	// function to create a new event given orgID
+	const onSave = useCallback(
+		(orgId) => saveEvent(createEvent, orgId),
+		[saveEvent],
+	);
+
+	// function to save an edited event
+	const onEdit = useCallback(
+		(eventId) => saveEvent(updateEvent, eventId),
+		[saveEvent],
+	);
+
+	// control dialog for deleting an event
+	const onDelete = useCallback(async (eventId) => {
+		onCloseWrapper();
+		await deleteEvent(eventId);
+		setEvents((prevEvents) =>
+			prevEvents.filter((prevEvent) => prevEvent.eventId !== eventId),
+		);
+	}, []);
 
 	useEffect(() => {
 		setTitle(initialEvent.title ?? "");
@@ -111,17 +180,6 @@ const EventDialog = ({
 
 	const handleEdit = () => handleBackend(true);
 
-	const handleAddPerson = (e, newUserList) => {
-		if (!newUserList.find((user) => user.id === initialEvent.eventCreator.id)) {
-			return;
-		}
-		setPeople(newUserList);
-	};
-
-	const handleDeletePerson = (userId) => {
-		setPeople(people.filter((person) => person.id !== userId));
-	};
-
 	const onCloseWrapper = () => {
 		onClose();
 		setTitleError(false);
@@ -137,11 +195,12 @@ const EventDialog = ({
 		);
 	}
 
-	const getUserFullName = (userObject) =>
-		userObject.firstName + " " + userObject.lastName;
-
 	if (!organization) {
-		return <>Loading</>;
+		return (
+			<Dialog open={open} onClose={onCloseWrapper} fullWidth>
+				Loading...
+			</Dialog>
+		);
 	}
 
 	return (
@@ -269,7 +328,7 @@ const EventDialog = ({
 					<OrganizationPeopleAutocomplete
 						parentSetSelectedPeople={setPeople}
 						organizationId={organization.orgId}
-						defaultPeopleList={[currentUser]}
+						defaultPeopleList={people ?? [currentUser]}
 						rejectAddPersonFunction={(newUserList) =>
 							!newUserList.find(
 								(user) => user.id === initialEvent.eventCreator.id,
@@ -281,6 +340,7 @@ const EventDialog = ({
 						disabled={!isEventCreator()}
 						variant="standard"
 						fullWidth={true}
+						controlled={true}
 					/>
 				</Box>
 
@@ -296,12 +356,12 @@ const EventDialog = ({
 						sx={{ width: "30%" }}
 						onChange={(e) => setOrganization(e.target.value)}
 						SelectProps={{
-							renderValue: (selected) => selected.name,
+							renderValue: (selected) => selected.name ?? selected.orgName,
 						}}
 					>
 						{orgInfo.map((org, index) => (
 							<MenuItem key={index} value={org}>
-								{org.name}
+								{org.name ?? org.orgName}
 							</MenuItem>
 						))}
 					</TextField>

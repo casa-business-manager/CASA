@@ -18,10 +18,13 @@ import TodayIcon from "@mui/icons-material/Today";
 import { getCalendarData } from "../API/EventAPI";
 import CurrentUserContext from "../Contexts/CurrentUserContext";
 import { getMMDDHHMM12hr } from "../util/date";
+import EventDialog from "../Calendars/EventDialog";
+import OrganizationsContext from "../Contexts/OrganizationsContext";
 
 const OrganizationHome = ({}) => {
 	const { orgId } = useParams();
 	const [currentUser, _] = useContext(CurrentUserContext);
+	const [organizations, __] = useContext(OrganizationsContext);
 
 	const [taskNotifications, setTaskNotifications] = useState([
 		"task1",
@@ -33,6 +36,9 @@ const OrganizationHome = ({}) => {
 	]);
 	/// Event notifications for [today, 7 days from now] fetched from the backend
 	const [eventNotifications, setEventNotifications] = useState([]);
+
+	const [openEventDialog, setOpenEventDialog] = useState(false);
+	const [selectedEvent, setSelectedEvent] = useState({});
 
 	useEffect(() => {
 		if (!currentUser) {
@@ -65,7 +71,16 @@ const OrganizationHome = ({}) => {
 	/// Text should be a ListItemText component
 	const NotificationCard = ({ icon, text, onClick }) => {
 		return (
-			<Card onClick={onClick} sx={{ width: "90%" }}>
+			<Card
+				onClick={onClick}
+				sx={{
+					width: "90%",
+					"&:hover": {
+						cursor: "pointer",
+						backgroundColor: "#f5f5f5",
+					},
+				}}
+			>
 				<ListItem>
 					<ListItemAvatar>
 						<Avatar>{icon}</Avatar>
@@ -170,11 +185,24 @@ const OrganizationHome = ({}) => {
 										secondary={`${getMMDDHHMM12hr(new Date(event.start))} - ${getMMDDHHMM12hr(new Date(event.end))}`}
 									/>
 								}
+								onClick={() => {
+									setSelectedEvent(event);
+									setOpenEventDialog(true);
+								}}
 							/>
 						))
 					)}
 				</Column>
 			</Box>
+
+			<EventDialog
+				open={openEventDialog}
+				onClose={() => setOpenEventDialog(false)}
+				initialEvent={selectedEvent}
+				initialIsEditing={true}
+				setEvents={setEventNotifications}
+				orgInfo={[organizations.find((org) => org.orgId === orgId)]}
+			/>
 		</>
 	);
 };
