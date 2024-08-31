@@ -109,9 +109,9 @@ public class RoleTests {
 		// Deserialize and extract waltId
 		// It won't deserialize with objectMapper, gives error:
 		// Cannot handle managed/back reference 'userOrgs': back reference type
-		// (`java.util.Set<com.casa.Model.User>`) not compatible with managed
-		// type (com.casa.Model.User) at [Source:
-		// (String)"{"id":"70e3198f-ff71-41dc-a633-d01b79c36526","firstName":"Walter","lastName":"White","email":"walter@white.com","password":"{bcrypt}$2a$10$23nCy68.GLZEv9r6S5dPd.ggYE18EJIm31.6BwsHok5jvYrzDvDt.","imageUrl":null,"provider":"local","providerId":null,"organizations":[]}";
+		// (`java.util.Set<com.example.casa.Model.User>`) not compatible with managed
+		// type (com.example.casa.Model.User) at [Source:
+		// (String)"{"id":"70e3198f-ff71-41dc-a633-d01b79c36526","firstName":"Walter","lastName":"White","email":"walter@white.com","Password123!":"{bcrypt}$2a$10$23nCy68.GLZEv9r6S5dPd.ggYE18EJIm31.6BwsHok5jvYrzDvDt.","imageUrl":null,"provider":"local","providerId":null,"organizations":[]}";
 		// line: 1, column: 1]
 
 		// So temp workaround and just extract it by looking at the serialized json
@@ -136,12 +136,12 @@ public class RoleTests {
 	@BeforeAll
 	void setup() throws Exception {
 		// Send signup requests
-		signUpRequest("Walter", "White", waltEmail, "password");
-		signUpRequest("Jessie", "Pinkman", jessieEmail, "password");
+		signUpRequest("Walter", "White", waltEmail, "Password123!");
+		signUpRequest("Jessie", "Pinkman", jessieEmail, "Password123!");
 
 		// Send login requests
-		waltToken = loginRequest(waltEmail, "password");
-		jessieToken = loginRequest(jessieEmail, "password");
+		waltToken = loginRequest(waltEmail, "Password123!");
+		jessieToken = loginRequest(jessieEmail, "Password123!");
 
 		// Use token to get userId
 		waltId = getUserId(waltToken, waltEmail);
@@ -508,7 +508,7 @@ public class RoleTests {
 		}
 		user = userRepository.findByEmail(waltEmail).orElse(null);
 		if (user != null) {
-			// waltToken = loginRequest(waltEmail, "password");
+			// waltToken = loginRequest(waltEmail, "Password123!");
 			// waltId = user.getId();
 			// System.out.println("USER: " + user);
 			// System.out.println("USER: " + user.getEmail());

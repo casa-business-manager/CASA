@@ -13,15 +13,16 @@ const OrganizationPeopleAutocomplete = ({
 	defaultPeopleList = [],
 	filterOptions,
 	rejectAddPersonFunction = () => false,
-	rejectDeletePersonFunction = () => false,
 	userIsDeletableFunction = () => true,
 	disabled,
 	variant = "outlined",
+	fullWidth = null,
+	controlled = false,
 	sx,
 	...props
 }) => {
 	const [orgPeople, setOrgPeople] = useState([]);
-	const [selectedPeople, setSelectedPeople] = useState([]);
+	const [selectedPeople, setSelectedPeople] = useState([...defaultPeopleList]);
 
 	const filterOptionsFunction =
 		filterOptions ??
@@ -44,6 +45,12 @@ const OrganizationPeopleAutocomplete = ({
 		fetchPeople();
 	}, [organizationId]);
 
+	useEffect(() => {
+		if (controlled) {
+			setSelectedPeople(defaultPeopleList);
+		}
+	}, [defaultPeopleList]);
+
 	const setSelectedPeopleWrapper = (newSelectedPeople) => {
 		parentSetSelectedPeople(newSelectedPeople);
 		setSelectedPeople(newSelectedPeople);
@@ -57,9 +64,6 @@ const OrganizationPeopleAutocomplete = ({
 	};
 
 	const handleDeletePerson = (userId) => {
-		if (rejectDeletePersonFunction(userId)) {
-			return;
-		}
 		setSelectedPeopleWrapper((oldSelectedPeople) =>
 			oldSelectedPeople.filter((person) => person.id !== userId),
 		);
@@ -71,6 +75,7 @@ const OrganizationPeopleAutocomplete = ({
 	return (
 		<Autocomplete
 			disabled={disabled}
+			fullWidth={fullWidth}
 			multiple
 			freeSolo
 			disableClearable
@@ -92,7 +97,13 @@ const OrganizationPeopleAutocomplete = ({
 					const handleDeleteSpecificPerson = deletable
 						? () => handleDeletePerson(user.id)
 						: undefined;
-					return <UserChip user={user} onDelete={handleDeleteSpecificPerson} />;
+					return (
+						<UserChip
+							key={index}
+							user={user}
+							onDelete={handleDeleteSpecificPerson}
+						/>
+					);
 				})
 			}
 			renderInput={(params) => (
@@ -105,7 +116,7 @@ const OrganizationPeopleAutocomplete = ({
 						...params.InputProps,
 						endAdornment: null,
 					}}
-					sx={sx} // Fixed width
+					sx={sx}
 				/>
 			)}
 		/>

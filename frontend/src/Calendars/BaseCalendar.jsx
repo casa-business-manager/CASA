@@ -1,10 +1,9 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useContext } from "react";
 import moment from "moment";
 import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
-import { getCurrentUser } from "../API/UserAPI";
 import { getOrganizationInfo } from "../API/OrganizationAPI";
 import {
 	getCalendarData,
@@ -13,13 +12,14 @@ import {
 	deleteEvent,
 } from "../API/EventAPI";
 import EventDialog from "./EventDialog";
+import CurrentUserContext from "../Contexts/CurrentUserContext";
 
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(Calendar);
 
 // TODO: color events by org?
 const BaseCalendar = ({ orgIds }) => {
-	const [currentUser, setCurrentUser] = useState(null);
+	const [currentUser, setCurrentUser] = useContext(CurrentUserContext);
 	const [events, setEvents] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [dialogOpen, setDialogOpen] = useState(false);
@@ -30,20 +30,6 @@ const BaseCalendar = ({ orgIds }) => {
 	const [loadedRanges, setLoadedRanges] = useState(
 		getCalendarBlock(moment().toDate()),
 	);
-
-	// Get user
-	useEffect(() => {
-		const fetchCurrentUser = async () => {
-			try {
-				const user = await getCurrentUser();
-				setCurrentUser(user);
-			} catch (error) {
-				console.error("Error fetching current user:", error);
-			}
-		};
-
-		fetchCurrentUser();
-	}, []);
 
 	// Call fetchData
 	useEffect(() => {
@@ -357,7 +343,7 @@ const BaseCalendar = ({ orgIds }) => {
 				)}
 				defaultDate={moment().toDate()}
 				defaultView={Views.WEEK}
-				style={{ height: "90vh" }}
+				style={{ flexGrow: 1, height: "100%" }}
 				onEventDrop={moveEvent}
 				onEventResize={resizeEvent}
 				popup

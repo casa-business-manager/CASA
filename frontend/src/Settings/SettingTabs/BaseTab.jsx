@@ -22,7 +22,13 @@ const BaseTab = ({
 			<ListItemIcon>
 				<Icon />
 			</ListItemIcon>
-			<ListItemText primary={Label} />
+			<ListItemText
+				primary={Label}
+				sx={{
+					overflow: "hidden",
+					whiteSpace: "nowrap",
+				}}
+			/>
 		</ListItemButton>
 	);
 };

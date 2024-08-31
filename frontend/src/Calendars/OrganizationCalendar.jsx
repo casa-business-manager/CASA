@@ -7,11 +7,7 @@ import BaseCalendar from "./BaseCalendar";
 const OrganizationCalendar = () => {
 	const { orgId } = useParams();
 
-	return (
-		<div className="OrganizationCalendar">
-			<BaseCalendar orgIds={[orgId]} />
-		</div>
-	);
+	return <BaseCalendar orgIds={[orgId]} />;
 };
 
 export default OrganizationCalendar;

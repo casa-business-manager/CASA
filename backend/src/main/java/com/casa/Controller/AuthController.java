@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.casa.Exception.BadRequestException;
 import com.casa.Model.AuthProvider;
 import com.casa.Model.User;
 import com.casa.Payload.ApiResponse;
@@ -50,6 +49,19 @@ public class AuthController {
 
 	@Autowired
 	private TokenProvider tokenProvider;
+
+	private static final String UPPERCASE_PATTERN = ".*[A-Z].*";
+	private static final String LOWERCASE_PATTERN = ".*[a-z].*";
+	private static final String NUMBER_PATTERN = ".*\\d.*";
+	private static final String SPECIAL_CHARACTER_PATTERN = ".*[!@#$%^&+=].*";
+
+	private boolean isValidPwdCpx(String password) {
+		logger.info("Checking password complexity for password: {}", password);
+		return password.matches(UPPERCASE_PATTERN) &&
+				password.matches(LOWERCASE_PATTERN) &&
+				password.matches(NUMBER_PATTERN) &&
+				password.matches(SPECIAL_CHARACTER_PATTERN);
+	}
 
 	@PostMapping("/login")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -81,7 +93,12 @@ public class AuthController {
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
 		if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-			throw new BadRequestException("Email address already in use.");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Email address already in use.");
+		}
+
+		if (!isValidPwdCpx(signUpRequest.getPassword())) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+					"Password must contain at least one upper case letter, one lower case letter, one digit, and one special character.");
 		}
 
 		// Creating user's account
@@ -103,5 +120,4 @@ public class AuthController {
 		return ResponseEntity.created(location)
 				.body(new ApiResponse(true, "User registered successfully"));
 	}
-
 }

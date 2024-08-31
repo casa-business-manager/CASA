@@ -20,6 +20,7 @@ import com.casa.Model.User;
 import com.casa.Payload.ApiResponse;
 import com.casa.Payload.Organization.OrganizationDto;
 import com.casa.Payload.Organization.OrganizationInformation;
+import com.casa.Payload.Organization.OrganizationWithRoles;
 import com.casa.Repository.EventRepository;
 import com.casa.Repository.OrganizationRepository;
 import com.casa.Repository.UserRepository;
@@ -42,11 +43,20 @@ public class OrganizationController {
 				.orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
 		Set<Organization> organizations = user.getOrganizations();
-		if (organizations.isEmpty()) {
-			return ResponseEntity.noContent().build();
+
+		Set<OrganizationWithRoles> organizationWithInfoSet = new HashSet<>();
+		for (Organization organization : organizations) {
+			Set<User> users = organization.getUsers();
+			Set<Role> roles = organization.getRoles();
+
+			OrganizationWithRoles orgInfo = new OrganizationWithRoles(organization);
+			orgInfo.setUsers(users);
+			orgInfo.setRoles(roles);
+
+			organizationWithInfoSet.add(orgInfo);
 		}
 
-		return ResponseEntity.ok(organizations);
+		return ResponseEntity.ok(organizationWithInfoSet);
 	}
 
 	@PostMapping("/createOrganizationForUser/user/{userId}")

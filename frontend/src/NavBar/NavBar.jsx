@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import {
 	AppBar,
 	Box,
+	Divider,
 	IconButton,
 	Menu,
+	MenuItem,
 	Toolbar,
 	Typography,
 } from "@mui/material";
@@ -14,40 +15,49 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronRight from "@mui/icons-material/ChevronRight";
 import OrganizationsContext from "../Contexts/OrganizationsContext";
 import { getOrganizations } from "../API/OrganizationAPI";
-
-const parseLocation = (location) => {
-	const path = location.pathname;
-	return path.split("/").filter((word) => word !== "");
-};
+import CurrentUserContext from "../Contexts/CurrentUserContext";
+import zIndex from "@mui/material/styles/zIndex";
+import { parseLocation } from "../util/path";
 
 const recognizedPathWordsToNavbarWords = {
 	login: { name: "Login", path: "login" },
 	organization: { name: "My Organizations", path: "organization" },
-	user: { name: "Me", path: "user" },
+	user: { name: "User", path: "user" },
 	calendar: { name: "Calendar", path: "calendar" },
 	email: { name: "Email", path: "email" },
 };
 
-const addOrganizationNameIfOrganizationId = (
-	pathWordsArray,
-	id,
-	organizations,
-) => {
+/// the function takes in IDs from the route url in order to replace them with
+/// words in the navbar. Since we maintain that IDs in the URL will be preceeded
+/// by their type (i.e. /organization/abcde-fg123-... or /user/abcde-fg123-...),
+/// we can use the preceeding type to determine how to fill in the word for the
+/// navbar.
+/// Will mutate the array pathWordsArray and add the new object with name and path
+const addNameIfId = (pathWordsArray, id, organizations) => {
 	if (pathWordsArray.length <= 0 || organizations.length === 0) {
 		return;
 	}
 
-	if (pathWordsArray[pathWordsArray.length - 1].path === "organization") {
+	const idType = pathWordsArray[pathWordsArray.length - 1].path;
+	const newPathWordObj = { path: id };
+
+	if (idType === "organization") {
 		const organizationOfId = organizations.find((org) => org.orgId === id);
-		pathWordsArray.push({ name: organizationOfId.orgName, path: `${id}` });
+		newPathWordObj.name = organizationOfId.orgName;
+	} else if (idType === "user") {
+		newPathWordObj.name = "Me";
 	}
+
+	pathWordsArray.push(newPathWordObj);
 };
 
 const NavBar = ({}) => {
 	const navigate = useNavigate();
+	const [currentUser, setCurrentUser] = useContext(CurrentUserContext);
 	const [organizations, setOrganizations] = useContext(OrganizationsContext);
 	// values from recognizedPathWordsToNavbarWords
 	const [navbarLinks, setNavbarLinks] = useState([]);
+	const [anchorEl, setAnchorEl] = useState(null);
 
 	const location = useLocation();
 
@@ -66,7 +76,7 @@ const NavBar = ({}) => {
 		};
 
 		fetchData();
-	}, [organizations]);
+	}, []);
 
 	useEffect(() => {
 		const pathWords = parseLocation(location);
@@ -75,7 +85,7 @@ const NavBar = ({}) => {
 			if (Object.hasOwn(recognizedPathWordsToNavbarWords, word)) {
 				navbarWords.push(recognizedPathWordsToNavbarWords[word]);
 			} else {
-				addOrganizationNameIfOrganizationId(navbarWords, word, organizations);
+				addNameIfId(navbarWords, word, organizations);
 			}
 		}
 		setNavbarLinks(navbarWords);
@@ -98,43 +108,92 @@ const NavBar = ({}) => {
 		navigate("/login");
 	};
 
-	const handleAccountButton = () => {
-		console.log("TODO: Account button clicked");
+	const handleCalendarClick = () => {
+		navigate(`/user/${currentUser.id}/calendar`);
+	};
+
+	const handleAccountButton = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
+
+	const handleMenuClickWrapper = (clickFunction) => {
+		return (...params) => {
+			setAnchorEl(null);
+			clickFunction(...params);
+		};
 	};
 
 	return (
 		<AppBar
-			position="relative"
+			position="fixed"
 			sx={{
 				backgroundColor: "#3b89f3",
-				mb: 1,
+				mb: 2,
+				zIndex: zIndex.drawer + 1,
 			}}
 		>
 			<Toolbar>
 				<MenuIcon sx={{ marginRight: "50px", color: "#fff" }}></MenuIcon>
-				<Typography onClick={handleLogout}>CASA</Typography>
-				{navbarLinks.map((link) => (
-					<>
+				<Typography
+					onClick={handleLogout}
+					sx={{
+						"&:hover": {
+							textDecoration: "underline",
+							textDecorationThickness: "2px",
+						},
+					}}
+				>
+					CASA
+				</Typography>
+				{navbarLinks.map((link, index) => (
+					<React.Fragment key={index}>
 						<ChevronRight sx={{ m: 1 }} />
 						<Typography
 							onClick={() => {
 								handleClickPath(link);
 							}}
+							sx={{
+								"&:hover": {
+									textDecoration: "underline",
+									textDecorationThickness: "2px",
+								},
+							}}
 						>
 							{link.name}
 						</Typography>
-					</>
+					</React.Fragment>
 				))}
 				<Box sx={{ flexGrow: 1 }} />
 				{/* Log out and Account buttons. Must make them white manualluy */}
 				{navbarLinks.find((link) => link.name === "Login") ? null : (
 					<>
-						<IconButton onClick={handleLogout}>
-							<LogoutIcon sx={{ color: "#fff" }} />
-						</IconButton>
 						<IconButton onClick={handleAccountButton}>
 							<AccountCircleIcon sx={{ color: "#fff" }} />
 						</IconButton>
+						<Menu
+							anchorEl={anchorEl}
+							open={Boolean(anchorEl)}
+							onClose={() => setAnchorEl(null)}
+							transformOrigin={{
+								horizontal: "center",
+								vertical: "top",
+							}}
+						>
+							{/* TODO: My Account page */}
+							<MenuItem onClick={handleMenuClickWrapper(handleLogout)}>
+								My Account
+							</MenuItem>
+							<MenuItem onClick={handleMenuClickWrapper(handleCalendarClick)}>
+								My Calendar
+							</MenuItem>
+							<Divider />
+							<MenuItem
+								onClick={handleMenuClickWrapper(handleLogout)}
+								sx={{ color: "red" }}
+							>
+								Logout
+							</MenuItem>
+						</Menu>
 					</>
 				)}
 			</Toolbar>
