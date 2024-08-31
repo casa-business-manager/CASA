@@ -15,13 +15,14 @@ import { getUserFullName } from "../util/user";
 import { useContext, useEffect, useState } from "react";
 import EmailContext from "../Contexts/EmailContext";
 
-const UserMenu = ({ anchorEl, onClose, user }) => {
+const UserMenu = ({ anchorEl, onClose, user, orgIdFromArg }) => {
 	const navigate = useNavigate();
+	const orgIdFromParam = useParams().orgId;
 
-	const { orgId } = useParams();
 	const [organizations, _] = useContext(OrganizationsContext);
 	const [__, setEmailRecipients] = useContext(EmailContext);
 	const [userRoles, setUserRoles] = useState([]);
+	const orgId = orgIdFromArg || orgIdFromParam;
 
 	const open = Boolean(anchorEl);
 

@@ -3,7 +3,7 @@ import { Avatar, Chip } from "@mui/material";
 import UserMenu from "./UserMenu";
 import { getUserFullName } from "../util/user";
 
-const UserChip = ({ user, onDelete, variant = "outlined" }) => {
+const UserChip = ({ user, onDelete, variant = "outlined", orgId = null }) => {
 	const [anchorEl, setAnchorEl] = useState(null);
 
 	const handleMenuOpen = (event) => {
@@ -28,8 +28,14 @@ const UserChip = ({ user, onDelete, variant = "outlined" }) => {
 				onDelete={onDelete}
 				key={user.id}
 				onClick={handleMenuOpen}
+				sx={{ my: 0.5, mr: 0.5 }}
 			/>
-			<UserMenu anchorEl={anchorEl} onClose={handleMenuClose} user={user} />
+			<UserMenu
+				anchorEl={anchorEl}
+				onClose={handleMenuClose}
+				user={user}
+				orgIdFromArg={orgId}
+			/>
 		</>
 	);
 };

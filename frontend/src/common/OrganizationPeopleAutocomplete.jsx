@@ -102,6 +102,7 @@ const OrganizationPeopleAutocomplete = ({
 							key={index}
 							user={user}
 							onDelete={handleDeleteSpecificPerson}
+							orgId={organizationId}
 						/>
 					);
 				})
