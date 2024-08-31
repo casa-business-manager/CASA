@@ -4,7 +4,6 @@ import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
-import { getOrganizationInfo } from "../API/OrganizationAPI";
 import {
 	getCalendarData,
 	createEvent,
@@ -37,29 +36,29 @@ const BaseCalendar = ({ orgIds }) => {
 		fetchData(loadedRanges.start.toISOString(), loadedRanges.end.toISOString());
 	}, [currentUser, orgIds]);
 
-	// Get organization people
-	useEffect(() => {
-		if (!orgIds) {
-			return;
-		}
+	// // Get organization people
+	// useEffect(() => {
+	// 	if (!orgIds) {
+	// 		return;
+	// 	}
 
-		const fetchPeople = async () => {
-			const orgInfoPromises = orgIds.map((orgId) => getOrganizationInfo(orgId));
+	// 	const fetchPeople = async () => {
+	// 		const orgInfoPromises = orgIds.map((orgId) => getOrganizationInfo(orgId));
 
-			var newOrgInfoList = [];
-			for (var i = 0; i < orgIds.length; i++) {
-				const orgInfoPromise = orgInfoPromises[i];
-				newOrgInfoList.push({
-					orgId: orgIds[i],
-					...(await orgInfoPromise),
-				});
-			}
+	// 		var newOrgInfoList = [];
+	// 		for (var i = 0; i < orgIds.length; i++) {
+	// 			const orgInfoPromise = orgInfoPromises[i];
+	// 			newOrgInfoList.push({
+	// 				orgId: orgIds[i],
+	// 				...(await orgInfoPromise),
+	// 			});
+	// 		}
 
-			setOrgInfo(newOrgInfoList);
-		};
+	// 		setOrgInfo(newOrgInfoList);
+	// 	};
 
-		fetchPeople();
-	}, [orgIds]);
+	// 	fetchPeople();
+	// }, [orgIds]);
 
 	// Get events for a user in an org
 	const fetchData = async (startDate = null, endDate = null) => {

@@ -130,20 +130,6 @@ public class OrganizationController {
 		return ResponseEntity.ok(users);
 	}
 
-	@PostMapping("/getOrganizationInfo/organization/{orgId}")
-	public ResponseEntity<?> getOrganizationInfo(@PathVariable String orgId) {
-		Organization organization = organizationRepository.findById(orgId)
-				.orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
-
-		Set<User> users = organization.getUsers();
-
-		OrganizationInformation orgInfo = new OrganizationInformation();
-		orgInfo.setName(organization.getOrgName());
-		orgInfo.setPeople(users);
-
-		return ResponseEntity.ok(orgInfo);
-	}
-
 	@PostMapping("/inviteUserToOrganization/organization/{orgId}")
 	public ResponseEntity<?> inviteUserToOrganization(@PathVariable String orgId, @RequestParam String email) {
 		Organization organization = organizationRepository.findById(orgId)
