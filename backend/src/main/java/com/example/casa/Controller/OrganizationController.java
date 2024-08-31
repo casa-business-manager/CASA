@@ -19,7 +19,6 @@ import com.example.casa.Model.Role;
 import com.example.casa.Model.User;
 import com.example.casa.Payload.ApiResponse;
 import com.example.casa.Payload.Organization.OrganizationDto;
-import com.example.casa.Payload.Organization.OrganizationInformation;
 import com.example.casa.Payload.Organization.OrganizationWithRoles;
 import com.example.casa.Repository.EventRepository;
 import com.example.casa.Repository.OrganizationRepository;
