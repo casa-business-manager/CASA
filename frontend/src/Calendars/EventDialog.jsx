@@ -328,7 +328,7 @@ const EventDialog = ({
 					<OrganizationPeopleAutocomplete
 						parentSetSelectedPeople={setPeople}
 						organizationId={organization.orgId}
-						defaultPeopleList={[currentUser]}
+						defaultPeopleList={people ?? [currentUser]}
 						rejectAddPersonFunction={(newUserList) =>
 							!newUserList.find(
 								(user) => user.id === initialEvent.eventCreator.id,
@@ -340,6 +340,7 @@ const EventDialog = ({
 						disabled={!isEventCreator()}
 						variant="standard"
 						fullWidth={true}
+						controlled={true}
 					/>
 				</Box>
 
