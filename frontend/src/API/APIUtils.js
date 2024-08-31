@@ -18,11 +18,12 @@ export const request = async (options) => {
 
 	return fetch(url, options).then((response) => {
 		return response.text().then((text) => {
+			// cant call JSON.parse on an empty string - may be an ok response but the function will throw an error
 			try {
 				if (response.ok) {
 					return text === "" ? response.ok : JSON.parse(text);
 				}
-				return Promise.reject(json.error);
+				return Promise.reject(JSON.parse(text).error);
 			} catch (error) {
 				console.error("Error parsing JSON response:", error);
 				return Promise.reject(text);
