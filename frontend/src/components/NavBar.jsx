@@ -13,9 +13,9 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronRight from "@mui/icons-material/ChevronRight";
-import OrganizationsContext from "../Contexts/OrganizationsContext";
+import OrganizationsContext from "../contexts/OrganizationsContext";
 import { getOrganizations } from "../API/OrganizationAPI";
-import CurrentUserContext from "../Contexts/CurrentUserContext";
+import CurrentUserContext from "../contexts/CurrentUserContext";
 import zIndex from "@mui/material/styles/zIndex";
 import { parseLocation } from "../util/path";
 

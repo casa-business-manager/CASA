@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SettingsDialog from "../Settings/SettingsDialog";
 import { IconButton } from "@mui/material";

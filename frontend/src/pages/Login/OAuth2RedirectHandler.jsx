@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation, Navigate } from "react-router-dom";
-import { ACCESS_TOKEN } from "../Constants/constants";
+import { ACCESS_TOKEN } from "../../constants/constants";
 
 const OAuth2RedirectHandler = () => {
 	const location = useLocation();

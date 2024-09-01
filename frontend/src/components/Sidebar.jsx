@@ -14,7 +14,7 @@ import { CalendarIcon } from "@mui/x-date-pickers/icons";
 import EmailIcon from "@mui/icons-material/Email";
 import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate, useParams } from "react-router-dom";
-import SettingsButton from "../Settings/SettingsButton";
+import SettingsButton from "../pages/Settings/SettingsButton";
 
 const Sidebar = ({ selected, children }) => {
 	const { orgId } = useParams();

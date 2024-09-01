@@ -4,10 +4,10 @@ import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
-import { getCalendarData, updateEvent } from "../API/EventAPI";
+import { getCalendarData, updateEvent } from "../../API/EventAPI";
 import EventDialog from "./EventDialog";
-import CurrentUserContext from "../Contexts/CurrentUserContext";
-import OrganizationsContext from "../Contexts/OrganizationsContext";
+import CurrentUserContext from "../../contexts/CurrentUserContext";
+import OrganizationsContext from "../../contexts/OrganizationsContext";
 
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(Calendar);

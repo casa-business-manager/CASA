@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Avatar, Chip } from "@mui/material";
 import UserMenu from "./UserMenu";
-import { getUserFullName } from "../util/user";
+import { getUserFullName } from "../../util/user";
 
 const UserChip = ({ user, onDelete, variant = "outlined", orgId = null }) => {
 	const [anchorEl, setAnchorEl] = useState(null);

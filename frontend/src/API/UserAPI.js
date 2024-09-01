@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN } from "../Constants/constants";
+import { ACCESS_TOKEN } from "../constants/constants";
 import { request } from "./APIUtils";
 
 export function getCurrentUser() {

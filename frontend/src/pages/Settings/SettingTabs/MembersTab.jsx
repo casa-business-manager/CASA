@@ -15,7 +15,7 @@ import {
 	getUsersInOrganization,
 	inviteUserToOrganization,
 	removeUserFromOrganization,
-} from "../../API/OrganizationAPI";
+} from "../../../API/OrganizationAPI";
 import { Box, IconButton } from "@mui/material";
 
 const MembersTabSettings = ({ settings, orgId }) => {

@@ -1,7 +1,7 @@
 import { Autocomplete, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import UserChip from "./UserChip";
-import OrganizationsContext from "../Contexts/OrganizationsContext";
+import OrganizationsContext from "../../contexts/OrganizationsContext";
 
 const OrganizationPeopleAutocomplete = ({
 	parentSetSelectedPeople,

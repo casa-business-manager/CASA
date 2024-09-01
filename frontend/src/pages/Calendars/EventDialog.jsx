@@ -21,10 +21,10 @@ import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import ApartmentIcon from "@mui/icons-material/Apartment";
-import OrganizationPeopleAutocomplete from "../common/OrganizationPeopleAutocomplete";
-import CurrentUserContext from "../Contexts/CurrentUserContext";
+import OrganizationPeopleAutocomplete from "../../components/common/OrganizationPeopleAutocomplete";
+import CurrentUserContext from "../../contexts/CurrentUserContext";
 import moment from "moment";
-import { createEvent, updateEvent, deleteEvent } from "../API/EventAPI";
+import { createEvent, updateEvent, deleteEvent } from "../../API/EventAPI";
 
 const EventDialog = ({
 	open,

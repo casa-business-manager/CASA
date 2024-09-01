@@ -13,11 +13,11 @@ import {
 	Alert,
 } from "@mui/material";
 import { GoogleLoginButton } from "react-social-login-buttons";
-import { GOOGLE_AUTH_URL } from "../Constants/constants";
+import { GOOGLE_AUTH_URL } from "../../constants/constants";
 import { useNavigate } from "react-router-dom";
-import { login, signup } from "../API/UserAPI";
-import { ACCESS_TOKEN } from "../Constants/constants";
-import loginImage from "../Assets/loginScreen.jpg";
+import { login, signup } from "../../API/UserAPI";
+import { ACCESS_TOKEN } from "../../constants/constants";
+import loginImage from "../../assets/loginScreen.jpg";
 
 const validateEmail = (email) => {
 	// https://mailtrap.io/blog/react-native-email-validation/

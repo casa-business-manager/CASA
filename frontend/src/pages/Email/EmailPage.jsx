@@ -16,15 +16,15 @@ import {
 	MenuItem,
 } from "@mui/material";
 import RichTextEditor from "./RichTextEditor";
-import OrganizationPeopleAutocomplete from "../common/OrganizationPeopleAutocomplete";
-import WarningDialog from "../common/WarningDialog";
+import OrganizationPeopleAutocomplete from "../../components/common/OrganizationPeopleAutocomplete";
+import WarningDialog from "../../components/common/WarningDialog";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CloseIcon from "@mui/icons-material/Close";
 import ArticleIcon from "@mui/icons-material/Article";
-import EmailContext from "../Contexts/EmailContext";
+import EmailContext from "../../contexts/EmailContext";
 
 const TemplateTab = ({
 	name,

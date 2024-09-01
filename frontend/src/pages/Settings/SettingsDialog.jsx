@@ -1,10 +1,8 @@
-import React, { useState, useEffect, Fragment, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
 	Dialog,
-	DialogActions,
 	DialogContent,
 	DialogTitle,
-	Button,
 	Box,
 	Typography,
 	IconButton,
@@ -17,8 +15,8 @@ import IntegrationsCollapse from "./SettingsCollapses/IntegrationsCollapse";
 import UserCollapse from "./SettingsCollapses/UserCollapse";
 import MembersTab from "./SettingTabs/MembersTab";
 import RolesTab from "./SettingTabs/RolesTab";
-import { getOrganizationRoles } from "../API/RoleAPI";
-import CurrentUserContext from "../Contexts/CurrentUserContext";
+import { getOrganizationRoles } from "../../API/RoleAPI";
+import CurrentUserContext from "../../contexts/CurrentUserContext";
 
 // orgId may be null
 const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {

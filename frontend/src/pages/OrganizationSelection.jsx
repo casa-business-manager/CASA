@@ -8,8 +8,8 @@ import {
 } from "../API/OrganizationAPI";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddIcon from "@mui/icons-material/Add";
-import OrganizationsContext from "../Contexts/OrganizationsContext";
-import CurrentUserContext from "../Contexts/CurrentUserContext";
+import OrganizationsContext from "../contexts/OrganizationsContext";
+import CurrentUserContext from "../contexts/CurrentUserContext";
 import {
 	Alert,
 	Box,

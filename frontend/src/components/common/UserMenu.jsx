@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import OrganizationsContext from "../Contexts/OrganizationsContext";
+import OrganizationsContext from "../../contexts/OrganizationsContext";
 import {
 	Avatar,
 	Box,
@@ -11,9 +11,9 @@ import {
 } from "@mui/material";
 import ChatIcon from "@mui/icons-material/Chat";
 import EmailIcon from "@mui/icons-material/Email";
-import { getUserFullName } from "../util/user";
+import { getUserFullName } from "../../util/user";
 import { useContext, useEffect, useState } from "react";
-import EmailContext from "../Contexts/EmailContext";
+import EmailContext from "../../contexts/EmailContext";
 
 const UserMenu = ({ anchorEl, onClose, user, orgIdFromArg }) => {
 	const navigate = useNavigate();

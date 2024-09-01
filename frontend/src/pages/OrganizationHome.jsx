@@ -16,10 +16,10 @@ import EventIcon from "@mui/icons-material/Event";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import TodayIcon from "@mui/icons-material/Today";
 import { getCalendarData } from "../API/EventAPI";
-import CurrentUserContext from "../Contexts/CurrentUserContext";
+import CurrentUserContext from "../contexts/CurrentUserContext";
 import { getMMDDHHMM12hr } from "../util/date";
-import EventDialog from "../Calendars/EventDialog";
-import OrganizationsContext from "../Contexts/OrganizationsContext";
+import EventDialog from "./Calendars/EventDialog";
+import OrganizationsContext from "../contexts/OrganizationsContext";
 
 const OrganizationHome = ({}) => {
 	const { orgId } = useParams();
