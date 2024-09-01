@@ -111,7 +111,8 @@ const Organization = () => {
 		<Card key={id} sx={{ boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.2)" }}>
 			<CardActionArea onClick={() => handleCardClick(id)}>
 				<CardMedia sx={{ height: 140, backgroundColor: "OliveDrab" }}>
-					TODO: Add Image
+					{/* CardMedia requires an image or a child component */}
+					<></>
 				</CardMedia>
 				<CardContent>
 					<Box sx={{ maxHeight: 80, overflowY: "auto" }}>

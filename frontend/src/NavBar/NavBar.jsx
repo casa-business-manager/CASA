@@ -135,13 +135,18 @@ const NavBar = ({}) => {
 			<Toolbar>
 				<MenuIcon sx={{ marginRight: "50px", color: "#fff" }}></MenuIcon>
 				<Typography
-					onClick={handleLogout}
-					sx={{
-						"&:hover": {
-							textDecoration: "underline",
-							textDecorationThickness: "2px",
-						},
-					}}
+					onClick={
+						// TODO: make this link to somewhere?
+						() => {}
+					}
+					sx={
+						{
+							// "&:hover": {
+							// 	textDecoration: "underline",
+							// 	textDecorationThickness: "2px",
+							// },
+						}
+					}
 				>
 					CASA
 				</Typography>
@@ -156,6 +161,7 @@ const NavBar = ({}) => {
 								"&:hover": {
 									textDecoration: "underline",
 									textDecorationThickness: "2px",
+									cursor: "pointer",
 								},
 							}}
 						>
@@ -180,7 +186,11 @@ const NavBar = ({}) => {
 							}}
 						>
 							{/* TODO: My Account page */}
-							<MenuItem onClick={handleMenuClickWrapper(handleLogout)}>
+							<MenuItem
+								onClick={handleMenuClickWrapper(() =>
+									console.log("TODO: Handle My Account"),
+								)}
+							>
 								My Account
 							</MenuItem>
 							<MenuItem onClick={handleMenuClickWrapper(handleCalendarClick)}>
