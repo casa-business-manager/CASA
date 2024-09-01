@@ -19,7 +19,6 @@ import com.example.casa.Model.Role;
 import com.example.casa.Model.User;
 import com.example.casa.Payload.ApiResponse;
 import com.example.casa.Payload.Organization.OrganizationDto;
-import com.example.casa.Payload.Organization.OrganizationInformation;
 import com.example.casa.Payload.Organization.OrganizationWithRoles;
 import com.example.casa.Repository.EventRepository;
 import com.example.casa.Repository.OrganizationRepository;
@@ -128,20 +127,6 @@ public class OrganizationController {
 
 		Set<User> users = organization.getUsers();
 		return ResponseEntity.ok(users);
-	}
-
-	@PostMapping("/getOrganizationInfo/organization/{orgId}")
-	public ResponseEntity<?> getOrganizationInfo(@PathVariable String orgId) {
-		Organization organization = organizationRepository.findById(orgId)
-				.orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
-
-		Set<User> users = organization.getUsers();
-
-		OrganizationInformation orgInfo = new OrganizationInformation();
-		orgInfo.setName(organization.getOrgName());
-		orgInfo.setPeople(users);
-
-		return ResponseEntity.ok(orgInfo);
 	}
 
 	@PostMapping("/inviteUserToOrganization/organization/{orgId}")

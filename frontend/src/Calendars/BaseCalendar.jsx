@@ -4,15 +4,10 @@ import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
-import { getOrganizationInfo } from "../API/OrganizationAPI";
-import {
-	getCalendarData,
-	createEvent,
-	updateEvent,
-	deleteEvent,
-} from "../API/EventAPI";
+import { getCalendarData, updateEvent } from "../API/EventAPI";
 import EventDialog from "./EventDialog";
 import CurrentUserContext from "../Contexts/CurrentUserContext";
+import OrganizationsContext from "../Contexts/OrganizationsContext";
 
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(Calendar);
@@ -20,6 +15,8 @@ const DragAndDropCalendar = withDragAndDrop(Calendar);
 // TODO: color events by org?
 const BaseCalendar = ({ orgIds }) => {
 	const [currentUser, _] = useContext(CurrentUserContext);
+	const [organizations, __] = useContext(OrganizationsContext);
+
 	const [events, setEvents] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [dialogOpen, setDialogOpen] = useState(false);
@@ -43,22 +40,10 @@ const BaseCalendar = ({ orgIds }) => {
 			return;
 		}
 
-		const fetchPeople = async () => {
-			const orgInfoPromises = orgIds.map((orgId) => getOrganizationInfo(orgId));
-
-			var newOrgInfoList = [];
-			for (var i = 0; i < orgIds.length; i++) {
-				const orgInfoPromise = orgInfoPromises[i];
-				newOrgInfoList.push({
-					orgId: orgIds[i],
-					...(await orgInfoPromise),
-				});
-			}
-
-			setOrgInfo(newOrgInfoList);
-		};
-
-		fetchPeople();
+		// setOrgInfo(organizations.filter((org) => orgIds.includes(org.orgId)));
+		setOrgInfo(
+			orgIds.map((orgId) => organizations.find((org) => org.orgId === orgId)),
+		);
 	}, [orgIds]);
 
 	// Get events for a user in an org
@@ -253,9 +238,7 @@ const BaseCalendar = ({ orgIds }) => {
 				localizer={localizer}
 				selectable
 				onSelectEvent={handleSelectEvent}
-				onSelectSlot={
-					orgIds.length > 0 ? handleSelectSlot : console.log("no organizations")
-				}
+				onSelectSlot={orgIds.length > 0 && handleSelectSlot}
 				events={deleteDuplicates(
 					[...events, temporaryEvent].filter(Boolean).map((event) => ({
 						eventId: event.eventId,

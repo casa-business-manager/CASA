@@ -356,12 +356,12 @@ const EventDialog = ({
 						sx={{ width: "30%" }}
 						onChange={(e) => setOrganization(e.target.value)}
 						SelectProps={{
-							renderValue: (selected) => selected.name ?? selected.orgName,
+							renderValue: (selected) => selected.orgName,
 						}}
 					>
 						{orgInfo.map((org, index) => (
 							<MenuItem key={index} value={org}>
-								{org.name ?? org.orgName}
+								{org.orgName}
 							</MenuItem>
 						))}
 					</TextField>

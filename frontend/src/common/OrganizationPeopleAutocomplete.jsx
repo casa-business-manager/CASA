@@ -1,15 +1,11 @@
-import { Autocomplete, Chip, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
-import { getOrganizationInfo } from "../API/OrganizationAPI";
+import { Autocomplete, TextField } from "@mui/material";
+import { useContext, useEffect, useState } from "react";
 import UserChip from "./UserChip";
+import OrganizationsContext from "../Contexts/OrganizationsContext";
 
-/// Must pass in organizationId or organizationPeopleList
-/// If both are passed in, will use organizationPeopleList over Id
-/// If Id is used, will make a backend call to get the people
 const OrganizationPeopleAutocomplete = ({
 	parentSetSelectedPeople,
 	organizationId,
-	organizationPeopleList,
 	defaultPeopleList = [],
 	filterOptions,
 	rejectAddPersonFunction = () => false,
@@ -21,6 +17,7 @@ const OrganizationPeopleAutocomplete = ({
 	sx,
 	...props
 }) => {
+	const [organizations, _] = useContext(OrganizationsContext);
 	const [orgPeople, setOrgPeople] = useState([]);
 	const [selectedPeople, setSelectedPeople] = useState([...defaultPeopleList]);
 
@@ -29,20 +26,13 @@ const OrganizationPeopleAutocomplete = ({
 		((optionPerson) =>
 			!selectedPeople.some((person) => person.id === optionPerson.id));
 
-	// Get organization people
-	// TODO: GET only if organizationPeopleList is not passed in
 	useEffect(() => {
 		if (!organizationId) {
 			return;
 		}
-
-		const fetchPeople = async () => {
-			const orgInfo = await getOrganizationInfo(organizationId);
-
-			setOrgPeople(orgInfo.people);
-		};
-
-		fetchPeople();
+		setOrgPeople(
+			organizations.find((org) => org.orgId === organizationId)?.users,
+		);
 	}, [organizationId]);
 
 	useEffect(() => {
