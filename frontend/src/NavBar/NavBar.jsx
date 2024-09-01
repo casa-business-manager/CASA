@@ -135,18 +135,15 @@ const NavBar = ({}) => {
 			<Toolbar>
 				<MenuIcon sx={{ marginRight: "50px", color: "#fff" }}></MenuIcon>
 				<Typography
-					onClick={
-						// TODO: make this link to somewhere?
-						() => {}
-					}
-					sx={
-						{
-							// "&:hover": {
-							// 	textDecoration: "underline",
-							// 	textDecorationThickness: "2px",
-							// },
-						}
-					}
+					onClick={() => {
+						navigate("/oauth2/redirect");
+					}}
+					sx={{
+						"&:hover": {
+							textDecoration: "underline",
+							textDecorationThickness: "2px",
+						},
+					}}
 				>
 					CASA
 				</Typography>
