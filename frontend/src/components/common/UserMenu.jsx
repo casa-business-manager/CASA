@@ -9,11 +9,10 @@ import {
 	Menu,
 	Typography,
 } from "@mui/material";
-import ChatIcon from "@mui/icons-material/Chat";
-import EmailIcon from "@mui/icons-material/Email";
 import { getUserFullName } from "../../util/user";
 import { useContext, useEffect, useState } from "react";
 import EmailContext from "../../contexts/EmailContext";
+import { EmailIcon, MessageIcon } from "../../constants/icons";
 
 const UserMenu = ({ anchorEl, onClose, user, orgIdFromArg }) => {
 	const navigate = useNavigate();
@@ -114,7 +113,7 @@ const UserMenu = ({ anchorEl, onClose, user, orgIdFromArg }) => {
 							Email
 						</Button>
 						<Button sx={{ gap: 1, color: "text.secondary" }}>
-							<ChatIcon sx={{ color: "text.primary" }} />
+							<MessageIcon sx={{ color: "text.primary" }} />
 							Chat
 						</Button>
 					</Box>

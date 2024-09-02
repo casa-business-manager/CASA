@@ -1,12 +1,10 @@
-import { act, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import BaseTab from "./BaseTab";
 import Typography from "@mui/material/Typography";
-import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import {
 	Autocomplete,
 	Box,
 	Button,
-	Chip,
 	ClickAwayListener,
 	FormControl,
 	Grow,
@@ -22,13 +20,16 @@ import {
 	TextField,
 } from "@mui/material";
 import BaseCollapse from "../SettingsCollapses/BaseCollapse";
-import PeopleIcon from "@mui/icons-material/People";
-import ShieldIcon from "@mui/icons-material/Shield";
-import CloseIcon from "@mui/icons-material/Close";
 import { GraphCanvas, lightTheme } from "reagraph";
 import { createRole, deleteRole, editRole } from "../../../API/RoleAPI";
-import MoveUpIcon from "@mui/icons-material/MoveUp";
 import UserChip from "../../../components/common/UserChip";
+import {
+	CloseIcon,
+	PeopleIcon,
+	PermissionIcon,
+	RoleManagedByIcon,
+	RolesIcon,
+} from "../../../constants/icons";
 
 const lockedRoleColor = "#B8B8B8";
 const controlledRoleColor = "#A2E6FF";
@@ -591,7 +592,7 @@ const RoleEditor = ({
 						alignItems: "center",
 					}}
 				>
-					<MoveUpIcon />
+					<RoleManagedByIcon />
 					<FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
 						<InputLabel>Managed by</InputLabel>
 						<Select
@@ -612,7 +613,7 @@ const RoleEditor = ({
 			)}
 			<List sx={{ overflow: "auto" }}>
 				<BaseCollapse
-					Icon={ShieldIcon}
+					Icon={PermissionIcon}
 					Label={"Permissions"}
 					key={"Permissions"}
 					defaultOpen={editorIsCreatingNewRole}
@@ -786,7 +787,7 @@ const RolesTabSettings = ({ settings, user }) => {
 const RolesTab = ({ settings, user, onClick, selected, indentLevel = 0 }) => {
 	return (
 		<BaseTab
-			Icon={AccountTreeIcon}
+			Icon={RolesIcon}
 			Label={"Roles"}
 			selected={selected}
 			indentLevel={indentLevel}

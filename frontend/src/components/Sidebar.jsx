@@ -1,6 +1,5 @@
 import {
 	Box,
-	Divider,
 	Drawer,
 	List,
 	ListItem,
@@ -8,13 +7,11 @@ import {
 	ListItemIcon,
 	ListItemText,
 	Toolbar,
-	Typography,
 } from "@mui/material";
 import { CalendarIcon } from "@mui/x-date-pickers/icons";
-import EmailIcon from "@mui/icons-material/Email";
-import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate, useParams } from "react-router-dom";
 import SettingsButton from "../pages/Settings/SettingsButton";
+import { EmailIcon, HomeIcon } from "../constants/icons";
 
 const Sidebar = ({ selected, children }) => {
 	const { orgId } = useParams();

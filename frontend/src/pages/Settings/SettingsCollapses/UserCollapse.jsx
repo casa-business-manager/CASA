@@ -1,5 +1,5 @@
 import BaseCollapse from "./BaseCollapse";
-import PeopleIcon from "@mui/icons-material/People";
+import { PeopleIcon } from "../../../constants/icons";
 
 const UserCollapse = ({ indentLevel = 0, children }) => {
 	return (

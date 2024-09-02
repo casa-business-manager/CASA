@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import {
 	AppBar,
 	Box,
@@ -11,13 +10,13 @@ import {
 	Toolbar,
 	Typography,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 import ChevronRight from "@mui/icons-material/ChevronRight";
 import OrganizationsContext from "../contexts/OrganizationsContext";
 import { getOrganizations } from "../API/OrganizationAPI";
 import CurrentUserContext from "../contexts/CurrentUserContext";
 import zIndex from "@mui/material/styles/zIndex";
 import { parseLocation } from "../util/path";
+import { AccountIcon, CASALogo } from "../constants/icons";
 
 const recognizedPathWordsToNavbarWords = {
 	login: { name: "Login", path: "login" },
@@ -53,7 +52,7 @@ const addNameIfId = (pathWordsArray, id, organizations) => {
 
 const NavBar = ({}) => {
 	const navigate = useNavigate();
-	const [currentUser, setCurrentUser] = useContext(CurrentUserContext);
+	const [currentUser, _] = useContext(CurrentUserContext);
 	const [organizations, setOrganizations] = useContext(OrganizationsContext);
 	// values from recognizedPathWordsToNavbarWords
 	const [navbarLinks, setNavbarLinks] = useState([]);
@@ -133,7 +132,7 @@ const NavBar = ({}) => {
 			}}
 		>
 			<Toolbar>
-				<MenuIcon sx={{ marginRight: "50px", color: "#fff" }}></MenuIcon>
+				<CASALogo sx={{ mr: 2, color: "#fff" }}></CASALogo>
 				<Typography
 					onClick={() => {
 						navigate("/oauth2/redirect");
@@ -171,7 +170,7 @@ const NavBar = ({}) => {
 				{navbarLinks.find((link) => link.name === "Login") ? null : (
 					<>
 						<IconButton onClick={handleAccountButton}>
-							<AccountCircleIcon sx={{ color: "#fff" }} />
+							<AccountIcon sx={{ color: "#fff" }} />
 						</IconButton>
 						<Menu
 							anchorEl={anchorEl}

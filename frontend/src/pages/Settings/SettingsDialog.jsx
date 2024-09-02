@@ -8,7 +8,6 @@ import {
 	IconButton,
 } from "@mui/material";
 import List from "@mui/material/List";
-import CloseIcon from "@mui/icons-material/Close";
 import OrganizationTab from "./SettingTabs/OrganizationTab";
 import MeetingsTab from "./SettingTabs/MeetingsTab";
 import IntegrationsCollapse from "./SettingsCollapses/IntegrationsCollapse";
@@ -17,6 +16,7 @@ import MembersTab from "./SettingTabs/MembersTab";
 import RolesTab from "./SettingTabs/RolesTab";
 import { getOrganizationRoles } from "../../API/RoleAPI";
 import CurrentUserContext from "../../contexts/CurrentUserContext";
+import { CloseIcon } from "../../constants/icons";
 
 // orgId may be null
 const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {

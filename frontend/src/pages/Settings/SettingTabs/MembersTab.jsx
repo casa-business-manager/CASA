@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import BaseTab from "./BaseTab";
 import Typography from "@mui/material/Typography";
-import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import { DataGrid } from "@mui/x-data-grid";
-import AddIcon from "@mui/icons-material/Add";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -17,6 +15,7 @@ import {
 	removeUserFromOrganization,
 } from "../../../API/OrganizationAPI";
 import { Box, IconButton } from "@mui/material";
+import { AccountIcon, AddIcon } from "../../../constants/icons";
 
 const MembersTabSettings = ({ settings, orgId }) => {
 	const [users, setUsers] = useState([]);
@@ -169,7 +168,7 @@ const MembersTab = ({
 }) => {
 	return (
 		<BaseTab
-			Icon={AccountBoxIcon}
+			Icon={AccountIcon}
 			Label={"Members"}
 			selected={selected}
 			indentLevel={indentLevel}

@@ -18,13 +18,15 @@ import {
 import RichTextEditor from "./RichTextEditor";
 import OrganizationPeopleAutocomplete from "../../components/common/OrganizationPeopleAutocomplete";
 import WarningDialog from "../../components/common/WarningDialog";
-import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
-import SendIcon from "@mui/icons-material/Send";
-import DeleteIcon from "@mui/icons-material/Delete";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import CloseIcon from "@mui/icons-material/Close";
-import ArticleIcon from "@mui/icons-material/Article";
 import EmailContext from "../../contexts/EmailContext";
+import {
+	AddIcon,
+	CloseIcon,
+	DeleteIcon,
+	MoreOptionsIcon,
+	SendIcon,
+	TemplateIcon,
+} from "../../constants/icons";
 
 const TemplateTab = ({
 	name,
@@ -92,7 +94,7 @@ const TemplateTab = ({
 				onClick={handleOptionsClick}
 				sx={{ visibility: open ? "visible" : "hidden" }}
 			>
-				<MoreVertIcon />
+				<MoreOptionsIcon />
 			</IconButton>
 			<Menu
 				id="basic-menu"
@@ -158,7 +160,7 @@ const TemplateDrawer = ({
 							Templates
 						</Typography>
 						<IconButton onClick={handleAddTemplate}>
-							<AddCircleOutlineOutlinedIcon />
+							<AddIcon />
 						</IconButton>
 					</Box>
 				</Toolbar>
@@ -284,7 +286,7 @@ const TemplateMenu = ({ open, closeDrawer }) => {
 						}}
 					>
 						<Box sx={{ display: "flex", alignItems: "center" }}>
-							<ArticleIcon sx={{ mr: 1 }} />
+							<TemplateIcon sx={{ mr: 1 }} />
 							<Typography variant="h6">Preview</Typography>
 						</Box>
 
@@ -481,7 +483,7 @@ const EmailPage = ({}) => {
 				<Typography variant="h5">Compose email</Typography>
 				<Button onClick={openDrawer} variant="outlined">
 					Use a template
-					<ArticleIcon sx={{ ml: 2 }} />
+					<TemplateIcon sx={{ ml: 2 }} />
 				</Button>
 			</Box>
 			<Divider sx={{ m: 2 }} />

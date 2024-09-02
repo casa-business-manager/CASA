@@ -13,10 +13,10 @@ import {
 	Alert,
 } from "@mui/material";
 import { GoogleLoginButton } from "react-social-login-buttons";
-import { GOOGLE_AUTH_URL } from "../../constants/constants";
+import { GOOGLE_AUTH_URL } from "../../constants/login";
 import { useNavigate } from "react-router-dom";
 import { login, signup } from "../../API/UserAPI";
-import { ACCESS_TOKEN } from "../../constants/constants";
+import { ACCESS_TOKEN } from "../../constants/login";
 import loginImage from "../../assets/loginScreen.jpg";
 
 const validateEmail = (email) => {

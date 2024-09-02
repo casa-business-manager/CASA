@@ -1,13 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser } from "../API/UserAPI";
-import {
-	getOrganizations,
-	createOrganization,
-	updateOrganization,
-} from "../API/OrganizationAPI";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import AddIcon from "@mui/icons-material/Add";
+import { getOrganizations, createOrganization } from "../API/OrganizationAPI";
 import OrganizationsContext from "../contexts/OrganizationsContext";
 import CurrentUserContext from "../contexts/CurrentUserContext";
 import {
@@ -16,7 +10,6 @@ import {
 	Button,
 	Card,
 	CardActionArea,
-	CardActions,
 	CardContent,
 	CardMedia,
 	Dialog,
@@ -28,9 +21,10 @@ import {
 	TextField,
 	Typography,
 } from "@mui/material";
+import { AddIcon, MoreOptionsIcon, OrganizationIcon } from "../constants/icons";
 
 const Organization = () => {
-	const [currentUser, setCurrentUser] = useContext(CurrentUserContext);
+	const [_, setCurrentUser] = useContext(CurrentUserContext);
 	const [organizations, setOrganizations] = useContext(OrganizationsContext);
 
 	const [loading, setLoading] = useState(true);
@@ -148,7 +142,7 @@ const Organization = () => {
 			{/* <CardActions sx={{ justifyContent: "right" }}> 
 			TODO: what goes in here?
 			<IconButton>
-					<MoreVertIcon />
+					<MoreOptionsIcon />
 				</IconButton>
 			</CardActions> */}
 		</Card>
@@ -265,8 +259,11 @@ const Organization = () => {
 					display: "flex",
 					gap: 2,
 					alignItems: "center",
+					mt: 1,
 				}}
 			>
+				<OrganizationIcon sx={{ fontSize: 40 }} />
+				{/* Increase the font size */}
 				<Typography variant="h4">Organizations</Typography>
 				<IconButton onClick={() => setIsDialogOpen(true)}>
 					<AddIcon />

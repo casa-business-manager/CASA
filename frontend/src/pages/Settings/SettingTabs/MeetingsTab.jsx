@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import BaseTab from "./BaseTab";
-import VideocamIcon from "@mui/icons-material/Videocam";
 import Typography from "@mui/material/Typography";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -8,6 +7,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Checkbox from "@mui/material/Checkbox";
+import { MeetingIcon } from "../../../constants/icons";
 
 const name = "Meetings";
 
@@ -94,7 +94,7 @@ const MeetingsTab = ({
 }) => {
 	return (
 		<BaseTab
-			Icon={VideocamIcon}
+			Icon={MeetingIcon}
 			Label={name}
 			selected={selected}
 			indentLevel={indentLevel}

@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { OrganizationIcon } from "../../../constants/icons";
 import BaseTab from "./BaseTab";
-import ApartmentIcon from "@mui/icons-material/Apartment";
 import Typography from "@mui/material/Typography";
 
 const OrganizationTabSettings = ({ settings }) => {
@@ -59,7 +58,7 @@ const OrganizationTabSettings = ({ settings }) => {
 const OrganizationTab = ({ settings, onClick, selected, indentLevel = 0 }) => {
 	return (
 		<BaseTab
-			Icon={ApartmentIcon}
+			Icon={OrganizationIcon}
 			Label={"Organization"}
 			selected={selected}
 			indentLevel={indentLevel}

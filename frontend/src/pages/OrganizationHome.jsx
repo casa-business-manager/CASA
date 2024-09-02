@@ -10,16 +10,18 @@ import {
 	ListItemText,
 	Typography,
 } from "@mui/material";
-import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
-import ChatIcon from "@mui/icons-material/Chat";
-import EventIcon from "@mui/icons-material/Event";
-import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import TodayIcon from "@mui/icons-material/Today";
 import { getCalendarData } from "../API/EventAPI";
 import CurrentUserContext from "../contexts/CurrentUserContext";
 import { getMMDDHHMM12hr } from "../util/date";
 import EventDialog from "./Calendars/EventDialog";
 import OrganizationsContext from "../contexts/OrganizationsContext";
+import {
+	CalendarIcon,
+	CalendarIconAlt,
+	MessageIcon,
+	TaskIcon,
+	TasksIcon,
+} from "../constants/icons";
 
 const OrganizationHome = ({}) => {
 	const { orgId } = useParams();
@@ -123,7 +125,7 @@ const OrganizationHome = ({}) => {
 	return (
 		<>
 			<Box display="flex" sx={{ flexGrow: 1, height: "100%", my: 1 }}>
-				<Column title={"Upcoming Tasks"} icon={<AssignmentTurnedInIcon />}>
+				<Column title={"Upcoming Tasks"} icon={<TasksIcon />}>
 					{taskNotifications.length === 0 ? (
 						<Typography>No tasks!</Typography>
 					) : (
@@ -131,7 +133,7 @@ const OrganizationHome = ({}) => {
 						taskNotifications.map((task, index) => (
 							<NotificationCard
 								key={index}
-								icon={<TaskAltIcon />}
+								icon={<TaskIcon />}
 								text={<ListItemText primary={task} secondary={task} />}
 							/>
 						))
@@ -145,7 +147,7 @@ const OrganizationHome = ({}) => {
 					sx={{ borderWidth: 1, borderColor: "rgba(0, 0, 0, 0.5)" }}
 				/>
 
-				<Column title={"New Messages"} icon={<ChatIcon />}>
+				<Column title={"New Messages"} icon={<MessageIcon />}>
 					{messageNotifications.length === 0 ? (
 						<Typography>No new messages</Typography>
 					) : (
@@ -171,14 +173,14 @@ const OrganizationHome = ({}) => {
 					sx={{ borderWidth: 1, borderColor: "rgba(0, 0, 0, 0.5)" }}
 				/>
 
-				<Column title={"Upcoming Events"} icon={<EventIcon />}>
+				<Column title={"Upcoming Events"} icon={<CalendarIcon />}>
 					{eventNotifications.length === 0 ? (
 						<Typography>No upcoming events</Typography>
 					) : (
 						eventNotifications.map((event, index) => (
 							<NotificationCard
 								key={index}
-								icon={<TodayIcon />}
+								icon={<CalendarIconAlt />}
 								text={
 									<ListItemText
 										primary={event.title}

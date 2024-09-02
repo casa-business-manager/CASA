@@ -1,4 +1,4 @@
-import { API_BASE_URL, ACCESS_TOKEN } from "../constants/constants";
+import { API_BASE_URL, ACCESS_TOKEN } from "../constants/login";
 
 export const request = async (options) => {
 	const headers = new Headers({

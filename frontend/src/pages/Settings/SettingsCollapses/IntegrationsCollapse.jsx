@@ -1,10 +1,10 @@
 import BaseCollapse from "./BaseCollapse";
-import CableIcon from "@mui/icons-material/Cable";
+import { IntegrationIcon } from "../../../constants/icons";
 
 const IntegrationsCollapse = ({ indentLevel = 0, children }) => {
 	return (
 		<BaseCollapse
-			Icon={CableIcon}
+			Icon={IntegrationIcon}
 			Label={"Integrations"}
 			indentLevel={indentLevel}
 			children={children}

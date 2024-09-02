@@ -15,16 +15,18 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Autocomplete } from "@mui/material";
 import dayjs from "dayjs";
-import CloseIcon from "@mui/icons-material/Close";
-import ViewHeadlineIcon from "@mui/icons-material/ViewHeadline";
-import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import ApartmentIcon from "@mui/icons-material/Apartment";
 import OrganizationPeopleAutocomplete from "../../components/common/OrganizationPeopleAutocomplete";
 import CurrentUserContext from "../../contexts/CurrentUserContext";
 import moment from "moment";
 import { createEvent, updateEvent, deleteEvent } from "../../API/EventAPI";
+import {
+	CloseIcon,
+	DescriptionIcon,
+	TimeIcon,
+	LocationIcon,
+	PeopleIcon,
+	OrganizationIcon,
+} from "../../constants/icons";
 
 const EventDialog = ({
 	open,
@@ -248,7 +250,7 @@ const EventDialog = ({
 						marginBottom: 4,
 					}}
 				>
-					<ViewHeadlineIcon sx={{ color: "action.active", mr: 1, my: 2.5 }} />
+					<DescriptionIcon sx={{ color: "action.active", mr: 1, my: 2.5 }} />
 					<TextField
 						disabled={!isEventCreator()}
 						label="Description"
@@ -263,7 +265,7 @@ const EventDialog = ({
 
 				{/* Time Picker */}
 				<Box sx={{ display: "flex", alignItems: "flex-start", mb: 1.5 }}>
-					<AccessTimeFilledIcon sx={{ color: "action.active", mr: 1, mt: 2 }} />
+					<TimeIcon sx={{ color: "action.active", mr: 1, mt: 2 }} />
 					<LocalizationProvider dateAdapter={AdapterDayjs}>
 						<Box sx={{ mr: 0 }}>
 							<TimePicker
@@ -297,7 +299,7 @@ const EventDialog = ({
 
 				{/* Location */}
 				<Box sx={{ display: "flex", alignItems: "flex-start" }}>
-					<LocationOnIcon sx={{ color: "action.active", mr: 1, my: 3.5 }} />
+					<LocationIcon sx={{ color: "action.active", mr: 1, my: 3.5 }} />
 					<Autocomplete
 						disabled={!isEventCreator()}
 						freeSolo
@@ -324,7 +326,7 @@ const EventDialog = ({
 
 				{/* People */}
 				<Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
-					<PeopleAltIcon sx={{ color: "action.active", mr: 1, my: 2.5 }} />
+					<PeopleIcon sx={{ color: "action.active", mr: 1, my: 2.5 }} />
 					<OrganizationPeopleAutocomplete
 						parentSetSelectedPeople={setPeople}
 						organizationId={organization.orgId}
@@ -346,7 +348,7 @@ const EventDialog = ({
 
 				{/* Organization */}
 				<Box sx={{ display: "flex", alignItems: "flex-start" }}>
-					<ApartmentIcon sx={{ color: "action.active", mr: 1, my: 2.7 }} />
+					<OrganizationIcon sx={{ color: "action.active", mr: 1, my: 2.7 }} />
 					<TextField
 						disabled={!isEventCreator() || initialIsEditing}
 						select
