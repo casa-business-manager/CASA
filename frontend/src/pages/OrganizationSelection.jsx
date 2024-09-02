@@ -262,16 +262,17 @@ const Organization = () => {
 					gap: 2,
 					alignItems: "center",
 					mt: 1,
+					mb: 2,
+					fontSize: 36,
 				}}
 			>
-				<OrganizationIcon sx={{ fontSize: 40 }} />
-				{/* Increase the font size */}
-				<Typography variant="h4">Organizations</Typography>
+				<OrganizationIcon sx={{ fontSize: "inherit" }} />
+				<Typography sx={{ fontSize: "inherit" }}>Organizations</Typography>
 				<IconButton onClick={() => setIsDialogOpen(true)}>
 					<AddIcon />
 				</IconButton>
 			</Box>
-			<Divider sx={{ my: 1 }} />
+			<Divider sx={{ my: 2 }} />
 			<Box
 				sx={{
 					display: "grid",
