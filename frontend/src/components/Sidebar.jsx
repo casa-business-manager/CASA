@@ -11,7 +11,7 @@ import {
 import { CalendarIcon } from "@mui/x-date-pickers/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import SettingsButton from "../pages/Settings/SettingsButton";
-import { EmailIcon, HomeIcon } from "../constants/icons";
+import { EmailIcon, HomeIcon, SettingsIcon } from "../constants/icons";
 
 const Sidebar = ({ selected, children }) => {
 	const { orgId } = useParams();
@@ -34,11 +34,11 @@ const Sidebar = ({ selected, children }) => {
 			icon: <EmailIcon />,
 			navigation: () => navigate(`/organization/${orgId}/email`),
 		},
-		// {
-		// 	label: "Settings",
-		// 	icon: <SettingsIcon />,
-		// 	navigation: () => navigate(`/organization/${orgId}/settings`),
-		// }
+		{
+			label: "Settings",
+			icon: <SettingsIcon />,
+			navigation: () => navigate(`/organization/${orgId}/settings`),
+		},
 	];
 
 	return (

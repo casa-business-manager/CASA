@@ -18,6 +18,7 @@ import EmailPage from "./pages/Email/EmailPage";
 import { CurrentUserProvider } from "./contexts/CurrentUserContext";
 import OrganizationsContext from "./contexts/OrganizationsContext";
 import EmailContext from "./contexts/EmailContext";
+import SettingsPage from "./pages/Settings/SettingsPage";
 
 function App() {
 	const [organizations, setOrganizations] = useState([]);
@@ -73,6 +74,14 @@ function App() {
 										element={
 											<Sidebar selected={"Email"}>
 												<EmailPage />
+											</Sidebar>
+										}
+									/>
+									<Route
+										path="/organization/:orgId/settings"
+										element={
+											<Sidebar selected={"Settings"}>
+												<SettingsPage />
 											</Sidebar>
 										}
 									/>
