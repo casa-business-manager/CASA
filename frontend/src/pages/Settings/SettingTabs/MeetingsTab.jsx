@@ -47,7 +47,6 @@ const MeetingsTabSettings = ({ settings, availableMeetings }) => {
 			<List
 				sx={{
 					width: "100%",
-					bgcolor: "background.paper",
 				}}
 			>
 				{availableMeetings.map((service) => {

@@ -17,6 +17,12 @@ import CurrentUserContext from "../contexts/CurrentUserContext";
 import zIndex from "@mui/material/styles/zIndex";
 import { parseLocation } from "../util/path";
 import { AccountIcon, CASALogo } from "../constants/icons";
+import {
+	LogoutColor,
+	MainAppColor,
+	mainAppColor,
+	MainTextLight,
+} from "../constants/colors";
 
 const recognizedPathWordsToNavbarWords = {
 	login: { name: "Login", path: "login" },
@@ -126,13 +132,13 @@ const NavBar = ({}) => {
 		<AppBar
 			position="fixed"
 			sx={{
-				backgroundColor: "#3b89f3",
+				backgroundColor: MainAppColor,
 				mb: 2,
 				zIndex: zIndex.drawer + 1,
 			}}
 		>
 			<Toolbar>
-				<CASALogo sx={{ mr: 2, color: "#fff" }}></CASALogo>
+				<CASALogo sx={{ mr: 2, color: MainTextLight }}></CASALogo>
 				<Typography
 					onClick={() => {
 						navigate("/oauth2/redirect");
@@ -170,7 +176,7 @@ const NavBar = ({}) => {
 				{navbarLinks.find((link) => link.name === "Login") ? null : (
 					<>
 						<IconButton onClick={handleAccountButton}>
-							<AccountIcon sx={{ color: "#fff" }} />
+							<AccountIcon sx={{ color: MainTextLight }} />
 						</IconButton>
 						<Menu
 							anchorEl={anchorEl}
@@ -195,7 +201,7 @@ const NavBar = ({}) => {
 							<Divider />
 							<MenuItem
 								onClick={handleMenuClickWrapper(handleLogout)}
-								sx={{ color: "red" }}
+								sx={{ color: LogoutColor }}
 							>
 								Logout
 							</MenuItem>

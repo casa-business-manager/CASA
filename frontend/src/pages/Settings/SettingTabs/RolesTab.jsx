@@ -30,12 +30,13 @@ import {
 	RoleManagedByIcon,
 	RolesIcon,
 } from "../../../constants/icons";
+import { DeleteColor, MainAppColor } from "../../../constants/colors";
 
 const lockedRoleColor = "#B8B8B8";
 const controlledRoleColor = "#A2E6FF";
-const ownedRoleColor = "#3B89F3";
+const ownedRoleColor = MainAppColor;
 const selectedColor = "#ff7f0e";
-const selectedColorRing = "#ff7f0e";
+const selectedColorRing = selectedColor;
 const edgeColor = "#a3bdc4";
 const inactiveOpacity = 0.4;
 const canvasBackgroundColor = "#f0f0f0";
@@ -168,7 +169,7 @@ const GraphPopup = ({
 								</MenuItem>
 								<MenuItem
 									onClick={menuClickWrapper(handleDeleteRole)}
-									style={{ color: "red" }}
+									style={{ color: DeleteColor }}
 								>
 									Delete role
 								</MenuItem>

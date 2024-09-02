@@ -27,6 +27,7 @@ import {
 	PeopleIcon,
 	OrganizationIcon,
 } from "../../constants/icons";
+import { SecondaryTextDark } from "../../constants/colors";
 
 const EventDialog = ({
 	open,
@@ -250,7 +251,7 @@ const EventDialog = ({
 						marginBottom: 4,
 					}}
 				>
-					<DescriptionIcon sx={{ color: "action.active", mr: 1, my: 2.5 }} />
+					<DescriptionIcon sx={{ color: SecondaryTextDark, mr: 1, my: 2.5 }} />
 					<TextField
 						disabled={!isEventCreator()}
 						label="Description"
@@ -265,7 +266,7 @@ const EventDialog = ({
 
 				{/* Time Picker */}
 				<Box sx={{ display: "flex", alignItems: "flex-start", mb: 1.5 }}>
-					<TimeIcon sx={{ color: "action.active", mr: 1, mt: 2 }} />
+					<TimeIcon sx={{ color: SecondaryTextDark, mr: 1, mt: 2 }} />
 					<LocalizationProvider dateAdapter={AdapterDayjs}>
 						<Box sx={{ mr: 0 }}>
 							<TimePicker
@@ -299,7 +300,7 @@ const EventDialog = ({
 
 				{/* Location */}
 				<Box sx={{ display: "flex", alignItems: "flex-start" }}>
-					<LocationIcon sx={{ color: "action.active", mr: 1, my: 3.5 }} />
+					<LocationIcon sx={{ color: SecondaryTextDark, mr: 1, my: 3.5 }} />
 					<Autocomplete
 						disabled={!isEventCreator()}
 						freeSolo
@@ -326,7 +327,7 @@ const EventDialog = ({
 
 				{/* People */}
 				<Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
-					<PeopleIcon sx={{ color: "action.active", mr: 1, my: 2.5 }} />
+					<PeopleIcon sx={{ color: SecondaryTextDark, mr: 1, my: 2.5 }} />
 					<OrganizationPeopleAutocomplete
 						parentSetSelectedPeople={setPeople}
 						organizationId={organization.orgId}
@@ -348,7 +349,7 @@ const EventDialog = ({
 
 				{/* Organization */}
 				<Box sx={{ display: "flex", alignItems: "flex-start" }}>
-					<OrganizationIcon sx={{ color: "action.active", mr: 1, my: 2.7 }} />
+					<OrganizationIcon sx={{ color: SecondaryTextDark, mr: 1, my: 2.7 }} />
 					<TextField
 						disabled={!isEventCreator() || initialIsEditing}
 						select

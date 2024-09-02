@@ -13,6 +13,7 @@ import { getUserFullName } from "../../util/user";
 import { useContext, useEffect, useState } from "react";
 import EmailContext from "../../contexts/EmailContext";
 import { EmailIcon, MessageIcon } from "../../constants/icons";
+import { MainTextDark, SecondaryTextDark } from "../../constants/colors";
 
 const UserMenu = ({ anchorEl, onClose, user, orgIdFromArg }) => {
 	const navigate = useNavigate();
@@ -107,13 +108,13 @@ const UserMenu = ({ anchorEl, onClose, user, orgIdFromArg }) => {
 					>
 						<Button
 							onClick={handleEmailClick}
-							sx={{ gap: 1, color: "text.secondary" }}
+							sx={{ gap: 1, color: SecondaryTextDark }}
 						>
-							<EmailIcon sx={{ color: "text.primary" }} />
+							<EmailIcon sx={{ color: MainTextDark }} />
 							Email
 						</Button>
-						<Button sx={{ gap: 1, color: "text.secondary" }}>
-							<MessageIcon sx={{ color: "text.primary" }} />
+						<Button sx={{ gap: 1, color: SecondaryTextDark }}>
+							<MessageIcon sx={{ color: MainTextDark }} />
 							Chat
 						</Button>
 					</Box>

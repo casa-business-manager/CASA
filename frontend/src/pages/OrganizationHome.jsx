@@ -22,6 +22,9 @@ import {
 	TaskIcon,
 	TasksIcon,
 } from "../constants/icons";
+import { ClickableHoverColor } from "../constants/colors";
+
+const DividerColor = "rgba(0, 0, 0, 0.5)";
 
 const OrganizationHome = ({}) => {
 	const { orgId } = useParams();
@@ -79,7 +82,7 @@ const OrganizationHome = ({}) => {
 					width: "90%",
 					"&:hover": {
 						cursor: "pointer",
-						backgroundColor: "#f5f5f5",
+						backgroundColor: ClickableHoverColor,
 					},
 				}}
 			>
@@ -108,7 +111,7 @@ const OrganizationHome = ({}) => {
 			</Box>
 			<Divider
 				variant="middle"
-				sx={{ my: 2, borderWidth: 1, borderColor: "rgba(0, 0, 0, 0.5)" }}
+				sx={{ my: 2, borderWidth: 1, borderColor: DividerColor }}
 			/>
 			<Box
 				sx={{
@@ -144,7 +147,7 @@ const OrganizationHome = ({}) => {
 				<Divider
 					orientation="vertical"
 					flexItem
-					sx={{ borderWidth: 1, borderColor: "rgba(0, 0, 0, 0.5)" }}
+					sx={{ borderWidth: 1, borderColor: DividerColor }}
 				/>
 
 				<Column title={"New Messages"} icon={<MessageIcon />}>
@@ -170,7 +173,7 @@ const OrganizationHome = ({}) => {
 				<Divider
 					orientation="vertical"
 					flexItem
-					sx={{ borderWidth: 1, borderColor: "rgba(0, 0, 0, 0.5)" }}
+					sx={{ borderWidth: 1, borderColor: DividerColor }}
 				/>
 
 				<Column title={"Upcoming Events"} icon={<CalendarIcon />}>

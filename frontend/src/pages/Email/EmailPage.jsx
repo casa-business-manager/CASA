@@ -27,6 +27,7 @@ import {
 	SendIcon,
 	TemplateIcon,
 } from "../../constants/icons";
+import { DeleteColor } from "../../constants/colors";
 
 const TemplateTab = ({
 	name,
@@ -106,7 +107,7 @@ const TemplateTab = ({
 				}}
 			>
 				<MenuItem onClick={handleEditTemplateWrapper}>Edit</MenuItem>
-				<MenuItem onClick={askBeforeDelete} sx={{ color: "red" }}>
+				<MenuItem onClick={askBeforeDelete} sx={{ color: DeleteColor }}>
 					Delete
 				</MenuItem>
 				<WarningDialog

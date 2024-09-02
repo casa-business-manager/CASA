@@ -110,7 +110,6 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 					height: "80vh",
 				},
 			}}
-			// fullScreen // Too dummy thicc
 		>
 			<DialogTitle>
 				<Box
@@ -133,8 +132,6 @@ const SettingsDialog = ({ dialogOpen, onClose, onSave, orgId }) => {
 						sx={{
 							width: "22%",
 							overflow: "auto",
-							// looks ass with the light blue select color
-							// bgcolor: "lightgray",
 						}}
 						component="nav"
 						aria-labelledby="nested-list-subheader"

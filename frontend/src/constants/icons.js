@@ -39,7 +39,7 @@ export { CloseIcon };
 
 export { DeleteIcon };
 
-export const { DescriptionIcon } = ViewHeadlineIcon;
+export const DescriptionIcon = ViewHeadlineIcon;
 
 export { EmailIcon };
 
