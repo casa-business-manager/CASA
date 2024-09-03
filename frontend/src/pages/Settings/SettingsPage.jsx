@@ -1,12 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
-import {
-	DialogContent,
-	DialogTitle,
-	Box,
-	Typography,
-	Divider,
-} from "@mui/material";
+import { Box, Typography, Divider } from "@mui/material";
 import List from "@mui/material/List";
 import OrganizationTab from "./SettingTabs/OrganizationTab";
 import MeetingsTab from "./SettingTabs/MeetingsTab";
@@ -14,8 +8,8 @@ import IntegrationsCollapse from "./SettingsCollapses/IntegrationsCollapse";
 import UserCollapse from "./SettingsCollapses/UserCollapse";
 import MembersTab from "./SettingTabs/MembersTab";
 import RolesTab from "./SettingTabs/RolesTab";
-import { getOrganizationRoles } from "../../API/RoleAPI";
 import CurrentUserContext from "../../contexts/CurrentUserContext";
+import OrganizationsContext from "../../contexts/OrganizationsContext";
 
 const SettingsPage = ({}) => {
 	const defaultComponent = (
@@ -23,13 +17,13 @@ const SettingsPage = ({}) => {
 	);
 
 	const { orgId } = useParams();
-	const [currentUser, setCurrentUser] = useContext(CurrentUserContext);
+	const [currentUser, _] = useContext(CurrentUserContext);
+	const [organizations, setOrganizations] = useContext(OrganizationsContext);
+	const organization = organizations.find((org) => org.orgId === orgId);
 
 	const [selected, setSelected] = useState(-1);
 	const [settingsPage, setSettingsPage] = useState(defaultComponent);
-	const [orgSettings, setOrgSettings] = useState({});
-	const [availableIntegrations, setAvailableIntegrations] = useState({});
-	const [roleSettings, setRoleSettings] = useState({});
+	const [availableIntegrations, setAvailableIntegrations] = useState(null);
 
 	// Always open to defaultComponent
 	useEffect(() => {
@@ -39,27 +33,6 @@ const SettingsPage = ({}) => {
 
 	// get settings if clicked
 	useEffect(() => {
-		const fetchOrganizationSettings = async () => {
-			// TODO: Make real backend function
-			// const settings = await SomeAPICallHere(orgId);
-
-			// hard code returns for now
-			const settings = {
-				orgName: "org name",
-				orgDescription: "org Description",
-				orgLocation: "org Location",
-				integrations: {
-					meetings: ["Zoom"],
-				},
-			};
-			setOrgSettings(settings);
-		};
-
-		const fetchRoleSettings = async () => {
-			const roleSettings = await getOrganizationRoles(orgId);
-			setRoleSettings(roleSettings);
-		};
-
 		const fetchAvailableIntegrations = async () => {
 			// TODO: Make real backend function
 			// const integrations = await SomeAPIOtherCallHere(orgId);
@@ -71,22 +44,28 @@ const SettingsPage = ({}) => {
 			setAvailableIntegrations(integrations);
 		};
 
-		fetchOrganizationSettings();
 		fetchAvailableIntegrations();
-		fetchRoleSettings();
-	}, [orgId, settingsPage]);
+	}, [orgId]);
 
 	const handleTabClick = (tabName, SettingComponent) => {
 		setSelected(tabName);
 		setSettingsPage(SettingComponent);
 	};
 
-	// TODO: detect changes and warn if there are unsaved changes
-	const onCloseWrapper = () => {};
+	const setOrganization = (functionToSetOrganization) => {
+		const currentOrganization = organization;
+		setOrganizations((oldOrganizations) => {
+			const otherOrganizations = oldOrganizations.filter(
+				(org) => org.orgId !== orgId,
+			);
+			return [
+				...otherOrganizations,
+				functionToSetOrganization(currentOrganization),
+			];
+		});
+	};
 
-	const onSaveWrapper = () => {};
-
-	if (!orgSettings.integrations || !availableIntegrations) {
+	if (!availableIntegrations) {
 		return <>Loading</>;
 	}
 
@@ -96,7 +75,7 @@ const SettingsPage = ({}) => {
 				Organization settings
 			</Typography>
 			<Divider sx={{ mt: 2 }} />
-			<Box height="65vh" sx={{ display: "flex", gap: 1 }}>
+			<Box height="80vh" sx={{ display: "flex", gap: 1 }}>
 				{/* Scrollable list of settings */}
 				<List
 					sx={{
@@ -107,19 +86,22 @@ const SettingsPage = ({}) => {
 					aria-labelledby="nested-list-subheader"
 				>
 					<OrganizationTab
-						settings={orgSettings}
+						organization={organization}
+						setOrganization={setOrganization}
 						onClick={handleTabClick}
 						selected={selected}
 					/>
 					<UserCollapse>
 						<MembersTab
-							settings={orgSettings}
+							organization={organization}
+							setOrganization={setOrganization}
 							orgId={orgId}
 							onClick={handleTabClick}
 							selected={selected}
 						/>
 						<RolesTab
-							settings={roleSettings}
+							organization={organization.roles}
+							setOrganization={setOrganization}
 							user={currentUser}
 							onClick={handleTabClick}
 							selected={selected}
@@ -127,7 +109,12 @@ const SettingsPage = ({}) => {
 					</UserCollapse>
 					<IntegrationsCollapse>
 						<MeetingsTab
-							settings={orgSettings.integrations.meetings}
+							organization={
+								// TODO: Integrate this once we store integrations
+								// organization.integrations
+								["Zoom"]
+							}
+							setOrganization={setOrganization}
 							availableMeetings={availableIntegrations.meetings}
 							onClick={handleTabClick}
 							selected={selected}

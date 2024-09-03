@@ -52,51 +52,6 @@ const Organization = () => {
 		fetchData();
 	}, []);
 
-	// const handleEditOrganization = (org) => {
-	// 	setEditingOrg(org);
-	// 	setOrgName(org.orgName);
-	// 	setOrgDescription(org.orgDescription);
-	// 	setOrgLocation(org.orgLocation);
-	// 	setIsDialogOpen(true);
-	// };
-
-	// const handleUpdateOrganization = async (event) => {
-	// 	event.preventDefault();
-	// 	const updatedOrg = {
-	// 		...editingOrg,
-	// 		orgName,
-	// 		orgDescription,
-	// 		orgLocation,
-	// 	};
-
-	// 	try {
-	// 		const data = await updateOrganization(updatedOrg);
-	// 		setOrganizations(
-	// 			organizations.map((org) => (org.orgId === data.orgId ? data : org)),
-	// 		);
-	// 		setEditingOrg(null);
-	// 		setOrgName("");
-	// 		setOrgDescription("");
-	// 		setOrgLocation("");
-	// 		setIsDialogOpen(false);
-	// 	} catch (error) {
-	// 		console.error("Error updating organization:", error);
-	// 		setError(error.message);
-	// 	}
-	// };
-
-	// const openDialog = () => {
-	// 	setEditingOrg(null);
-	// 	setOrgName("");
-	// 	setOrgDescription("");
-	// 	setOrgLocation("");
-	// 	setIsDialogOpen(true);
-	// };
-
-	// const closeDialog = () => {
-	// 	setIsDialogOpen(false);
-	// };
-
 	const handleCardClick = (orgId) => {
 		navigate(`/organization/${orgId}`);
 	};

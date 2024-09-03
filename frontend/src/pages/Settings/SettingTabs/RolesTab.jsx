@@ -730,7 +730,7 @@ const RolesTabSettings = ({ settings, user }) => {
 		}
 	}, [selectedRole, editorIsCreatingNewRole]);
 
-	if (!settings || settings.length === 0 || !user) {
+	if (!settings || !user) {
 		return <>Loading</>;
 	}
 
