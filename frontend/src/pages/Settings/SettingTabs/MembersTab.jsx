@@ -86,15 +86,14 @@ const MembersTabSettings = ({ settings, orgId }) => {
 	}
 
 	const columns = [
-		{ field: "id", headerName: "ID", width: 150 },
-		{ field: "name", headerName: "Name", width: 200 },
-		{ field: "email", headerName: "Email", width: 250 },
-		{ field: "firstName", headerName: "First Name", width: 200 },
-		{ field: "lastName", headerName: "Last Name", width: 200 },
+		// { field: "id", headerName: "ID", width: 150 },
+		{ field: "email", headerName: "Email", flex: 1 },
+		{ field: "firstName", headerName: "First Name", flex: 1 },
+		{ field: "lastName", headerName: "Last Name", flex: 1 },
 		{
 			field: "actions",
 			headerName: "Actions",
-			width: 150,
+			flex: 1,
 			renderCell: (params) => (
 				<Button
 					variant="contained"

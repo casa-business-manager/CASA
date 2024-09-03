@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import { CalendarIcon } from "@mui/x-date-pickers/icons";
 import { useNavigate, useParams } from "react-router-dom";
-import SettingsButton from "../pages/Settings/SettingsButton";
 import { EmailIcon, HomeIcon, SettingsIcon } from "../constants/icons";
 
 const Sidebar = ({ selected, children }) => {
@@ -71,9 +70,6 @@ const Sidebar = ({ selected, children }) => {
 							</ListItemButton>
 						</ListItem>
 					))}
-					<ListItem>
-						<SettingsButton orgId={orgId} />
-					</ListItem>
 				</List>
 			</Drawer>
 			<Box sx={{ flexGrow: 1 }}>{children}</Box>

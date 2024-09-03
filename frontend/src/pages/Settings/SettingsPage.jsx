@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import {
-	Dialog,
 	DialogContent,
 	DialogTitle,
 	Box,
 	Typography,
-	IconButton,
+	Divider,
 } from "@mui/material";
 import List from "@mui/material/List";
 import OrganizationTab from "./SettingTabs/OrganizationTab";
@@ -17,9 +16,8 @@ import MembersTab from "./SettingTabs/MembersTab";
 import RolesTab from "./SettingTabs/RolesTab";
 import { getOrganizationRoles } from "../../API/RoleAPI";
 import CurrentUserContext from "../../contexts/CurrentUserContext";
-import { CloseIcon } from "../../constants/icons";
 
-const SettingsPage = ({ onClose, onSave }) => {
+const SettingsPage = ({}) => {
 	const defaultComponent = (
 		<Typography variant="h5">Select a setting</Typography>
 	);
@@ -84,14 +82,9 @@ const SettingsPage = ({ onClose, onSave }) => {
 	};
 
 	// TODO: detect changes and warn if there are unsaved changes
-	const onCloseWrapper = () => {
-		onClose();
-	};
+	const onCloseWrapper = () => {};
 
-	const onSaveWrapper = () => {
-		onCloseWrapper();
-		onSave();
-	};
+	const onSaveWrapper = () => {};
 
 	if (!orgSettings.integrations || !availableIntegrations) {
 		return <>Loading</>;
@@ -99,65 +92,55 @@ const SettingsPage = ({ onClose, onSave }) => {
 
 	return (
 		<>
-			<DialogTitle>
-				<Box
+			<Typography variant="h5" sx={{ my: 1 }}>
+				Organization settings
+			</Typography>
+			<Divider sx={{ mt: 2 }} />
+			<Box height="65vh" sx={{ display: "flex", gap: 1 }}>
+				{/* Scrollable list of settings */}
+				<List
 					sx={{
-						display: "flex",
-						justifyContent: "space-between",
+						width: "22%",
+						overflow: "auto",
 					}}
+					component="nav"
+					aria-labelledby="nested-list-subheader"
 				>
-					Organization settings
-					<IconButton onClick={onCloseWrapper}>
-						<CloseIcon />
-					</IconButton>
-				</Box>
-			</DialogTitle>
-
-			<DialogContent>
-				<Box height="65vh" sx={{ display: "flex", gap: 1 }}>
-					{/* Scrollable list of settings */}
-					<List
-						sx={{
-							width: "22%",
-							overflow: "auto",
-						}}
-						component="nav"
-						aria-labelledby="nested-list-subheader"
-					>
-						<OrganizationTab
+					<OrganizationTab
+						settings={orgSettings}
+						onClick={handleTabClick}
+						selected={selected}
+					/>
+					<UserCollapse>
+						<MembersTab
 							settings={orgSettings}
+							orgId={orgId}
 							onClick={handleTabClick}
 							selected={selected}
 						/>
-						<UserCollapse>
-							<MembersTab
-								settings={orgSettings}
-								orgId={orgId}
-								onClick={handleTabClick}
-								selected={selected}
-							/>
-							<RolesTab
-								settings={roleSettings}
-								user={currentUser}
-								onClick={handleTabClick}
-								selected={selected}
-							/>
-						</UserCollapse>
-						<IntegrationsCollapse>
-							<MeetingsTab
-								settings={orgSettings.integrations.meetings}
-								availableMeetings={availableIntegrations.meetings}
-								onClick={handleTabClick}
-								selected={selected}
-							/>
-						</IntegrationsCollapse>
-					</List>
+						<RolesTab
+							settings={roleSettings}
+							user={currentUser}
+							onClick={handleTabClick}
+							selected={selected}
+						/>
+					</UserCollapse>
+					<IntegrationsCollapse>
+						<MeetingsTab
+							settings={orgSettings.integrations.meetings}
+							availableMeetings={availableIntegrations.meetings}
+							onClick={handleTabClick}
+							selected={selected}
+						/>
+					</IntegrationsCollapse>
+				</List>
 
-					{/* Settings page */}
-					{/* If you need it to be scrollable, wrap your settings in a Box with overflow set to "auto" */}
-					<Box sx={{ flex: 3, m: 2 }}>{settingsPage}</Box>
-				</Box>
-			</DialogContent>
+				<Divider orientation="vertical" flexItem />
+
+				{/* Settings page */}
+				{/* If you need it to be scrollable, wrap your settings in a Box with overflow set to "auto" */}
+				<Box sx={{ flex: 3, m: 2 }}>{settingsPage}</Box>
+			</Box>
 		</>
 	);
 };
