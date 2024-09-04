@@ -25,7 +25,6 @@ const BaseCalendar = ({ orgIds }) => {
 	const [editMenu, setEditMenu] = useState(false); // passed to the menu
 	const [orgInfo, setOrgInfo] = useState([]);
 
-	// Function moved higher
 	const getCalendarBlock = (date) => {
 		const firstDayMonth = moment(date).startOf("month");
 		const calendarBlockStart = moment(firstDayMonth).startOf("week");
@@ -55,7 +54,7 @@ const BaseCalendar = ({ orgIds }) => {
 	}, []);
 
 	// Calculate the calendar height dynamically
-	const calendarHeight = windowHeight - 100; // Adjust this offset as necessary
+	const calendarHeight = windowHeight - 80;
 
 	// Fetch data when orgIds or currentUser changes
 	useEffect(() => {
@@ -244,50 +243,55 @@ const BaseCalendar = ({ orgIds }) => {
 	}
 
 	return (
-		<div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-			<div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-				<DragAndDropCalendar
-					localizer={localizer}
-					selectable
-					onSelectEvent={handleSelectEvent}
-					onSelectSlot={orgIds.length > 0 && handleSelectSlot}
-					events={deleteDuplicates(
-						[...events, temporaryEvent].filter(Boolean).map((event) => ({
-							eventId: event.eventId,
-							title: event.title,
-							description: event.description,
-							location: event.location,
-							start: moment(event.start).local().toDate(),
-							end: moment(event.end).local().toDate(),
-							allDay: event.allDay,
-							organization: event.organization,
-							eventCreator: event.eventCreator,
-							eventAccessors: event.eventAccessors,
-						})),
-					)}
-					defaultDate={moment().toDate()}
-					defaultView={Views.MONTH}
-					style={{ height: calendarHeight }} // Dynamically set height
-					onEventDrop={moveEvent}
-					onEventResize={resizeEvent}
-					popup
-					resizable
-					onRangeChange={handleRangeChange}
-					draggableAccessor={(event) =>
-						event.eventCreator && event.eventCreator.id === currentUser.id
-					}
-				/>
-				<EventDialog
-					open={dialogOpen}
-					onClose={handleCloseDialog}
-					initialEvent={menuEvent}
-					initialIsEditing={editMenu}
-					orgInfo={orgInfo}
-					setEvents={setEvents}
-					setDialogOpen={setDialogOpen}
-					setTemporaryEvent={setTemporaryEvent}
-				/>
-			</div>
+		<div
+			style={{
+				flexGrow: 1,
+				display: "flex",
+				flexDirection: "column",
+				height: "100%",
+			}}
+		>
+			<DragAndDropCalendar
+				localizer={localizer}
+				selectable
+				onSelectEvent={handleSelectEvent}
+				onSelectSlot={orgIds.length > 0 && handleSelectSlot}
+				events={deleteDuplicates(
+					[...events, temporaryEvent].filter(Boolean).map((event) => ({
+						eventId: event.eventId,
+						title: event.title,
+						description: event.description,
+						location: event.location,
+						start: moment(event.start).local().toDate(),
+						end: moment(event.end).local().toDate(),
+						allDay: event.allDay,
+						organization: event.organization,
+						eventCreator: event.eventCreator,
+						eventAccessors: event.eventAccessors,
+					})),
+				)}
+				defaultDate={moment().toDate()}
+				defaultView={Views.WEEK}
+				style={{ height: calendarHeight }} // Dynamically set height
+				onEventDrop={moveEvent}
+				onEventResize={resizeEvent}
+				popup
+				resizable
+				onRangeChange={handleRangeChange}
+				draggableAccessor={(event) =>
+					event.eventCreator && event.eventCreator.id === currentUser.id
+				}
+			/>
+			<EventDialog
+				open={dialogOpen}
+				onClose={handleCloseDialog}
+				initialEvent={menuEvent}
+				initialIsEditing={editMenu}
+				orgInfo={orgInfo}
+				setEvents={setEvents}
+				setDialogOpen={setDialogOpen}
+				setTemporaryEvent={setTemporaryEvent}
+			/>
 		</div>
 	);
 };
