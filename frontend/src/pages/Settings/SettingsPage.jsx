@@ -95,7 +95,6 @@ const SettingsPage = ({}) => {
 						<MembersTab
 							organization={organization}
 							setOrganization={setOrganization}
-							orgId={orgId}
 							onClick={handleTabClick}
 							selected={selected}
 						/>
