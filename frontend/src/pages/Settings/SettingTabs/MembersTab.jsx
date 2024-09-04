@@ -17,35 +17,16 @@ import {
 import { Box, IconButton } from "@mui/material";
 import { AccountIcon, AddIcon } from "../../../constants/icons";
 
-const MembersTabSettings = ({ settings, orgId }) => {
-	const [users, setUsers] = useState([]);
-	const [loading, setLoading] = useState(true);
+const MembersTabSettings = ({ organization, setOrganization }) => {
+	const orgId = organization.orgId;
+
+	// must do this because MembersTabSettings isnt a child component
+	// it wont be re-rendered when organization changes
+	const [users, setUsers] = useState(organization.users);
+
 	const [error, setError] = useState(null);
 	const [open, setOpen] = useState(false);
 	const [email, setEmail] = useState("");
-
-	useEffect(() => {
-		if (!orgId) {
-			return;
-		}
-
-		const fetchUsers = async () => {
-			try {
-				const response = await getUsersInOrganization(orgId);
-				if (typeof response === "string") {
-					throw new Error(response);
-				}
-				setUsers(response);
-				setLoading(false);
-			} catch (error) {
-				console.error("Error fetching users:", error);
-				setError(error);
-				setLoading(false);
-			}
-		};
-
-		fetchUsers();
-	}, [orgId]);
 
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -60,6 +41,11 @@ const MembersTabSettings = ({ settings, orgId }) => {
 			await inviteUserToOrganization(orgId, email);
 			setOpen(false);
 			const updatedUsers = await getUsersInOrganization(orgId);
+
+			setOrganization((oldOrganization) => ({
+				...oldOrganization,
+				users: updatedUsers,
+			}));
 			setUsers(updatedUsers);
 		} catch (error) {
 			console.error("Error inviting user:", error);
@@ -70,31 +56,35 @@ const MembersTabSettings = ({ settings, orgId }) => {
 	const handleRemoveUser = async (userId) => {
 		try {
 			await removeUserFromOrganization(orgId, userId);
-			setUsers(users.filter((user) => user.id !== userId));
+			setOrganization((oldOrganization) => {
+				const updatedUsers = oldOrganization.users.filter(
+					(user) => user.id !== userId,
+				);
+				setUsers(updatedUsers);
+				return {
+					...oldOrganization,
+					users: updatedUsers,
+				};
+			});
 		} catch (error) {
 			console.error("Error removing user:", error);
 			setError(error);
 		}
 	};
 
-	if (loading || !settings || !settings.orgName) {
-		return <>Loading</>;
-	}
-
 	if (error) {
 		return <>Error: {error.message}</>;
 	}
 
 	const columns = [
-		{ field: "id", headerName: "ID", width: 150 },
-		{ field: "name", headerName: "Name", width: 200 },
-		{ field: "email", headerName: "Email", width: 250 },
-		{ field: "firstName", headerName: "First Name", width: 200 },
-		{ field: "lastName", headerName: "Last Name", width: 200 },
+		// { field: "id", headerName: "ID", width: 150 },
+		{ field: "email", headerName: "Email", flex: 1 },
+		{ field: "firstName", headerName: "First Name", flex: 1 },
+		{ field: "lastName", headerName: "Last Name", flex: 1 },
 		{
 			field: "actions",
 			headerName: "Actions",
-			width: 150,
+			flex: 1,
 			renderCell: (params) => (
 				<Button
 					variant="contained"
@@ -113,7 +103,7 @@ const MembersTabSettings = ({ settings, orgId }) => {
 				sx={{
 					display: "flex",
 					alignItems: "center",
-					justifyContent: "space-between",
+					gap: 1,
 				}}
 			>
 				<Typography variant="h5">Members</Typography>
@@ -160,8 +150,8 @@ const MembersTabSettings = ({ settings, orgId }) => {
 };
 
 const MembersTab = ({
-	settings,
-	orgId,
+	organization,
+	setOrganization,
 	onClick,
 	selected,
 	indentLevel = 0,
@@ -173,7 +163,12 @@ const MembersTab = ({
 			selected={selected}
 			indentLevel={indentLevel}
 			onClick={onClick}
-			SettingsPage={<MembersTabSettings orgId={orgId} settings={settings} />}
+			SettingsPage={
+				<MembersTabSettings
+					organization={organization}
+					setOrganization={setOrganization}
+				/>
+			}
 		/>
 	);
 };

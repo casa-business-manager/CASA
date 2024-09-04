@@ -30,6 +30,7 @@ const recognizedPathWordsToNavbarWords = {
 	user: { name: "User", path: "user" },
 	calendar: { name: "Calendar", path: "calendar" },
 	email: { name: "Email", path: "email" },
+	settings: { name: "Settings", path: "settings" },
 };
 
 /// the function takes in IDs from the route url in order to replace them with
