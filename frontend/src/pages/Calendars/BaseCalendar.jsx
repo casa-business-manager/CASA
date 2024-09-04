@@ -36,7 +36,6 @@ const BaseCalendar = ({ orgIds }) => {
 	const [menuEvent, setMenuEvent] = useState({}); // passed to the menu
 	const [editMenu, setEditMenu] = useState(false); // passed to the menu
 	const [orgInfo, setOrgInfo] = useState([]);
-
 	const [loadedRanges, setLoadedRanges] = useState(
 		getCalendarBlock(moment().toDate()),
 	);
@@ -74,7 +73,7 @@ const BaseCalendar = ({ orgIds }) => {
 		);
 	}, [orgIds]);
 
-	// Get events for a user in an org
+	// Get events for the orgs
 	const fetchData = async (startDate = null, endDate = null) => {
 		try {
 			const calendarDataPromises = orgIds.map((orgId) =>
