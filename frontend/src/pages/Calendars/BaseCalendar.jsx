@@ -12,6 +12,18 @@ import OrganizationsContext from "../../contexts/OrganizationsContext";
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(Calendar);
 
+const getCalendarBlock = (date) => {
+	const firstDayMonth = moment(date).startOf("month");
+	const calendarBlockStart = moment(firstDayMonth).startOf("week");
+	const calendarBlockEnd = moment(calendarBlockStart)
+		.add(5.5, "weeks")
+		.startOf("week");
+	return {
+		start: calendarBlockStart.toDate(),
+		end: calendarBlockEnd.toDate(),
+	};
+};
+
 // TODO: color events by org?
 const BaseCalendar = ({ orgIds }) => {
 	const [currentUser, _] = useContext(CurrentUserContext);
@@ -24,18 +36,6 @@ const BaseCalendar = ({ orgIds }) => {
 	const [menuEvent, setMenuEvent] = useState({}); // passed to the menu
 	const [editMenu, setEditMenu] = useState(false); // passed to the menu
 	const [orgInfo, setOrgInfo] = useState([]);
-
-	const getCalendarBlock = (date) => {
-		const firstDayMonth = moment(date).startOf("month");
-		const calendarBlockStart = moment(firstDayMonth).startOf("week");
-		const calendarBlockEnd = moment(calendarBlockStart)
-			.add(5.5, "weeks")
-			.startOf("week");
-		return {
-			start: calendarBlockStart.toDate(),
-			end: calendarBlockEnd.toDate(),
-		};
-	};
 
 	const [loadedRanges, setLoadedRanges] = useState(
 		getCalendarBlock(moment().toDate()),
