@@ -34,8 +34,12 @@ const SettingsPage = ({}) => {
 	// get settings if clicked
 	useEffect(() => {
 		const fetchAvailableIntegrations = async () => {
+			if (!organization) {
+				return;
+			}
 			// TODO: Make real backend function
 			// const integrations = await SomeAPIOtherCallHere(orgId);
+			organization.integrations = { meetings: ["Zoom"] };
 
 			// hard code returns for now
 			const integrations = {
@@ -45,7 +49,7 @@ const SettingsPage = ({}) => {
 		};
 
 		fetchAvailableIntegrations();
-	}, [orgId]);
+	}, [orgId, organizations]);
 
 	const handleTabClick = (tabName, SettingComponent) => {
 		setSelected(tabName);
@@ -99,7 +103,7 @@ const SettingsPage = ({}) => {
 							selected={selected}
 						/>
 						<RolesTab
-							organization={organization.roles}
+							organization={organization}
 							setOrganization={setOrganization}
 							user={currentUser}
 							onClick={handleTabClick}
@@ -108,11 +112,7 @@ const SettingsPage = ({}) => {
 					</UserCollapse>
 					<IntegrationsCollapse>
 						<MeetingsTab
-							organization={
-								// TODO: Integrate this once we store integrations
-								// organization.integrations
-								["Zoom"]
-							}
+							organization={organization}
 							setOrganization={setOrganization}
 							availableMeetings={availableIntegrations.meetings}
 							onClick={handleTabClick}

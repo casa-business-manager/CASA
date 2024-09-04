@@ -81,9 +81,6 @@ const GraphPopup = ({
 	setSelectedRole,
 	setRoles,
 	setEditorIsCreatingNewRole,
-	setName,
-	setPermissions,
-	setUsers,
 	setSelectedNode,
 }) => {
 	const menuClickWrapper = (handlerFunction) => {
@@ -695,10 +692,10 @@ const RoleEditor = ({
 	);
 };
 
-const RolesTabSettings = ({ settings, user }) => {
+const RolesTabSettings = ({ organization, setOrganization, user }) => {
 	const [selectedRole, setSelectedRole] = useState(null);
 	const [name, setName] = useState("");
-	const [roles, setRoles] = useState(settings);
+	const [roles, setRoles] = useState(organization.roles);
 	const [permissions, setPermissions] = useState([]);
 	const [users, setUsers] = useState([]);
 	const [editorIsCreatingNewRole, setEditorIsCreatingNewRole] = useState(false);
@@ -730,7 +727,18 @@ const RolesTabSettings = ({ settings, user }) => {
 		}
 	}, [selectedRole, editorIsCreatingNewRole]);
 
-	if (!settings || !user) {
+	// newRolesFunction is a function (oldRoles) => newRoles
+	const setRolesInOrganizationsRoles = (newRolesFunction) => {
+		const newRoles = newRolesFunction(roles);
+		setRoles(newRoles);
+		setOrganization((oldOrganization) => {
+			const newOrganization = { ...oldOrganization };
+			newOrganization.roles = newRoles;
+			return newOrganization;
+		});
+	};
+
+	if (!roles || !user) {
 		return <>Loading</>;
 	}
 
@@ -748,7 +756,7 @@ const RolesTabSettings = ({ settings, user }) => {
 				>
 					<RolesGraph
 						roles={roles}
-						setRoles={setRoles}
+						setRoles={setRolesInOrganizationsRoles}
 						selectedRole={selectedRole}
 						setSelectedRole={setSelectedRole}
 						user={user}
@@ -777,7 +785,7 @@ const RolesTabSettings = ({ settings, user }) => {
 						editorIsCreatingNewRole={editorIsCreatingNewRole}
 						setEditorIsCreatingNewRole={setEditorIsCreatingNewRole}
 						roles={roles}
-						setRoles={setRoles}
+						setRoles={setRolesInOrganizationsRoles}
 					/>
 				</Box>
 			</Box>
@@ -785,7 +793,14 @@ const RolesTabSettings = ({ settings, user }) => {
 	);
 };
 
-const RolesTab = ({ settings, user, onClick, selected, indentLevel = 0 }) => {
+const RolesTab = ({
+	organization,
+	setOrganization,
+	user,
+	onClick,
+	selected,
+	indentLevel = 0,
+}) => {
 	return (
 		<BaseTab
 			Icon={RolesIcon}
@@ -793,7 +808,13 @@ const RolesTab = ({ settings, user, onClick, selected, indentLevel = 0 }) => {
 			selected={selected}
 			indentLevel={indentLevel}
 			onClick={onClick}
-			SettingsPage={<RolesTabSettings settings={settings} user={user} />}
+			SettingsPage={
+				<RolesTabSettings
+					organization={organization}
+					setOrganization={setOrganization}
+					user={user}
+				/>
+			}
 		/>
 	);
 };

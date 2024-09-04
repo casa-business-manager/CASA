@@ -11,10 +11,10 @@ import { MeetingIcon } from "../../../constants/icons";
 
 const name = "Meetings";
 
-const MeetingsTabSettings = ({ settings, availableMeetings }) => {
-	const [checked, setChecked] = useState(settings);
+const MeetingsTabSettings = ({ organization, availableMeetings }) => {
+	const [checked, setChecked] = useState(organization.integrations.meetings);
 
-	if (!settings || !availableMeetings) {
+	if (!organization || !availableMeetings) {
 		return <>Loading</>;
 	}
 
@@ -32,8 +32,8 @@ const MeetingsTabSettings = ({ settings, availableMeetings }) => {
 	};
 
 	const handleSave = async () => {
-		// const newCheckedList = await someAPICall(checked);
 		try {
+			// const newCheckedList = await someAPICall(checked);
 			const newCheckedList = await checked;
 			setChecked(newCheckedList);
 		} catch {
@@ -85,7 +85,8 @@ const MeetingsTabSettings = ({ settings, availableMeetings }) => {
 };
 
 const MeetingsTab = ({
-	settings,
+	organization,
+	setOrganization,
 	availableMeetings,
 	onClick,
 	selected,
@@ -100,7 +101,8 @@ const MeetingsTab = ({
 			onClick={onClick}
 			SettingsPage={
 				<MeetingsTabSettings
-					settings={settings}
+					organization={organization}
+					setOrganization={setOrganization}
 					availableMeetings={availableMeetings}
 				/>
 			}
