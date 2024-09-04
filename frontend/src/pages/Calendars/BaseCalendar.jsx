@@ -24,11 +24,40 @@ const BaseCalendar = ({ orgIds }) => {
 	const [menuEvent, setMenuEvent] = useState({}); // passed to the menu
 	const [editMenu, setEditMenu] = useState(false); // passed to the menu
 	const [orgInfo, setOrgInfo] = useState([]);
+
+	// Function moved higher
+	const getCalendarBlock = (date) => {
+		const firstDayMonth = moment(date).startOf("month");
+		const calendarBlockStart = moment(firstDayMonth).startOf("week");
+		const calendarBlockEnd = moment(calendarBlockStart)
+			.add(5.5, "weeks")
+			.startOf("week");
+		return {
+			start: calendarBlockStart.toDate(),
+			end: calendarBlockEnd.toDate(),
+		};
+	};
+
 	const [loadedRanges, setLoadedRanges] = useState(
 		getCalendarBlock(moment().toDate()),
 	);
 
-	// Call fetchData
+	// Window height for dynamic resizing
+	const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+
+	// Update height on window resize
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowHeight(window.innerHeight);
+		};
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	// Calculate the calendar height dynamically
+	const calendarHeight = windowHeight - 100; // Adjust this offset as necessary
+
+	// Fetch data when orgIds or currentUser changes
 	useEffect(() => {
 		if (!currentUser) return;
 		fetchData(loadedRanges.start.toISOString(), loadedRanges.end.toISOString());
@@ -202,24 +231,6 @@ const BaseCalendar = ({ orgIds }) => {
 		}
 	};
 
-	// helper function for lazy loading to get calendar blocks
-	function getCalendarBlock(date) {
-		// find the first day of the month -> find the sunday before/on that
-		const firstDayMonth = moment(date).startOf("month");
-		const calendarBlockStart = moment(firstDayMonth).startOf("week");
-
-		// 5 week block
-		// todo: test with daylight savings time
-		const calendarBlockEnd = moment(calendarBlockStart)
-			.add(5.5, "weeks")
-			.startOf("week");
-
-		return {
-			start: calendarBlockStart.toDate(),
-			end: calendarBlockEnd.toDate(),
-		};
-	}
-
 	// helper function to remove duplicated events (caused by hot reloads)
 	function deleteDuplicates(list) {
 		return list.filter(
@@ -233,48 +244,50 @@ const BaseCalendar = ({ orgIds }) => {
 	}
 
 	return (
-		<div className="BaseCalendar">
-			<DragAndDropCalendar
-				localizer={localizer}
-				selectable
-				onSelectEvent={handleSelectEvent}
-				onSelectSlot={orgIds.length > 0 && handleSelectSlot}
-				events={deleteDuplicates(
-					[...events, temporaryEvent].filter(Boolean).map((event) => ({
-						eventId: event.eventId,
-						title: event.title,
-						description: event.description,
-						location: event.location,
-						start: moment(event.start).local().toDate(),
-						end: moment(event.end).local().toDate(),
-						allDay: event.allDay,
-						organization: event.organization,
-						eventCreator: event.eventCreator,
-						eventAccessors: event.eventAccessors,
-					})),
-				)}
-				defaultDate={moment().toDate()}
-				defaultView={Views.WEEK}
-				style={{ flexGrow: 1, height: "100%" }}
-				onEventDrop={moveEvent}
-				onEventResize={resizeEvent}
-				popup
-				resizable
-				onRangeChange={handleRangeChange}
-				draggableAccessor={(event) =>
-					event.eventCreator && event.eventCreator.id === currentUser.id
-				}
-			/>
-			<EventDialog
-				open={dialogOpen}
-				onClose={handleCloseDialog}
-				initialEvent={menuEvent}
-				initialIsEditing={editMenu}
-				orgInfo={orgInfo}
-				setEvents={setEvents}
-				setDialogOpen={setDialogOpen}
-				setTemporaryEvent={setTemporaryEvent}
-			/>
+		<div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+			<div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+				<DragAndDropCalendar
+					localizer={localizer}
+					selectable
+					onSelectEvent={handleSelectEvent}
+					onSelectSlot={orgIds.length > 0 && handleSelectSlot}
+					events={deleteDuplicates(
+						[...events, temporaryEvent].filter(Boolean).map((event) => ({
+							eventId: event.eventId,
+							title: event.title,
+							description: event.description,
+							location: event.location,
+							start: moment(event.start).local().toDate(),
+							end: moment(event.end).local().toDate(),
+							allDay: event.allDay,
+							organization: event.organization,
+							eventCreator: event.eventCreator,
+							eventAccessors: event.eventAccessors,
+						})),
+					)}
+					defaultDate={moment().toDate()}
+					defaultView={Views.MONTH}
+					style={{ height: calendarHeight }} // Dynamically set height
+					onEventDrop={moveEvent}
+					onEventResize={resizeEvent}
+					popup
+					resizable
+					onRangeChange={handleRangeChange}
+					draggableAccessor={(event) =>
+						event.eventCreator && event.eventCreator.id === currentUser.id
+					}
+				/>
+				<EventDialog
+					open={dialogOpen}
+					onClose={handleCloseDialog}
+					initialEvent={menuEvent}
+					initialIsEditing={editMenu}
+					orgInfo={orgInfo}
+					setEvents={setEvents}
+					setDialogOpen={setDialogOpen}
+					setTemporaryEvent={setTemporaryEvent}
+				/>
+			</div>
 		</div>
 	);
 };
