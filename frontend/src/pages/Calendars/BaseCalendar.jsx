@@ -12,6 +12,18 @@ import OrganizationsContext from "../../contexts/OrganizationsContext";
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(Calendar);
 
+const getCalendarBlock = (date) => {
+	const firstDayMonth = moment(date).startOf("month");
+	const calendarBlockStart = moment(firstDayMonth).startOf("week");
+	const calendarBlockEnd = moment(calendarBlockStart)
+		.add(5.5, "weeks")
+		.startOf("week");
+	return {
+		start: calendarBlockStart.toDate(),
+		end: calendarBlockEnd.toDate(),
+	};
+};
+
 // TODO: color events by org?
 const BaseCalendar = ({ orgIds }) => {
 	const [currentUser, _] = useContext(CurrentUserContext);
@@ -28,7 +40,22 @@ const BaseCalendar = ({ orgIds }) => {
 		getCalendarBlock(moment().toDate()),
 	);
 
-	// Call fetchData
+	// Window height for dynamic resizing
+	const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+
+	// Update height on window resize
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowHeight(window.innerHeight);
+		};
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	// Calculate the calendar height dynamically
+	const calendarHeight = windowHeight - 80;
+
+	// Fetch data when orgIds or currentUser changes
 	useEffect(() => {
 		if (!currentUser) return;
 		fetchData(loadedRanges.start.toISOString(), loadedRanges.end.toISOString());
@@ -46,7 +73,7 @@ const BaseCalendar = ({ orgIds }) => {
 		);
 	}, [orgIds]);
 
-	// Get events for a user in an org
+	// Get events for the orgs
 	const fetchData = async (startDate = null, endDate = null) => {
 		try {
 			const calendarDataPromises = orgIds.map((orgId) =>
@@ -202,24 +229,6 @@ const BaseCalendar = ({ orgIds }) => {
 		}
 	};
 
-	// helper function for lazy loading to get calendar blocks
-	function getCalendarBlock(date) {
-		// find the first day of the month -> find the sunday before/on that
-		const firstDayMonth = moment(date).startOf("month");
-		const calendarBlockStart = moment(firstDayMonth).startOf("week");
-
-		// 5 week block
-		// todo: test with daylight savings time
-		const calendarBlockEnd = moment(calendarBlockStart)
-			.add(5.5, "weeks")
-			.startOf("week");
-
-		return {
-			start: calendarBlockStart.toDate(),
-			end: calendarBlockEnd.toDate(),
-		};
-	}
-
 	// helper function to remove duplicated events (caused by hot reloads)
 	function deleteDuplicates(list) {
 		return list.filter(
@@ -233,7 +242,14 @@ const BaseCalendar = ({ orgIds }) => {
 	}
 
 	return (
-		<div className="BaseCalendar">
+		<div
+			style={{
+				flexGrow: 1,
+				display: "flex",
+				flexDirection: "column",
+				height: "100%",
+			}}
+		>
 			<DragAndDropCalendar
 				localizer={localizer}
 				selectable
@@ -255,7 +271,7 @@ const BaseCalendar = ({ orgIds }) => {
 				)}
 				defaultDate={moment().toDate()}
 				defaultView={Views.WEEK}
-				style={{ flexGrow: 1, height: "100%" }}
+				style={{ height: calendarHeight }} // Dynamically set height
 				onEventDrop={moveEvent}
 				onEventResize={resizeEvent}
 				popup
