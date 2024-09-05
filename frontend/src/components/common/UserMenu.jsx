@@ -31,13 +31,16 @@ const UserMenu = ({ anchorEl, onClose, user, orgIdFromArg }) => {
 			return;
 		}
 		const organization = organizations.find((org) => org.orgId === orgId);
+		if (!organization || !organization.roles) {
+			return;
+		}
 		const orgRoles = organization.roles;
 		setUserRoles(
 			orgRoles.filter((role) =>
 				role.users.some((roleUser) => roleUser.id === user.id),
 			),
 		);
-	}, [orgId]);
+	}, [orgId, organizations]);
 
 	const handleEmailClick = () => {
 		setEmailRecipients([user]);
