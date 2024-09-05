@@ -23,8 +23,7 @@
     An all-in-one business management webapp template
     <br />
     <br />
-	<!-- todo: link this to the demo once it is up -->
-    <a href="https://github.com/casa-business-manager/CASA">View Demo</a>
+    <a href="https://casa-8uei.onrender.com">View Demo</a>
     ·
     <a href="https://github.com/casa-business-manager/CASA/issues/new/choose">Report Bug</a>
     ·
@@ -79,8 +78,7 @@ However, we hope that this project can serve as a solid starting point for any f
 * Email sending with a rich text editor and template selection
 * Customizable hierarchical roles system
 
-<!-- todo: link to the demo -->
-For more information about the state of the project, check out the demo or <a href="#screenshots">Screenshots</a> sections
+For more information about the state of the project, check out the <a href="https://casa-8uei.onrender.com">demo</a> or <a href="#screenshots">Screenshots</a> sections
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
