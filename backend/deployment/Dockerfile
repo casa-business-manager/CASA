@@ -9,4 +9,5 @@ VOLUME /tmp
 COPY ./*.sh entrypoint.sh
 COPY ./*.jar app.jar
 
-ENTRYPOINT ["bash", "/entrypoint.sh"]
+EXPOSE 8080
+ENTRYPOINT ["sudo", "bash", "/entrypoint.sh"]
