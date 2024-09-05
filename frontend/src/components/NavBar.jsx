@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
+	Alert,
 	AppBar,
 	Box,
 	Divider,
@@ -176,6 +177,10 @@ const NavBar = ({}) => {
 				{/* Log out and Account buttons. Must make them white manualluy */}
 				{navbarLinks.find((link) => link.name === "Login") ? null : (
 					<>
+						<Alert severity="warning" sx={{ mx: 5 }}>
+							This is just a demo of CASA. For your security, please do not use
+							real information or passwords.
+						</Alert>
 						<IconButton onClick={handleAccountButton}>
 							<AccountIcon sx={{ color: MainTextLight }} />
 						</IconButton>
