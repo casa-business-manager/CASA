@@ -119,7 +119,11 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedHeaders(List.of("Authorization"));
 		configuration.addAllowedOrigin("http://localhost:3000/");
-		configuration.addAllowedOrigin("http://0.0.0.0");
+		configuration.addAllowedOrigin("http://onrender.com/");
+		configuration.addAllowedOrigin("http://onrender.com/");
+		configuration.addAllowedOrigin("http://0.0.0.0/");
+		configuration.addAllowedOrigin("https://casa-8uei.onrender.com");
+		configuration.addAllowedOrigin("https://casa-8uei.onrender.com/");
 
 		configuration.setAllowCredentials(true);
 		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Requestor-Type", "Content-Type",
