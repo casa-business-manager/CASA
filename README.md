@@ -206,9 +206,6 @@ The authors of this repository would like to thank:
 [license-shield]: https://img.shields.io/github/license/casa-business-manager/CASA.svg?style=for-the-badge
 [license-url]: https://github.com/casa-business-manager/CASA/blob/master/LICENSE.txt
 
-<!-- todo: upload a screenshot -->
-[casa-screenshot]: screenshots/organization_selection.png
-
 <!-- BUILT WITH -->
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://reactjs.org/
