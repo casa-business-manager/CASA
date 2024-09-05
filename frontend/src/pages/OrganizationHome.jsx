@@ -141,7 +141,6 @@ const OrganizationHome = ({}) => {
 							/>
 						))
 					)}
-					TODO: Make project management and integrate notifications here 🚧
 				</Column>
 
 				<Divider
@@ -167,7 +166,6 @@ const OrganizationHome = ({}) => {
 							/>
 						))
 					)}
-					TODO: Make messages and integrate notifications here 🚧
 				</Column>
 
 				<Divider
