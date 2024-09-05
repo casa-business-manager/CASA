@@ -9,4 +9,4 @@ VOLUME /tmp
 COPY ./*.sh entrypoint.sh
 COPY ./*.jar app.jar
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["bash", "/entrypoint.sh"]
