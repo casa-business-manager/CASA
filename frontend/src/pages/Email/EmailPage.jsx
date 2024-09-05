@@ -158,7 +158,7 @@ const TemplateDrawer = ({
 						}}
 					>
 						<Typography variant="h6" noWrap>
-							Templates
+							Templates 🚧
 						</Typography>
 						<IconButton onClick={handleAddTemplate}>
 							<AddIcon />
@@ -450,7 +450,7 @@ const EmailEditor = ({ orgId, sx }) => {
 					<DeleteIcon sx={{ ml: 1 }} />
 				</Button>
 				<Button variant="contained" onClick={handleSendEmail}>
-					Send
+					Send 🚧
 					<SendIcon sx={{ ml: 1 }} />
 				</Button>
 			</Box>

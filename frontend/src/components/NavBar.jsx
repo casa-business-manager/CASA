@@ -194,7 +194,7 @@ const NavBar = ({}) => {
 									console.log("TODO: Handle My Account"),
 								)}
 							>
-								My Account
+								My Account 🚧
 							</MenuItem>
 							<MenuItem onClick={handleMenuClickWrapper(handleCalendarClick)}>
 								My Calendar

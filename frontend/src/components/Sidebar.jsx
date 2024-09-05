@@ -38,6 +38,36 @@ const Sidebar = ({ selected, children }) => {
 			icon: <SettingsIcon />,
 			navigation: () => navigate(`/organization/${orgId}/settings`),
 		},
+		{
+			label: "Messages",
+			icon: "🚧",
+			navigation: () => {},
+		},
+		{
+			label: "Projects",
+			icon: "🚧",
+			navigation: () => {},
+		},
+		{
+			label: "HR",
+			icon: "🚧",
+			navigation: () => {},
+		},
+		{
+			label: "Customers",
+			icon: "🚧",
+			navigation: () => {},
+		},
+		{
+			label: "Inventory",
+			icon: "🚧",
+			navigation: () => {},
+		},
+		{
+			label: "Files",
+			icon: "🚧",
+			navigation: () => {},
+		},
 	];
 
 	return (

@@ -43,7 +43,7 @@ const MeetingsTabSettings = ({ organization, availableMeetings }) => {
 
 	return (
 		<>
-			<Typography variant="h5">Meetings</Typography>
+			<Typography variant="h5">Meetings 🚧</Typography>
 			<List
 				sx={{
 					width: "100%",

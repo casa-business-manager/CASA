@@ -322,7 +322,7 @@ const PermissionRow = ({
 			sx={{ display: "flex", justifyContent: "space-between", m: 4, pl: 4 }}
 		>
 			<Typography key={`permissiontext-${permissionIndex}`} sx={{}}>
-				{permission}
+				{permission}🚧
 			</Typography>
 			{value === true || value === false ? (
 				<Switch

@@ -128,7 +128,7 @@ const OrganizationHome = ({}) => {
 	return (
 		<>
 			<Box display="flex" sx={{ flexGrow: 1, height: "100%", my: 1 }}>
-				<Column title={"Upcoming Tasks"} icon={<TasksIcon />}>
+				<Column title={"Upcoming Tasks 🚧"} icon={<TasksIcon />}>
 					{taskNotifications.length === 0 ? (
 						<Typography>No tasks!</Typography>
 					) : (
@@ -141,7 +141,7 @@ const OrganizationHome = ({}) => {
 							/>
 						))
 					)}
-					TODO: Make project management and integrate notifications here
+					TODO: Make project management and integrate notifications here 🚧
 				</Column>
 
 				<Divider
@@ -150,7 +150,7 @@ const OrganizationHome = ({}) => {
 					sx={{ borderWidth: 1, borderColor: DividerColor }}
 				/>
 
-				<Column title={"New Messages"} icon={<MessageIcon />}>
+				<Column title={"New Messages 🚧"} icon={<MessageIcon />}>
 					{messageNotifications.length === 0 ? (
 						<Typography>No new messages</Typography>
 					) : (
@@ -167,7 +167,7 @@ const OrganizationHome = ({}) => {
 							/>
 						))
 					)}
-					TODO: Make messages and integrate notifications here
+					TODO: Make messages and integrate notifications here 🚧
 				</Column>
 
 				<Divider
