@@ -119,6 +119,7 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedHeaders(List.of("Authorization"));
 		configuration.addAllowedOrigin("http://localhost:3000/");
+		configuration.addAllowedOrigin("http://onrender.com");
 
 		configuration.setAllowCredentials(true);
 		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Requestor-Type", "Content-Type",
