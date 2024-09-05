@@ -6,7 +6,7 @@ RUN apt-get clean && apt-get update && apt-get install -y \
   mariadb-server
 
 VOLUME /tmp
-COPY deployment/*.sh entrypoint.sh
-COPY deployment/*.jar app.jar
+COPY ./*.sh entrypoint.sh
+COPY ./*.jar app.jar
 
 ENTRYPOINT ["./entrypoint.sh"]
