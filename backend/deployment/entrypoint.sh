@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 echo "0"
 
 # start the db
