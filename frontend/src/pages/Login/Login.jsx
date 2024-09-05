@@ -413,6 +413,11 @@ function Login() {
 			<Box sx={{ display: "flex", alignItems: "center", gap: 4, px: 2 }}>
 				<Box component="img" src={loginImage} sx={{ width: "70%" }} />
 				<Box sx={{ width: "30%", pr: 6 }}>
+					<Alert severity="warning" sx={{ mb: 2 }}>
+						Alert: The demo make take a minute or more to handle the first
+						request. Subsequent requests will be faster. Apologies for the
+						delay.
+					</Alert>
 					{!authState
 						? GetStarted
 						: authState === "signIn"
