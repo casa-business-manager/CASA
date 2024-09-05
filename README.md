@@ -44,7 +44,7 @@
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
+    <li><a href="#screenshots">Screenshots</a></li>
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
@@ -80,7 +80,7 @@ However, we hope that this project can serve as a solid starting point for any f
 * Customizable hierarchical roles system
 
 <!-- todo: link to the demo -->
-For more information about the state of the project, check out the demo or <a href="#usage">Usage</a> sections
+For more information about the state of the project, check out the demo or <a href="#screenshots">Screenshots</a> sections
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
