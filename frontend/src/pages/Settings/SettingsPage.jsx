@@ -84,6 +84,7 @@ const SettingsPage = ({}) => {
 				<List
 					sx={{
 						width: "22%",
+						maxWidth: "260px",
 						overflow: "auto",
 					}}
 					component="nav"
