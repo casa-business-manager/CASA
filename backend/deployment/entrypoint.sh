@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "0"
 
 # start the db
 sudo service mariadb start
