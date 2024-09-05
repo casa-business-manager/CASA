@@ -47,13 +47,6 @@ export async function getUsersInOrganization(organizationId) {
 	});
 }
 
-// getUsersInOrganization + org name
-export async function getOrganizationInfo(organizationId) {
-	return request({
-		url: "/getOrganizationInfo/organization/" + organizationId,
-	});
-}
-
 export async function inviteUserToOrganization(organizationId, userEmail) {
 	const params = `?email=${userEmail}`;
 

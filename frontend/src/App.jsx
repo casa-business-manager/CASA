@@ -5,19 +5,20 @@ import {
 	Route,
 	Navigate,
 } from "react-router-dom";
-import Login from "./Login/Login";
-import OrganizationSelection from "./OrganizationSelection/OrganizationSelection";
-import OAuth2RedirectHandler from "./Login/OAuth2RedirectHandler";
-import OrganizationHome from "./OrganizationHome/OrganizationHome";
-import UserCalendar from "./Calendars/UserCalendar";
-import OrganizationCalendar from "./Calendars/OrganizationCalendar";
-import EmailPage from "./Email/EmailPage";
-import NavBar from "./NavBar/NavBar";
-import OrganizationsContext from "./Contexts/OrganizationsContext";
 import { Box, Toolbar } from "@mui/material";
-import { CurrentUserProvider } from "./Contexts/CurrentUserContext";
-import Sidebar from "./Sidebar/Sidebar";
-import EmailContext from "./Contexts/EmailContext";
+import NavBar from "./components/NavBar";
+import Sidebar from "./components/Sidebar";
+import Login from "./pages/Login/Login";
+import OAuth2RedirectHandler from "./pages/Login/OAuth2RedirectHandler";
+import OrganizationHome from "./pages/OrganizationHome";
+import OrganizationSelection from "./pages/OrganizationSelection";
+import OrganizationCalendar from "./pages/Calendars/OrganizationCalendar";
+import UserCalendar from "./pages/Calendars/UserCalendar";
+import EmailPage from "./pages/Email/EmailPage";
+import { CurrentUserProvider } from "./contexts/CurrentUserContext";
+import OrganizationsContext from "./contexts/OrganizationsContext";
+import EmailContext from "./contexts/EmailContext";
+import SettingsPage from "./pages/Settings/SettingsPage";
 
 function App() {
 	const [organizations, setOrganizations] = useState([]);
@@ -73,6 +74,14 @@ function App() {
 										element={
 											<Sidebar selected={"Email"}>
 												<EmailPage />
+											</Sidebar>
+										}
+									/>
+									<Route
+										path="/organization/:orgId/settings"
+										element={
+											<Sidebar selected={"Settings"}>
+												<SettingsPage />
 											</Sidebar>
 										}
 									/>

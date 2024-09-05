@@ -4,7 +4,6 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -178,7 +177,7 @@ public class RoleController {
 		return ResponseEntity.ok(user);
 	}
 
-	@DeleteMapping("/deleteRole/role/{roleId}")
+	@PostMapping("/deleteRole/role/{roleId}")
 	public ResponseEntity<?> deleteRole(@PathVariable String roleId) {
 		Role role = roleRepository.findById(roleId)
 				.orElseThrow(() -> new RuntimeException("Role could not be found with id: " + roleId));

@@ -5,11 +5,8 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +16,6 @@ import com.casa.Model.Role;
 import com.casa.Model.User;
 import com.casa.Payload.ApiResponse;
 import com.casa.Payload.Organization.OrganizationDto;
-import com.casa.Payload.Organization.OrganizationInformation;
 import com.casa.Payload.Organization.OrganizationWithRoles;
 import com.casa.Repository.EventRepository;
 import com.casa.Repository.OrganizationRepository;
@@ -95,7 +91,11 @@ public class OrganizationController {
 		System.out.println("Organization created: " + organization.getOrgName());
 		System.out.println("User organizations: " + user.getOrganizations().size());
 
-		return ResponseEntity.ok(organization);
+		OrganizationWithRoles orgInfo = new OrganizationWithRoles(organization);
+		orgInfo.setUsers(organization.getUsers());
+		orgInfo.setRoles(organization.getRoles());
+
+		return ResponseEntity.ok(orgInfo);
 	}
 
 	@PostMapping("/updateOrganization/organization/{orgId}")
@@ -128,20 +128,6 @@ public class OrganizationController {
 
 		Set<User> users = organization.getUsers();
 		return ResponseEntity.ok(users);
-	}
-
-	@PostMapping("/getOrganizationInfo/organization/{orgId}")
-	public ResponseEntity<?> getOrganizationInfo(@PathVariable String orgId) {
-		Organization organization = organizationRepository.findById(orgId)
-				.orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
-
-		Set<User> users = organization.getUsers();
-
-		OrganizationInformation orgInfo = new OrganizationInformation();
-		orgInfo.setName(organization.getOrgName());
-		orgInfo.setPeople(users);
-
-		return ResponseEntity.ok(orgInfo);
 	}
 
 	@PostMapping("/inviteUserToOrganization/organization/{orgId}")
