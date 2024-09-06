@@ -168,7 +168,7 @@ The developer container is also equiped with helpful shortcuts. They will be doc
 ### Top contributors:
 
 <a href="https://github.com/casa-business-manager/CASA/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=casa-business-manager/CASA" alt="contrib.rocks image" />
+  <img src="https://contrib.rocks/image?repo=casa-business-manager/casa" alt="contrib.rocks image" />
 </a>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
