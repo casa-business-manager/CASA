@@ -33,6 +33,7 @@ export const CalendarIcon = EventIcon;
 export const CalendarIconAlt = TodayIcon;
 
 // TODO: get a custom logo designed
+//export const CASALogo = kdiToolbarLogo;
 export const CASALogo = HomeIcon;
 
 export { CloseIcon };

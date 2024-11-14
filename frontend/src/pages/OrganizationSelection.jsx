@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCurrentUser } from "../API/UserAPI";
 import { getOrganizations, createOrganization } from "../API/OrganizationAPI";
 import OrganizationsContext from "../contexts/OrganizationsContext";
 import CurrentUserContext from "../contexts/CurrentUserContext";
@@ -21,7 +20,8 @@ import {
 	TextField,
 	Typography,
 } from "@mui/material";
-import { AddIcon, MoreOptionsIcon, OrganizationIcon } from "../constants/icons";
+import { AddIcon, OrganizationIcon } from "../constants/icons";
+import { BE_ACCESS_TOKEN } from "../constants/login";
 
 const CardColor = "OliveDrab";
 
@@ -31,26 +31,32 @@ const Organization = () => {
 
 	const [loading, setLoading] = useState(true);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [apiError, setApiError] = useState("");
 	const navigate = useNavigate();
 
+	// Fetch data on component mount
 	useEffect(() => {
 		const fetchData = async () => {
-			try {
-				const userData = await getCurrentUser();
-				setCurrentUser(userData);
+			const token = sessionStorage.getItem(BE_ACCESS_TOKEN);
+			if (!token) {
+				console.warn("No backend access token found. Redirecting to login.");
+				navigate("/login"); // Redirect to login if token is missing
+				return;
+			}
 
+			try {
 				const orgData = await getOrganizations();
 				setOrganizations(orgData);
 			} catch (error) {
-				console.error("Error:", error);
-				setLoading(true);
+				console.error("Error fetching data:", error);
+				setApiError("Failed to load organizations. Please try again.");
 			} finally {
-				setLoading(false);
+				setLoading(false); // Ensure loading is set to false once fetching completes
 			}
 		};
 
 		fetchData();
-	}, []);
+	}, [navigate]);
 
 	const handleCardClick = (orgId) => {
 		navigate(`/organization/${orgId}`);
@@ -61,10 +67,7 @@ const Organization = () => {
 	const OrganizationCard = ({ id, name, description, location }) => (
 		<Card key={id} sx={{ boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.2)" }}>
 			<CardActionArea onClick={() => handleCardClick(id)}>
-				<CardMedia sx={{ height: 140, backgroundColor: CardColor }}>
-					{/* CardMedia requires an image or a child component */}
-					<></>
-				</CardMedia>
+				<CardMedia sx={{ height: 140, backgroundColor: CardColor }} />
 				<CardContent>
 					<Box sx={{ maxHeight: 80, overflowY: "auto" }}>
 						<Typography
@@ -87,7 +90,7 @@ const Organization = () => {
 					</Box>
 					<Box sx={{ maxHeight: 80, overflowY: "auto" }}>
 						<Typography
-							variant="body3"
+							variant="body2"
 							color="text.primary"
 							sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
 						>
@@ -96,12 +99,6 @@ const Organization = () => {
 					</Box>
 				</CardContent>
 			</CardActionArea>
-			{/* <CardActions sx={{ justifyContent: "right" }}> 
-			TODO: what goes in here?
-			<IconButton>
-					<MoreOptionsIcon />
-				</IconButton>
-			</CardActions> */}
 		</Card>
 	);
 
@@ -113,99 +110,87 @@ const Organization = () => {
 		const [orgNameError, setOrgNameError] = useState(false);
 		const [orgDescriptionError, setOrgDescriptionError] = useState(false);
 		const [orgLocationError, setOrgLocationError] = useState(false);
-		const [apiError, setApiError] = useState("");
 
 		const handleCreateOrganization = async (event) => {
 			event.preventDefault();
-			event.stopPropagation();
 
-			var flag = false;
+			// Form validation
+			let hasError = false;
 			if (!orgName) {
 				setOrgNameError(true);
-				flag = true;
+				hasError = true;
 			}
 			if (!orgDescription) {
 				setOrgDescriptionError(true);
-				flag = true;
+				hasError = true;
 			}
 			if (!orgLocation) {
 				setOrgLocationError(true);
-				flag = true;
+				hasError = true;
 			}
-			if (flag) {
-				return;
-			}
+			if (hasError) return;
 
+			// API call to create the organization
 			const organizationDto = { orgName, orgDescription, orgLocation };
-
 			try {
 				const data = await createOrganization(organizationDto);
-				setOrganizations([...organizations, data]);
-				setIsOpen(false);
+				setOrganizations([...organizations, data]); // Update organization list
+				setIsOpen(false); // Close dialog on success
 			} catch (error) {
 				console.error("Error creating organization:", error);
-				setApiError(`${error}`);
+				setApiError("Error creating organization. Please try again.");
 			}
 		};
 
 		return (
-			<>
-				<Dialog open={isOpen} onClose={() => setIsDialogOpen(false)}>
-					<DialogTitle variant="h4">Create Organization</DialogTitle>
-					<DialogContent>
-						{apiError !== "" && <Alert severity="error">{apiError}</Alert>}
-						<TextField
-							id="organization-name"
-							label="Organization Name"
-							value={orgName}
-							onChange={(e) => {
-								setOrgName(e.target.value);
-								setOrgNameError(false);
-							}}
-							fullWidth
-							margin="normal"
-							required
-							error={orgNameError}
-						/>
-						<TextField
-							label="Organization Description"
-							value={orgDescription}
-							onChange={(e) => {
-								setOrgDescription(e.target.value);
-								setOrgDescriptionError(false);
-							}}
-							fullWidth
-							margin="normal"
-							required
-							error={orgDescriptionError}
-						/>
-						<TextField
-							label="Organization Location"
-							value={orgLocation}
-							onChange={(e) => {
-								setOrgLocation(e.target.value);
-								setOrgLocationError(false);
-							}}
-							fullWidth
-							margin="normal"
-							required
-							error={orgLocationError}
-						/>
-					</DialogContent>
-					<DialogActions>
-						<Button color="primary" onClick={() => setIsOpen(false)}>
-							Cancel
-						</Button>
-						<Button
-							variant="contained"
-							color="primary"
-							onClick={handleCreateOrganization}
-						>
-							Create
-						</Button>
-					</DialogActions>
-				</Dialog>
-			</>
+			<Dialog open={isOpen} onClose={() => setIsDialogOpen(false)}>
+				<DialogTitle>Create Organization</DialogTitle>
+				<DialogContent>
+					{apiError && <Alert severity="error">{apiError}</Alert>}
+					<TextField
+						label="Organization Name"
+						value={orgName}
+						onChange={(e) => {
+							setOrgName(e.target.value);
+							setOrgNameError(false);
+						}}
+						fullWidth
+						margin="normal"
+						required
+						error={orgNameError}
+					/>
+					<TextField
+						label="Organization Description"
+						value={orgDescription}
+						onChange={(e) => {
+							setOrgDescription(e.target.value);
+							setOrgDescriptionError(false);
+						}}
+						fullWidth
+						margin="normal"
+						required
+						error={orgDescriptionError}
+					/>
+					<TextField
+						label="Organization Location"
+						value={orgLocation}
+						onChange={(e) => {
+							setOrgLocation(e.target.value);
+							setOrgLocationError(false);
+						}}
+						fullWidth
+						margin="normal"
+						required
+						error={orgLocationError}
+					/>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setIsOpen(false)}>Cancel</Button>
+					<Button variant="contained" onClick={handleCreateOrganization}>
+						Create
+					</Button>
+				</DialogActions>
+			</Dialog>
 		);
 	};
 
@@ -237,7 +222,7 @@ const Organization = () => {
 			>
 				{organizations.length > 0 ? (
 					organizations
-						.toSorted((a, b) => a.orgName > b.orgName)
+						.sort((a, b) => a.orgName.localeCompare(b.orgName))
 						.map((org) => (
 							<OrganizationCard
 								key={org.orgId}
@@ -248,7 +233,7 @@ const Organization = () => {
 							/>
 						))
 				) : (
-					<>No organization data available.</>
+					<Typography>No organization data available.</Typography>
 				)}
 			</Box>
 			<CreateDialog isOpen={isDialogOpen} setIsOpen={setIsDialogOpen} />

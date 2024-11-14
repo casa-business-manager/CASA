@@ -23,6 +23,7 @@ import {
 	mainAppColor,
 	MainTextLight,
 } from "../constants/colors";
+import { useMsal } from "@azure/msal-react";
 
 const recognizedPathWordsToNavbarWords = {
 	login: { name: "Login", path: "login" },
@@ -64,6 +65,7 @@ const NavBar = ({}) => {
 	// values from recognizedPathWordsToNavbarWords
 	const [navbarLinks, setNavbarLinks] = useState([]);
 	const [anchorEl, setAnchorEl] = useState(null);
+	const { instance } = useMsal();
 
 	const location = useLocation();
 
@@ -111,7 +113,9 @@ const NavBar = ({}) => {
 
 	const handleLogout = () => {
 		sessionStorage.removeItem("token");
-		navigate("/login");
+		instance.logoutRedirect({
+			postLogoutRedirectUri: "/",
+		});
 	};
 
 	const handleCalendarClick = () => {
@@ -151,7 +155,7 @@ const NavBar = ({}) => {
 						},
 					}}
 				>
-					CASA
+					KDI
 				</Typography>
 				{navbarLinks.map((link, index) => (
 					<React.Fragment key={index}>

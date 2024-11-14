@@ -31,14 +31,6 @@ const OrganizationHome = ({}) => {
 	const [currentUser, _] = useContext(CurrentUserContext);
 	const [organizations, __] = useContext(OrganizationsContext);
 
-	const [taskNotifications, setTaskNotifications] = useState([
-		"task1",
-		"task2",
-	]);
-	const [messageNotifications, setMessageNotifications] = useState([
-		"message1",
-		"message2",
-	]);
 	/// Event notifications for [today, 7 days from now] fetched from the backend
 	const [eventNotifications, setEventNotifications] = useState([]);
 
@@ -128,54 +120,6 @@ const OrganizationHome = ({}) => {
 	return (
 		<>
 			<Box display="flex" sx={{ flexGrow: 1, height: "100%", my: 1 }}>
-				<Column title={"Upcoming Tasks"} icon={<TasksIcon />}>
-					{taskNotifications.length === 0 ? (
-						<Typography>No tasks!</Typography>
-					) : (
-						// TODO: Make notification cards for tasks
-						taskNotifications.map((task, index) => (
-							<NotificationCard
-								key={index}
-								icon={<TaskIcon />}
-								text={<ListItemText primary={task} secondary={task} />}
-							/>
-						))
-					)}
-					TODO: Make project management and integrate notifications here
-				</Column>
-
-				<Divider
-					orientation="vertical"
-					flexItem
-					sx={{ borderWidth: 1, borderColor: DividerColor }}
-				/>
-
-				<Column title={"New Messages"} icon={<MessageIcon />}>
-					{messageNotifications.length === 0 ? (
-						<Typography>No new messages</Typography>
-					) : (
-						// TODO: Make notification cards for tasks
-						messageNotifications.map((messageNotification, index) => (
-							<NotificationCard
-								key={index}
-								text={
-									<ListItemText
-										primary={messageNotification}
-										secondary={messageNotification}
-									/>
-								}
-							/>
-						))
-					)}
-					TODO: Make messages and integrate notifications here
-				</Column>
-
-				<Divider
-					orientation="vertical"
-					flexItem
-					sx={{ borderWidth: 1, borderColor: DividerColor }}
-				/>
-
 				<Column title={"Upcoming Events"} icon={<CalendarIcon />}>
 					{eventNotifications.length === 0 ? (
 						<Typography>No upcoming events</Typography>

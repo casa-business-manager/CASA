@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation, Navigate } from "react-router-dom";
-import { ACCESS_TOKEN } from "../../constants/login";
+import { BE_ACCESS_TOKEN } from "../../constants/login";
 
 const OAuth2RedirectHandler = () => {
 	const location = useLocation();
@@ -18,7 +18,7 @@ const OAuth2RedirectHandler = () => {
 	const error = getUrlParameter("error");
 
 	if (token) {
-		sessionStorage.setItem(ACCESS_TOKEN, token);
+		sessionStorage.setItem(BE_ACCESS_TOKEN, token);
 		return <Navigate to="/organization" state={{ from: location }} replace />;
 	} else {
 		return (

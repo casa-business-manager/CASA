@@ -96,11 +96,6 @@ public class AuthController {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Email address already in use.");
 		}
 
-		if (!isValidPwdCpx(signUpRequest.getPassword())) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-					"Password must contain at least one upper case letter, one lower case letter, one digit, and one special character.");
-		}
-
 		// Creating user's account
 		User user = new User();
 		user.setFirstName(signUpRequest.getFirstName());

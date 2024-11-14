@@ -1,15 +1,16 @@
-import { API_BASE_URL, ACCESS_TOKEN } from "../constants/login";
+// APIUtils.js
+import { API_BASE_URL, BE_ACCESS_TOKEN } from "../constants/login";
 
 export const request = async (options) => {
 	const headers = new Headers({
 		"Content-Type": "application/json",
 	});
 
-	if (sessionStorage.getItem(ACCESS_TOKEN)) {
-		headers.append(
-			"Authorization",
-			"Bearer " + sessionStorage.getItem(ACCESS_TOKEN),
-		);
+	const token = sessionStorage.getItem(BE_ACCESS_TOKEN);
+	if (token) {
+		headers.append("Authorization", "Bearer " + token);
+	} else {
+		console.warn("No backend access token found in sessionStorage");
 	}
 
 	const defaults = { headers: headers, method: "POST" };
@@ -18,12 +19,17 @@ export const request = async (options) => {
 
 	return fetch(url, options).then((response) => {
 		return response.text().then((text) => {
-			// cant call JSON.parse on an empty string - may be an ok response but the function will throw an error
 			try {
-				if (response.ok) {
-					return text === "" ? response.ok : JSON.parse(text);
+				const contentType = response.headers.get("content-type");
+				if (contentType && contentType.includes("application/json")) {
+					const jsonResponse = JSON.parse(text);
+					console.log("API Response:", jsonResponse); // Log the full response
+					return response.ok
+						? jsonResponse
+						: Promise.reject(jsonResponse.error);
+				} else {
+					return response.ok ? text : Promise.reject(text);
 				}
-				return Promise.reject(JSON.parse(text).error);
 			} catch (error) {
 				console.error("Error parsing JSON response:", error);
 				return Promise.reject(text);

@@ -1,8 +1,8 @@
-import { ACCESS_TOKEN } from "../constants/login";
+import { MS_ACCESS_TOKEN, BE_ACCESS_TOKEN } from "../constants/login";
 import { request } from "./APIUtils";
 
 export function getCurrentUser() {
-	if (!sessionStorage.getItem(ACCESS_TOKEN)) {
+	if (!sessionStorage.getItem(BE_ACCESS_TOKEN)) {
 		return Promise.reject("No access token set.");
 	}
 

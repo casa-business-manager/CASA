@@ -20,6 +20,17 @@ import OrganizationsContext from "./contexts/OrganizationsContext";
 import EmailContext from "./contexts/EmailContext";
 import SettingsPage from "./pages/Settings/SettingsPage";
 
+import { PageLayout } from "./components/PageLayout";
+import { loginRequest } from "./authConfig";
+import { callMsGraph } from "./API/GraphAPI";
+import { ProfileData } from "./components/ProfileData";
+
+import {
+	AuthenticatedTemplate,
+	UnauthenticatedTemplate,
+	useMsal,
+} from "@azure/msal-react";
+
 function App() {
 	const [organizations, setOrganizations] = useState([]);
 	const [emailRecipients, setEmailRecipients] = useState([]);
@@ -35,7 +46,7 @@ function App() {
 							value={[emailRecipients, setEmailRecipients]}
 						>
 							<NavBar title="Organization Calendar" />
-							{/* For spacing */}
+							{/* For spacing } */}
 							<Toolbar sx={{ mb: 1 }} />
 							<Box sx={{ flexGrow: 1, px: 1 }}>
 								<Routes>

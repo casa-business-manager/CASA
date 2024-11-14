@@ -1,4 +1,4 @@
-export const MainAppColor = "#3b89f3";
+export const MainAppColor = "#2B5336";
 
 export const MainTextLight = "#fff";
 

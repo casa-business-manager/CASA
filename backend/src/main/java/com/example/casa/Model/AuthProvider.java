@@ -1,5 +1,5 @@
 package com.example.casa.Model;
 
 public enum AuthProvider {
-	google, local
+	google, local, microsoft
 }
