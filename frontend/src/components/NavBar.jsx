@@ -24,6 +24,7 @@ import {
 	MainTextLight,
 } from "../constants/colors";
 import { useMsal } from "@azure/msal-react";
+import { BE_ACCESS_TOKEN, MS_ACCESS_TOKEN } from "../constants/login";
 
 const recognizedPathWordsToNavbarWords = {
 	login: { name: "Login", path: "login" },
@@ -112,7 +113,8 @@ const NavBar = ({}) => {
 	};
 
 	const handleLogout = () => {
-		sessionStorage.removeItem("token");
+		sessionStorage.removeItem(BE_ACCESS_TOKEN);
+		sessionStorage.removeItem(MS_ACCESS_TOKEN);
 		instance.logoutRedirect({
 			postLogoutRedirectUri: "/",
 		});

@@ -9,7 +9,9 @@ import org.hibernate.annotations.GenericGenerator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -32,6 +34,9 @@ public class Event {
 	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
 	@Column(name = "uuid", updatable = false, unique = true, nullable = false)
 	private String eventId;
+
+	@Column(name = "microsoft_event_id", unique = true)
+	private String microsoftEventId;
 
 	@Column(name = "title", nullable = false)
 	private String title;
@@ -59,14 +64,22 @@ public class Event {
 	private Organization organization;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "event_creator_id", nullable = false)
+	@JoinColumn(name = "event_creator_id", nullable = true)
 	@JsonManagedReference("user-createdEvents")
 	private User eventCreator;
+
+	@Column(name = "external_creator_email", nullable = true)
+	private String externalCreatorEmail;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "event_accessors", joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
 	@JsonManagedReference("user-accessibleEvents")
 	private Set<User> eventAccessors = new HashSet<>();
+
+	@ElementCollection(fetch = FetchType.LAZY)
+	@CollectionTable(name = "event_external_accessors", joinColumns = @JoinColumn(name = "event_id"))
+	@Column(name = "email")
+	private Set<String> externalAccessors = new HashSet<>();
 
 	public Event() {
 	}
@@ -78,6 +91,14 @@ public class Event {
 
 	public void setEventId(String eventId) {
 		this.eventId = eventId;
+	}
+
+	public String getMicrosoftEventId() {
+		return microsoftEventId;
+	}
+
+	public void setMicrosoftEventId(String microsoftEventId) {
+		this.microsoftEventId = microsoftEventId;
 	}
 
 	public String getTitle() {
@@ -142,6 +163,16 @@ public class Event {
 
 	public void setEventCreator(User eventCreator) {
 		this.eventCreator = eventCreator;
+		this.externalCreatorEmail = null;
+	}
+
+	public String getExternalCreatorEmail() {
+		return externalCreatorEmail;
+	}
+
+	public void setExternalCreatorEmail(String externalCreatorEmail) {
+		this.externalCreatorEmail = externalCreatorEmail;
+		this.eventCreator = null;
 	}
 
 	public Set<User> getEventAccessors() {
@@ -150,5 +181,13 @@ public class Event {
 
 	public void setEventAccessors(Set<User> eventAccessors) {
 		this.eventAccessors = eventAccessors;
+	}
+
+	public Set<String> getExternalAccessors() {
+		return externalAccessors;
+	}
+
+	public void setExternalAccessors(Set<String> externalAccessors) {
+		this.externalAccessors = externalAccessors;
 	}
 }

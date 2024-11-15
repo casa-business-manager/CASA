@@ -18,6 +18,8 @@ public class EventDto {
 
 	private String[] eventAccessorIds;
 
+	private String eventId;
+
 	public EventDto() {
 	}
 
@@ -87,6 +89,14 @@ public class EventDto {
 
 	public void setEventAccessorIds(String[] eventAccessorIds) {
 		this.eventAccessorIds = eventAccessorIds;
+	}
+
+	public String getMicrosoftEventId() {
+		return this.eventId;
+	}
+
+	public void setMicrosoftEventId(String eventId) {
+		this.eventId = eventId;
 	}
 
 }

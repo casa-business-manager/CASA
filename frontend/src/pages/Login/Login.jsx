@@ -1,9 +1,9 @@
 // Login.jsx
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useIsAuthenticated } from "@azure/msal-react";
 import { SignInButton } from "../../components/SignInButton";
-import { SignUpButton } from "../../components/SignUpButton"; // Ensure SignUpButton is properly imported
+import { SignUpButton } from "../../components/SignUpButton";
 import { callMsGraph } from "../../API/GraphAPI";
 import { login, signup } from "../../API/UserAPI";
 import { MS_ACCESS_TOKEN, BE_ACCESS_TOKEN } from "../../constants/login";
@@ -11,9 +11,9 @@ import { MS_ACCESS_TOKEN, BE_ACCESS_TOKEN } from "../../constants/login";
 function Login() {
 	const isAuthenticated = useIsAuthenticated();
 	const navigate = useNavigate();
-	const hardcodedPassword = "kdi2002!"; // Ensure this matches backend signup password
+	const [isLoading, setIsLoading] = useState(false); // Loading state
+	const hardcodedPassword = "kdi2002!";
 
-	// Function for handling login directly
 	const handleMicrosoftLogin = async (msAccessToken) => {
 		try {
 			console.log("Received Microsoft access token for login:", msAccessToken);
@@ -24,23 +24,23 @@ function Login() {
 			console.log("Microsoft user data received for login:", microsoftUser);
 
 			const email = microsoftUser?.mail || microsoftUser?.userPrincipalName;
-			if (!email) {
-				throw new Error("No email found in Microsoft account");
+			if (!email) throw new Error("No email found in Microsoft account");
+
+			console.log("Checking backend for existing user with email:", email);
+			const loginResponse = await login({ email, password: hardcodedPassword });
+			if (!loginResponse || !loginResponse.accessToken) {
+				throw new Error("User not found in backend");
 			}
 
-			console.log("Attempting backend login with email:", email);
-			const loginResponse = await login({ email, password: hardcodedPassword });
-			const backendToken = loginResponse.accessToken;
-
-			sessionStorage.setItem(BE_ACCESS_TOKEN, backendToken);
+			sessionStorage.setItem(BE_ACCESS_TOKEN, loginResponse.accessToken);
 			console.log("Login successful, backend access token stored.");
+			setIsLoading(true); // Set loading state to true
 			navigate("/organization");
 		} catch (error) {
 			console.error("Error during login:", error);
 		}
 	};
 
-	// Function for handling signup, with fallback to login if user exists
 	const handleMicrosoftSignup = async (msAccessToken) => {
 		try {
 			console.log("Received Microsoft access token for signup:", msAccessToken);
@@ -51,13 +51,10 @@ function Login() {
 			console.log("Microsoft user data received for signup:", microsoftUser);
 
 			const email = microsoftUser?.mail || microsoftUser?.userPrincipalName;
-			if (!email) {
-				throw new Error("No email found in Microsoft account");
-			}
+			if (!email) throw new Error("No email found in Microsoft account");
 
-			// Attempt to signup with required fields
 			const signupData = {
-				email: email,
+				email,
 				firstName: microsoftUser.givenName || "DefaultFirstName",
 				lastName: microsoftUser.surname || "DefaultLastName",
 				password: hardcodedPassword,
@@ -66,29 +63,25 @@ function Login() {
 
 			try {
 				await signup(signupData);
-				console.log("Signup successful, proceeding to login...");
+				console.log("Signup successful. Logging in...");
 
-				// Login after successful signup
 				const loginResponse = await login({
-					email: email,
+					email,
 					password: hardcodedPassword,
 				});
-				const backendToken = loginResponse.accessToken;
-				sessionStorage.setItem(BE_ACCESS_TOKEN, backendToken);
+				sessionStorage.setItem(BE_ACCESS_TOKEN, loginResponse.accessToken);
 				console.log(
 					"Login after signup successful, backend access token stored.",
 				);
 			} catch (signupError) {
 				if (signupError.message.includes("Email address already in use")) {
-					console.log("Email already in use. Attempting login...");
+					console.log("User already exists. Attempting login...");
 
-					// Attempt login if signup fails due to existing user
 					const loginResponse = await login({
 						email,
 						password: hardcodedPassword,
 					});
-					const backendToken = loginResponse.accessToken;
-					sessionStorage.setItem(BE_ACCESS_TOKEN, backendToken);
+					sessionStorage.setItem(BE_ACCESS_TOKEN, loginResponse.accessToken);
 					console.log("Login successful, backend access token stored.");
 				} else {
 					console.error("Unexpected signup error:", signupError);
@@ -96,6 +89,7 @@ function Login() {
 				}
 			}
 
+			setIsLoading(true); // Set loading state to true
 			navigate("/organization");
 		} catch (error) {
 			console.error("Error during signup/login:", error);
@@ -103,17 +97,20 @@ function Login() {
 	};
 
 	useEffect(() => {
-		if (isAuthenticated) {
-			console.log(
-				"User authenticated with Microsoft. Redirecting to /organization...",
-			);
+		const backendToken = sessionStorage.getItem(BE_ACCESS_TOKEN);
+		if (isAuthenticated && backendToken) {
+			setIsLoading(true);
 			navigate("/organization");
 		}
 	}, [isAuthenticated, navigate]);
 
 	return (
 		<div>
-			{isAuthenticated ? null : (
+			{isAuthenticated ? (
+				isLoading ? (
+					<p>Loading...</p> // Show loading if waiting for token
+				) : null
+			) : (
 				<div
 					style={{
 						display: "flex",

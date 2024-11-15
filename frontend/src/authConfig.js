@@ -40,7 +40,7 @@ export const msalConfig = {
 // scopes to prompt for user consent
 // default, mSAL.js adds openid, profile, email to any login request
 export const loginRequest = {
-	scopes: ["User.Read"],
+	scopes: ["User.Read", "Calendars.Read.Shared", "Calendars.Read"],
 };
 
 // scopes to request when obtaining an access token for MS Graph API

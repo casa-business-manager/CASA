@@ -1,24 +1,35 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "../authConfig";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
+import CurrentUserContext from "../contexts/CurrentUserContext";
+import { MS_ACCESS_TOKEN } from "../constants/login";
 
-/**
- * Renders a drop-down button with child buttons for logging in with a popup or redirect
- */
 export const SignInButton = ({ onLoginSuccess }) => {
 	const { instance } = useMsal();
+	const [_, setCurrentUser] = useContext(CurrentUserContext);
 
 	const handleLogin = async (loginType) => {
 		try {
+			// Clear previous token if any
+			sessionStorage.removeItem(MS_ACCESS_TOKEN);
+
 			const response =
 				loginType === "popup"
 					? await instance.loginPopup(loginRequest)
 					: await instance.loginRedirect(loginRequest);
-			onLoginSuccess(response.accessToken);
+
+			// Assuming response includes new user profile information and access token
+			const accessToken = response.accessToken;
+
+			// Store new token and update CurrentUserContext
+			sessionStorage.setItem(MS_ACCESS_TOKEN, accessToken);
+
+			// Pass access token to parent component callback if needed
+			onLoginSuccess(accessToken);
 		} catch (e) {
-			console.log(e);
+			console.log("Error during Microsoft login:", e);
 		}
 	};
 

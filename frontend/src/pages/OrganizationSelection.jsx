@@ -46,6 +46,7 @@ const Organization = () => {
 
 			try {
 				const orgData = await getOrganizations();
+				console.log("Fetched Organizations Data:", orgData); // Debugging log
 				setOrganizations(orgData);
 			} catch (error) {
 				console.error("Error fetching data:", error);
@@ -56,7 +57,7 @@ const Organization = () => {
 		};
 
 		fetchData();
-	}, [navigate]);
+	}, [navigate, setOrganizations]);
 
 	const handleCardClick = (orgId) => {
 		navigate(`/organization/${orgId}`);

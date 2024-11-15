@@ -2,6 +2,7 @@ package com.example.casa.Repository;
 
 import java.util.Date;
 import java.util.Set;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,6 +15,8 @@ import com.example.casa.Model.User;
 public interface EventRepository extends JpaRepository<Event, String> {
 
 	Set<Event> findByOrganizationAndEventAccessorsContaining(Organization organization, User user);
+
+	Optional<Event> findByMicrosoftEventId(String microsoftEventId);
 
 	@Query("SELECT e FROM Event e WHERE e.organization = :organization AND :user MEMBER OF e.eventAccessors AND e.start < :endDate AND e.end > :startDate")
 	Set<Event> findAccessibleEventsInBlock(@Param("organization") Organization organization,

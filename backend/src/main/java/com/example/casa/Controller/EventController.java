@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -86,34 +87,78 @@ public class EventController {
 
 	@PostMapping("/createEvent/organization/{orgId}")
 	public ResponseEntity<?> createEvent(@PathVariable String orgId, @RequestBody EventDto eventRequest) {
-		Event newEvent = new Event();
-		newEvent.setTitle(eventRequest.getTitle());
-		newEvent.setDescription(eventRequest.getDescription());
-		newEvent.setLocation(eventRequest.getLocation());
-		newEvent.setStart(DateConverter.ISO2Date(eventRequest.getStart()));
-		newEvent.setEnd(DateConverter.ISO2Date(eventRequest.getEnd()));
-		newEvent.setAllDay(eventRequest.getAllDay());
-
 		Organization organization = organizationRepository.findById(orgId)
 				.orElseThrow(() -> new RuntimeException("Organization not found with id: " + orgId));
-		newEvent.setOrganization(organization);
 
-		String creatorId = eventRequest.getEventCreatorId();
-		User creator = userRepository.findById(creatorId)
-				.orElseThrow(() -> new RuntimeException("User not found with id: " + creatorId));
-		newEvent.setEventCreator(creator);
+		// Check if the event already exists using Microsoft Event ID
+		Optional<Event> existingEventOpt = eventRepository.findByMicrosoftEventId(eventRequest.getMicrosoftEventId());
+		Event event;
 
-		for (String accssorId : eventRequest.getEventAccessorIds()) {
-			User accessor = userRepository.findById(accssorId)
-					.orElseThrow(() -> new RuntimeException("User not found with id: " + accssorId));
-			newEvent.getEventAccessors().add(accessor);
+		if (existingEventOpt.isPresent()) {
+			// Update existing event
+			event = existingEventOpt.get();
+			updateEventFields(event, eventRequest);
+		} else {
+			// Create new event
+			event = new Event();
+			updateEventFields(event, eventRequest);
+			event.setMicrosoftEventId(eventRequest.getMicrosoftEventId());
+			event.setOrganization(organization);
 		}
-		// ensure the event creator is always in the set
-		newEvent.getEventAccessors().add(newEvent.getEventCreator());
 
-		newEvent = eventRepository.save(newEvent);
+		// Check if the event creator exists in the organization by email
+		String creatorIdentifier = eventRequest.getEventCreatorId();
+		User organizerUser = null;
 
-		return ResponseEntity.ok(newEvent);
+		// First, check by User ID
+		organizerUser = userRepository.findById(creatorIdentifier).orElse(null);
+		if (organizerUser == null && creatorIdentifier.contains("@")) {
+			// If not found by ID, try finding by email
+			organizerUser = userRepository.findByEmail(creatorIdentifier).orElse(null);
+		}
+
+		if (organizerUser != null) {
+			// Internal user found; set as event creator and add as an accessor
+			event.setEventCreator(organizerUser);
+			event.getEventAccessors().add(organizerUser);
+		} else {
+			// External email; set as external creator email
+			event.setExternalCreatorEmail(creatorIdentifier);
+		}
+
+		// Process accessors: add internal users by ID, add external attendees as emails
+		for (String accessor : eventRequest.getEventAccessorIds()) {
+			User accessorUser = null;
+
+			// Check if the accessor is an internal user by ID first, then by email
+			accessorUser = userRepository.findById(accessor).orElse(null);
+			if (accessorUser == null && accessor.contains("@")) {
+				accessorUser = userRepository.findByEmail(accessor).orElse(null);
+			}
+
+			if (accessorUser != null) {
+				event.getEventAccessors().add(accessorUser);
+			} else {
+				event.getExternalAccessors().add(accessor); // Treat as an external email if not found
+			}
+		}
+
+		// Ensure the organizer is included in accessors if they are internal
+		if (organizerUser != null && !event.getEventAccessors().contains(organizerUser)) {
+			event.getEventAccessors().add(organizerUser);
+		}
+
+		event = eventRepository.save(event);
+		return ResponseEntity.ok(event);
+	}
+
+	private void updateEventFields(Event event, EventDto eventRequest) {
+		event.setTitle(eventRequest.getTitle());
+		event.setDescription(eventRequest.getDescription());
+		event.setLocation(eventRequest.getLocation());
+		event.setStart(DateConverter.ISO2Date(eventRequest.getStart()));
+		event.setEnd(DateConverter.ISO2Date(eventRequest.getEnd()));
+		event.setAllDay(eventRequest.getAllDay());
 	}
 
 	@PostMapping("/updateEvent/event/{eventId}")
@@ -123,7 +168,8 @@ public class EventController {
 		Event event = eventRepository.findById(eventId)
 				.orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
 
-		if (!currentUserId.equals(event.getEventCreator().getId())) {
+		if (!currentUserId.equals(
+				event.getEventCreator() != null ? event.getEventCreator().getId() : event.getExternalCreatorEmail())) {
 			throw new BadRequestException("User " + currentUserId + " is not the event owner!");
 		}
 
@@ -138,14 +184,23 @@ public class EventController {
 
 		if (eventRequest.getEventAccessorIds() != null) {
 			event.getEventAccessors().clear();
-			for (String accssorId : eventRequest.getEventAccessorIds()) {
-				User accessor = userRepository.findById(accssorId)
-						.orElseThrow(() -> new RuntimeException("User not found with id: " + accssorId));
-				event.getEventAccessors().add(accessor);
+			event.getExternalAccessors().clear();
+
+			for (String accessor : eventRequest.getEventAccessorIds()) {
+				User accessorUser = null;
+
+				accessorUser = userRepository.findById(accessor).orElse(null);
+				if (accessorUser == null && accessor.contains("@")) {
+					accessorUser = userRepository.findByEmail(accessor).orElse(null);
+				}
+
+				if (accessorUser != null) {
+					event.getEventAccessors().add(accessorUser);
+				} else {
+					event.getExternalAccessors().add(accessor);
+				}
 			}
 		}
-		// ensure the event creator is always in the set
-		event.getEventAccessors().add(event.getEventCreator());
 
 		event = eventRepository.save(event);
 
